@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     hamburgerMenu.addEventListener('click', toggleSidePanel);
     exploreButton.addEventListener('click', () => {
-        navigateWithTransition('../pages/basic.html');
+        navigateWithTransition('../basic.html');
     });
     homeButton.addEventListener('click', () => {
-        navigateWithTransition('basic.html');
+        navigateWithTransition('basic');
     });
     favouritesButton.addEventListener('click', () => {
         navigateWithTransition('favourites.html');

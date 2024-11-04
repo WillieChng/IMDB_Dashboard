@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <title>{% block title %}Dashboard{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
     <header>
@@ -30,19 +29,16 @@
             <a href="#logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
-    <div class="content" id="home">
-        <div class="center-container">
-            <br><h1>Dive into the world of entertainment analytics!</h1><br><br>
-            <p>Explore a dynamic dashboard tailored<br>
-                for industry professionals seeking<br>
-                insights into performance metrics and<br>
-                audience behavior</p>
-            <br><br><br><h2 id="explore-button">Explore</h2>
-        </div>
-    </div>
     <div class="content" id="homepage"></div>
     <div class="content" id="favourites"></div>
     <div class="content" id="settings"></div>
-    <script src="../js/script.js"></script>
+    <div class="container">
+    {%block content%}
+    <h1>ayoo</h1>
+    {% endblock %}
+    </div>
+    <script src={{ url_for('static', filename='script.js')}}></script>
+</body>
+</html>
 </body>
 </html>

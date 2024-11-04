@@ -1,0 +1,12 @@
+{% extends "basic.html" %} 
+{% block title %} Testing {% endblock %} 
+{% block content%} 
+    <h1>This is the the Testing page</h1> 
+    {{text}} {{"mr." + user}} <br>
+
+    {% if boolean == True %}
+        Yes it is True! 
+    {% else %}
+        No it is no not true.
+    {% endif %} 
+{% endblock %}
