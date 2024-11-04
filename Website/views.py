@@ -9,7 +9,7 @@ def testing():
 
 @views.route('/') #root function
 def index():
-    return render_template("index.html")
+    return render_template("homepage.html")
 
 @views.route('/basic.html')
 def homepage():
