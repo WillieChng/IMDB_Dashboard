@@ -15,6 +15,14 @@ def index():
 def homepage():
     return render_template("basic.html")
 
+@views.route('/intermediate.html')
+def homepage():
+    return render_template("intermediate.html")
+
+@views.route('/advanced.html')
+def homepage():
+    return render_template("advanced.html")
+
 @views.route('/favourites.html')
 def favourtie_page():
     return render_template("favourites.html")
