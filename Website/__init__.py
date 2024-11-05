@@ -3,16 +3,21 @@
 #Function automatically run when imported from elsewhere
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from os import path
+from os import path, environ
+from dotenv import load_dotenv
 
 db = SQLAlchemy() #db = database connection that used to interact with database
 
 def create_app():
     app = Flask(__name__) #name of the file, __init__.py
+
+    # Load environment variables from .env file
+    load_dotenv()
+    
     app.config['SECRET_KEY'] = "KDJFASasldfgjsfdfs"
     
     #Add Database 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost:3306/moviedb' #sqlalchemy is stored within this location
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URI') #sqlalchemy is stored within this location
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disables modification tracking, improving performance
     db.init_app(app) #Initialize flask app to the 
     
