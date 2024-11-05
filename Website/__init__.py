@@ -43,9 +43,10 @@ def create_database_if_not_exists():
     #Connect to MySQL server without specifying a database
     import pymysql
     connection = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="password"
+    #use .env to fill in host, user and password variable
+        host=environ.get("host"), 
+        user=environ.get("user"),
+        password=environ.get("password")
     )
     
     with connection.cursor() as cursor:
