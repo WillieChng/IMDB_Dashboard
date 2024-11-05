@@ -8,19 +8,19 @@ def testing():
     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True) 
 
 @views.route('/') #root function
-def index():
+def base():
     return render_template("homepage.html")
 
 @views.route('/basic.html')
-def homepage():
+def basic():
     return render_template("basic.html")
 
 @views.route('/intermediate.html')
-def homepage():
+def intermediate():
     return render_template("intermediate.html")
 
 @views.route('/advanced.html')
-def homepage():
+def advanced():
     return render_template("advanced.html")
 
 @views.route('/favourites.html')
