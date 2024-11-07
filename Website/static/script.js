@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const hamburgerMenu = document.getElementById('hamburger-menu');
     const exploreButton = document.getElementById('explore-button');
-    const homeButton = document.querySelector('a[href="basic.html"]');
     const favouritesButton = document.querySelector('a[href="favourites.html"]');
     const settingsButton = document.querySelector('a[href="settings.html"]');
     const profileButton = document.querySelector('a[href="profile.html"]');
@@ -17,12 +16,73 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultIcon = document.getElementById('default-icon');
     let cropper;
 
+    const links = document.querySelectorAll('.category-links a');
+    const activeLink = localStorage.getItem('activeLink');
+
+    if (activeLink) {
+        const activeElement = document.querySelector(`.category-links a[href="${activeLink}"]`);
+        if (activeElement) {
+            activeElement.classList.add('active');
+        }
+    }
+
+    links.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+            links.forEach(l => l.classList.remove('active'));
+            const href = this.getAttribute('href');
+            console.log('Clicked link href:', href); // Debugging log
+            if (href !== './' && href !== 'index.html') { // Check if the link is not the homepage
+                this.classList.add('active');
+                localStorage.setItem('activeLink', href);
+            } else {
+                localStorage.removeItem('activeLink'); // Clear activeLink for homepage
+            }
+            window.location.href = href; // Navigate to the link's href
+        });
+    });
+
+    // Check if the current page is the homepage and remove the active class
+    const currentPath = window.location.pathname;
+    if (currentPath === '/' || currentPath.endsWith('index.html')) {
+        links.forEach(link => link.classList.remove('active'));
+    }
+
     function toggleSidePanel() {
         sidePanel.classList.toggle('show');
         contentSections.forEach(section => {
             section.classList.toggle('shifted');
         });
     }
+
+    document.getElementById('password').addEventListener('input', function() {
+        let password = document.getElementById('password').value;
+        let passwordHelp = document.getElementById('passwordHelp');
+        if (password.length < 8) {
+            passwordHelp.style.display = 'block';
+        } else {
+            passwordHelp.style.display = 'none';
+        }
+    });
+
+    document.getElementById('closePopup').addEventListener('click', function() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('popup').style.display = 'none';
+        document.querySelector('header').classList.remove('grayed-out');
+    });
+    
+    document.getElementById('overlay').addEventListener('click', function() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('popup').style.display = 'none';
+        document.querySelector('header').classList.add('grayed-out');
+    });
+
+    // Show the pop-up and gray out the header when the page loads or when a specific event occurs
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('popup').style.display = 'block';
+        document.querySelector('header').classList.add('grayed-out');
+    }); 
 
     // Dont touch for future reference
     // function showSection(sectionId) {
@@ -49,12 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (exploreButton) {
         exploreButton.addEventListener('click', () => {
             navigateWithTransition('../basic.html');
-        });
-    }
-
-    if (homeButton) {
-        homeButton.addEventListener('click', () => {
-            navigateWithTransition('basic.html');
         });
     }
 
@@ -148,5 +202,28 @@ document.addEventListener('DOMContentLoaded', function() {
         defaultIcon.style.display = 'block';
         toggleDefaultIcon();
     });
+
+    document.getElementById('save-button').addEventListener('click', function() {
+        // Get the input elements
+        let contactEmail = document.getElementById('contact-email');
+        let currentPassword = document.getElementById('current-password');
+        let newPassword = document.getElementById('new-password');
+    
+        // Update the placeholder only if the input has a value
+        if (contactEmail.value) {
+            contactEmail.placeholder = contactEmail.value;
+            contactEmail.value = '';
+        }
+        if (currentPassword.value) {
+            currentPassword.placeholder = currentPassword.value;
+            currentPassword.value = '';
+        }
+        if (newPassword.value) {
+            newPassword.placeholder = newPassword.value;
+            newPassword.value = '';
+        }
+    });
+
+
 
 });

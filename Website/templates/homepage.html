@@ -3,12 +3,18 @@
 {% block content%} 
 <div class="content" id="home">
     <div class="center-container">
-        <br><h1>Dive into the world of entertainment analytics!</h1><br><br>
-        <p>Explore a dynamic dashboard tailored<br>
-            for industry professionals seeking<br>
-            insights into performance metrics and<br>
-            audience behavior</p>
-        <br><br><br><h2 id="explore-button">Explore</h2>
+        <br><h1>Dive into the world of entertainment analytics!</h1><br>
+        <br>
+        <img class="image-1" src="{{ url_for('static', filename='img/analytic-graph.png') }}" alt="">
+        <p class="explore-description">
+            Explore a dynamic dashboard tailored for industry professionals seeking insights into performance metrics and audience behavior</p>
+        <br><br><br>
+        <h2 id="explore-button">Explore</h2>
+        <img class="image-2" src="{{ url_for('static', filename='img/bar-chart.png') }}" alt="">
+        <img class="image-3" src="{{ url_for('static', filename='img/candlestick-chart.png') }}" alt="">
+        <img class="image-4" src="{{ url_for('static', filename='img/line-chart.png') }}" alt="">
+        <img class="image-5" src="{{ url_for('static', filename='img/organization-chart.png') }}" alt="">
+        <img class="image-6" src="{{ url_for('static', filename='img/pie-chart.png') }}" alt="">
     </div>
 </div>
 {% endblock %}

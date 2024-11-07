@@ -56,10 +56,10 @@
     <!-- Fourth Row -->
     <div class="row">
         <div class="col">
-            <input type="text" class="textbox" placeholder="First Name">
+            <input type="text" id="first-name" class="textbox" placeholder="First Name">
         </div>
         <div class="col">
-            <input type="text" class="textbox" placeholder="Last Name">
+            <input type="text" id="last-name" class="textbox" placeholder="Last Name">
         </div>
     </div>
 
@@ -78,7 +78,7 @@
     <!-- Seventh Row -->
     <div class="row">
         <div class="col">
-            <input type="email" class="contact-email-input" placeholder="Contact Email">
+            <input type="email" id="contact-email" class="contact-email-input" placeholder="example@gmail.com">
         </div>
     </div>
 
@@ -106,13 +106,20 @@
         </div>
     </div>
 
-    <!-- Last Row -->
+    <!-- Current & new password -->
     <div class="password-row">
         <div class="password-col">
-            <input type="password" class="password-input" placeholder="Current Password">
+            <input type="password" id="current-password" class="password-input" placeholder="Current Password">
         </div>
         <div class="password-col">
-            <input type="password" class="password-input" placeholder="New Password">
+            <input type="password" id="new-password"class="password-input" placeholder="New Password">
+        </div>
+    </div>
+
+    <!-- Save Button Row -->
+    <div class="row">
+        <div class="col text-right">
+            <button type="button" id="save-button" class="btn btn-primary">Save</button>
         </div>
     </div>
 </div>

@@ -13,7 +13,9 @@
         <div class="hamburger-menu" id="hamburger-menu">
             &#9776; <!-- Unicode character for the hamburger icon -->
         </div>
-        <span class="brand-name">CineSurfer</span>
+        <span class="brand-name">
+            <a href="./" class="brand" >CineSurfer</a>
+        </span>
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input type="text" class="search-bar" placeholder="Browse...">
@@ -21,15 +23,30 @@
         <div class="user-icon-container">
             <i class="fas fa-user-alt"></i>
             <div class="dropdown-menu">
-                <a href="profile.html">Profile</a>
-                <a href="settings.html">Settings</a>
-                <a href="#logout">Logout</a>
+                {% if current_user.is_authenticated %}
+                    <a href="profile.html">Profile</a>
+                    <a href="settings.html">Settings</a>
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Sign In</a>
+                    <a href="{{ url_for('auth.sign_up') }}">Sign Up</a>
+                {% endif %}
             </div>
         </div>
     </header>
+    {% if request.path not in ['/settings.html', '/profile.html'] %}
+    <section class="categories">
+        <div class="category-links">
+            <a href="basic.html">Basic</a>
+            <a href="intermediate.html">Intermediate</a>
+            <a href="advanced.html">Advanced</a>
+        </div>
+    </section>
+    {% endif %}
+
     <nav id="side-panel">
         <div class="nav-links">
-            <a href="basic.html"><i class="fas fa-home"></i> HomePage</a>
+            <a href="./"><i class="fas fa-home"></i> HomePage</a>
             <a href="favourites.html"><i class="fas fa-star"></i> Favourites</a>
             <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
         </div>
