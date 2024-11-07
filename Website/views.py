@@ -30,3 +30,7 @@ def favourtie_page():
 @views.route('/settings.html')
 def settings_page():
     return render_template("settings.html")
+
+@views.route('/profile.html')
+def profile_page():
+    return render_template("profile.html")

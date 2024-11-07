@@ -24,6 +24,7 @@ header {
     padding: 0 20px;
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.3); /* Add a dark shadow beneath the header */
 }
+
 .hamburger-menu {
     font-size: 30px;
     cursor: pointer;
@@ -34,6 +35,14 @@ header {
     margin-left: 28px; /* Space between the icon and the text */
     font-size: 36px; /* Adjust the font size as needed */
     -webkit-text-stroke: 1px black; /* Add an outline */
+}
+
+.brand:link,
+.brand:visited,
+.brand:hover,
+.brand:active {
+    color: inherit; /* Ensure the color does not change */
+    text-decoration: none; /* Ensure no underline */
 }
 
 .search-container {
@@ -63,7 +72,66 @@ header {
     color: #ccc;
 }
 
+.user-icon-container {
+    display: inline-block; /* Use flexbox for alignment */
+    align-items: center; /* Center the icon vertically */
+    margin-left: auto; /* Push the user icon to the right */
+    padding: 0 30px; /* Add padding for spacing */
+    margin-right: 0px;
+    position: relative;
+}
+
+.user-icon-container i {
+    font-size: 26px; /* Adjust icon size */
+    color: #333; /* Set icon color */
+    margin-right: 7px;
+}
+.user-icon-container a {
+    text-decoration: none; /* Remove underline from the link */
+    color: #333; /* Set link color */
+    align-items: center;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px #000000a9;
+    z-index: 1;
+    right: 30px;
+    top: 45px;
+    border-radius: 7px;
+}
+
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -29px; /* Position the triangle above the menu */
+    right: 6px; /* Adjust this value to align the triangle */
+    border-width: 15px;
+    border-style: solid;
+    border-color: transparent transparent white transparent; /* Create the triangle */
+}
+
+
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f1f1f1;
+}
+
+.user-icon-container:hover .dropdown-menu {
+    display: block;
+}
+
 #side-panel {
+    overflow-x: hidden;
     background-color: white;
     width: 200px;
     height: 100vh; /* Full height */
@@ -110,6 +178,13 @@ header {
     left: 0; /* Show the side panel */
 }
 
+.main-content {
+    margin-left: 250px; /* Same width as the side panel */
+    padding: 20px;
+    flex-grow: 1;
+    margin-top: 60px;
+}
+
 .logout-container {
     position: absolute;
     bottom: 90px; /* Adjust this value to position the logout button */
@@ -120,14 +195,13 @@ header {
 
 .content.shifted {
     margin-left: 200px; /* Offset content by the width of the sidebar */
-    
+    transition: margin-left 0.3s; /* Smooth transition for margin change */
 }
 
 .content {
     margin-left: 0; /* Offset content by the width of the sidebar */
-    padding: 20px;
+    padding: 10px 20px;
     flex-grow: 1; /* Allow content to grow and fill the remaining space */
-    margin-top: 60px; /* Offset content by the height of the header */
     transition: margin-left 0.3s; /* Smooth transition for margin change */
 }
 
@@ -145,7 +219,7 @@ header {
 
 .center-container h2 {
     font-family: 'Poppins', sans-serif; 
-    font-size: 160px;
+    font-size: 100px;
     font-weight: 800; /* Set font weight to regular */
     margin: 0; /* Remove default margin */
     line-height: 1.5; /* Adjust line height for spacing */
@@ -166,4 +240,208 @@ header {
     margin: 0; /* Remove default margin */
     line-height: 1.5; /* Adjust line height for spacing */
 }
+
+/*profile */
+
+.profile-container {
+    padding: 20px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+}
+
+.col {
+    flex: 1;
+    padding: 5px;
+    /* border: 1px solid black; */
+}
+
+.col h4{
+    margin:0;
+}
+
+.col .profile-picture{
+    margin-right: 0;
+    display: block;
+}
+
+.prof-pic-text{
+    margin-left: -90px;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+    display: none;
+}
+
+.profile-picture-container {
+    width: 150px; /* Match the icon size */
+    height: 150px; /* Match the icon size */
+    position: relative; /* Ensure it is positioned correctly */
+    margin-left: 10px; /* Center the container */
+}
+
+.default-icon {
+    font-size: 150px;
+    position: relative; /* Change to relative */
+    display: block; /* Ensure it is a block element */
+    margin: 0 auto; /* Center horizontally */
+    text-align: center; /* Center text */
+}
+
+.hidden {
+    display: none;
+}
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cropper-container {
+    width: 100%;
+    height: 400px;
+    position: relative;
+}
+
+.upload-btn {
+    padding: 10px;
+    cursor: pointer;
+    border: 2px solid transparent; /* Default border */
+    background-color: transparent;
+    border-radius: 5px; /* Optional: Add rounded corners */
+    width: 140px;
+    height: 50px;
+    font-size: 15px;
+    border-color: #007bff; /* Blue border for upload button */
+}
+
+.col .upload-btn {
+    margin-left: 100px;
+}
+
+.col .delete-btn {
+    margin-right: 20px;
+}
+
+.delete-btn {
+    padding: 10px;
+    cursor: pointer;
+    border: 2px solid transparent; /* Default border */
+    background-color: transparent;
+    border-radius: 5px; /* Optional: Add rounded corners */
+    width: 120px;
+    height: 40px;
+    font-size: 15px;
+    border-color: #dc3545; /* Red border for delete button */
+
+}
+
+
+.file-input {
+    display: none;
+}
+
+.textbox {
+    width: calc(70% - 1px); /* Adjust the width to fit two textboxes in one row */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.textbox:first-of-type {
+    margin-right: 10px; /* Adjust the value as needed */
+}
+
+.textbox:last-of-type {
+    margin-left: 10px; /* Adjust the value as needed */
+}
+
+/* Fifth & eighth Row */
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    margin: 10px 0;
+}
+
+/* Sixth Row */
+.contact-email-text {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Seventh Row */
+.contact-email-input {
+    width: 50%;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Ninth Row */
+.password-text {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Tenth Row */
+.modify-password-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Eleventh Row */
+.password-row {
+    display: flex;
+}
+
+.password-col {
+    flex: 1;
+}
+
+/* Last Row */
+.password-input {
+    width: calc(70% - 1px);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/*end of profile*/
 
