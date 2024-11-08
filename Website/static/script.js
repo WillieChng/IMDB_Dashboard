@@ -19,6 +19,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const links = document.querySelectorAll('.category-links a');
     const activeLink = localStorage.getItem('activeLink');
 
+    function toggleSidePanel() {
+        if (sidePanel) {
+            console.log('sidePanel found');
+            sidePanel.classList.toggle('show');
+            contentSections.forEach(section => {
+                section.classList.toggle('shifted');
+            });
+        } else {
+            console.log('sidePanel not found');
+        }
+    }
+    
+    function navigateWithTransition(url) {
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = url;
+        }, 500); // Match the duration of the CSS transition
+    }
+
+    if (hamburgerMenu) {
+        console.log('hamburgerMenu found');
+        hamburgerMenu.addEventListener('click', toggleSidePanel);
+    } else {
+        console.log('hamburgerMenu not found');
+    }
+
+    if (exploreButton) {
+        exploreButton.addEventListener('click', () => {
+            navigateWithTransition('../basic.html');
+        });
+    }
+
+    if (favouritesButton) {
+        favouritesButton.addEventListener('click', () => {
+            navigateWithTransition('favourites.html');
+        });
+    }
+
+    if (settingsButton) {
+        settingsButton.addEventListener('click', () => {
+            navigateWithTransition('settings.html');
+        });
+    }
+
+    if (profileButton) {
+        profileButton.addEventListener('click', () => {
+            navigateWithTransition('profile.html');
+        });
+    }
+    
     if (activeLink) {
         const activeElement = document.querySelector(`.category-links a[href="${activeLink}"]`);
         if (activeElement) {
@@ -48,13 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
         links.forEach(link => link.classList.remove('active'));
     }
 
-    function toggleSidePanel() {
-        sidePanel.classList.toggle('show');
-        contentSections.forEach(section => {
-            section.classList.toggle('shifted');
-        });
-    }
-
     document.getElementById('password').addEventListener('input', function() {
         let password = document.getElementById('password').value;
         let passwordHelp = document.getElementById('passwordHelp');
@@ -74,14 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('overlay').addEventListener('click', function() {
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('popup').style.display = 'none';
-        document.querySelector('header').classList.add('grayed-out');
     });
 
     // Show the pop-up and gray out the header when the page loads or when a specific event occurs
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('popup').style.display = 'block';
-        document.querySelector('header').classList.add('grayed-out');
     }); 
 
     // Dont touch for future reference
@@ -95,40 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
     // }
 
-    function navigateWithTransition(url) {
-        document.body.classList.add('fade-out');
-        setTimeout(() => {
-            window.location.href = url;
-        }, 500); // Match the duration of the CSS transition
-    }
-
-    if (hamburgerMenu){
-        hamburgerMenu.addEventListener('click', toggleSidePanel);
-    }
-
-    if (exploreButton) {
-        exploreButton.addEventListener('click', () => {
-            navigateWithTransition('../basic.html');
-        });
-    }
-
-    if (favouritesButton) {
-        favouritesButton.addEventListener('click', () => {
-            navigateWithTransition('favourites.html');
-        });
-    }
-
-    if (settingsButton) {
-        settingsButton.addEventListener('click', () => {
-            navigateWithTransition('settings.html');
-        });
-    }
-
-    if (profileButton) {
-        profileButton.addEventListener('click', () => {
-            navigateWithTransition('profile.html');
-        });
-    }
 
     function toggleDefaultIcon() {
         if (profilePicture.src && profilePicture.src !== window.location.href) {
