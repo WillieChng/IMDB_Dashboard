@@ -17,12 +17,8 @@
             &#9776; <!-- Unicode character for the hamburger icon -->
         </div>
         <span class="brand-name">
-            <a href="./" class="brand" >CineSurfer</a>
+            <a href="./" class="brand">CineSurfer</a>
         </span>
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-bar" placeholder="Browse...">
-        </div>
         <div class="user-icon-container">
             <i class="fas fa-user-alt"></i>
             <div class="dropdown-menu">
@@ -37,26 +33,7 @@
             </div>
         </div>
     </header>
-    {% if request.path not in ['/settings.html', '/profile.html'] %}
-    <section class="categories">
-        <div class="category-links">
-            <a href="basic.html">Basic</a>
-            <a href="intermediate.html">Intermediate</a>
-            <a href="advanced.html">Advanced</a>
-        </div>
-    </section>
-    {% endif %}
 
-    <nav id="side-panel">
-        <div class="nav-links">
-            <a href="./"><i class="fas fa-home"></i> HomePage</a>
-            <a href="favourites.html"><i class="fas fa-star"></i> Favourites</a>
-            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-        </div>
-        <div class="logout-container">
-            <a href="#logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </nav>
     <div class="main-content">
         {% block content %}{% endblock %}
     </div>
@@ -64,7 +41,7 @@
     {% with messages = get_flashed_messages(with_categories=true)%}
         {% if messages %}
             {% for category, message in messages %}
-                {% if category =='error' %}
+                {% if category == 'error' %}
                     <div class="alert alert-danger alter-dismissable fade show" role="alert">
                     {{ message }}
                         <button type="button" class="close" data-dismiss="alert">
@@ -79,12 +56,9 @@
                         </button>
                     </div>
                 {% endif %}
-            {% endfor%}
+            {% endfor %}
         {% endif %}
     {% endwith %}
-    </div>
-    <script src={{ url_for('static', filename='script.js')}}></script>
-</body>
-</html>
+    <script src={{ url_for('static', filename='script.js') }}></script>
 </body>
 </html>

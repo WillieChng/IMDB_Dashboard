@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (exploreButton) {
         exploreButton.addEventListener('click', () => {
-            navigateWithTransition('../basic.html');
+            navigateWithTransition('../signup');
         });
     }
 
@@ -123,7 +123,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('popup').style.display = 'block';
-    }); 
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const exploreButton = document.querySelector('.explore-link');
+    
+        if (exploreButton) {
+            exploreButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default link behavior
+                navigateWithTransition('/signup'); // Use the correct URL for the signup page
+            });
+        }
+    });
 
     // Dont touch for future reference
     // function showSection(sectionId) {
