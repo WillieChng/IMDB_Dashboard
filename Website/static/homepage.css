@@ -1,0 +1,106 @@
+.content {
+    margin-left: 0; /* Offset content by the width of the sidebar */
+    padding: 10px 20px;
+    flex-grow: 1; /* Allow content to grow and fill the remaining space */
+    transition: margin-left 0.3s; /* Smooth transition for margin change */
+}
+
+.center-container {
+    text-align: center; /* Center the text */
+    position: relative;
+}
+
+.center-container h1 {
+    font-family: 'Poppins', sans-serif; 
+    font-size: 31px;
+    font-weight: 800; /* Set font weight to regular */
+    margin: 0px; /* Remove default margin */
+    line-height: 1.5; /* Adjust line height for spacing */
+}
+
+.explore-link {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Inherit color from parent */
+}
+
+#explore-button {
+    font-family: 'Poppins', sans-serif; 
+    font-size: 100px;
+    font-weight: 800; /* Set font weight to regular */
+    margin: 0px; /* Remove default margin */
+    line-height: 1.5; /* Adjust line height fo r spacing */
+    cursor: pointer;
+    color: #02d2ba; /* Purple by default*/
+    display: inline-block; /* Reduce hitbox to text size */
+    position: relative;
+    top: -60px;
+    left: 0;
+}
+
+#explore-button:hover {
+    color: #e38fed; /* Pink on hover */
+}
+
+.explore-description {
+    font-family: 'Poppins', sans-serif; 
+    font-size: 30px;
+    font-weight: 400; /* Set font weight to regular */
+    margin: 0 auto; /* Remove default margin */
+    line-height: 1.4; /* Adjust line height for spacing */
+    padding: 0px; /* Some padding */
+    width: 50%;
+}
+
+img.image-1 {
+    width: 150px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    float: left;
+    left: 30px;
+    position: relative;
+    top: 0;
+}
+
+.image-2 {
+    width: 140px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    float: left;
+    left: 140px;
+    position: relative;
+    top: -20px;
+}
+
+.image-3 {
+    width: 120px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    float: left;
+    position: relative;
+    top: 140px;
+    left: -150px;
+}
+
+.image-4 {
+    width: 130px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    bottom: 20px; 
+    float: middle;
+    position: relative;
+    top: 140px;
+    left: -200px;
+}
+
+.image-5 {
+    width: 120px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    float: right;
+    margin-top: -100px; /* Adjust to align beside the explore button */
+    margin-right: 100px; /* Adjust to align beside the explore button */
+}
+
+.image-6 {
+    width: 140px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    float: right;
+    margin-top: -40px;
+    margin-right: 180px;
+    clear: right;
+}

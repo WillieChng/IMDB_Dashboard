@@ -5,6 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path, environ
 from dotenv import load_dotenv
+from flask_login import LoginManager
 
 db = SQLAlchemy() #db = database connection that used to interact with database
 db_name = "moviedb"
@@ -28,6 +29,17 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'  # Set the login view
+    login_manager.init_app(app)
+    
+    from .models import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
     #define class/table (from models.py) before initializing db
     with app.app_context(): # Required for creating tables in the app context
         #create database/schema automatically if it doesnt exist
