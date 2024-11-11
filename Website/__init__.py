@@ -29,8 +29,6 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
     
     #define class/table (from models.py) before initializing db
-    # Import models and create tables if they do not exist
-    from .models import User, Note
     with app.app_context(): # Required for creating tables in the app context
         #create database/schema automatically if it doesnt exist
         create_database_if_not_exists()
