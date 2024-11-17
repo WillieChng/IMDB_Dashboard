@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (exploreButton) {
         exploreButton.addEventListener('click', () => {
-            navigateWithTransition('../signup');
+            navigateWithTransition('../login');
         });
     }
 
