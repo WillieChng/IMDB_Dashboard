@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultIcon = document.getElementById('default-icon');
     let cropper;
 
-    const links = document.querySelectorAll('.category-links a');
-    const activeLink = localStorage.getItem('activeLink');
-
     function toggleSidePanel() {
         if (sidePanel) {
             console.log('sidePanel found');
@@ -36,6 +33,94 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             window.location.href = url;
         }, 500); // Match the duration of the CSS transition
+    }
+
+    function toggleDefaultIcon() {
+        if (profilePicture && profilePicture.src && profilePicture.src !== window.location.href) {
+            if (defaultIcon) {
+                defaultIcon.classList.add('hidden');
+            }
+            if (profilePicture) {
+                profilePicture.style.display = 'block';
+            }
+        } else {
+            if (defaultIcon) {
+                defaultIcon.classList.remove('hidden');
+            }
+            if (profilePicture) {
+                profilePicture.style.display = 'none';
+            }
+        }
+    }
+    // Initial check
+    toggleDefaultIcon();
+
+    if (uploadInput) {
+        uploadInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePicture.src = e.target.result;
+                    toggleDefaultIcon();
+                    cropperImage.src = e.target.result;
+                    cropperModal.style.display = 'block';
+                    cropper = new Cropper(cropperImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (cropButton) {
+        cropButton.addEventListener('click', function() {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 150,
+                    height: 150,
+                });
+                profilePicture.src = canvas.toDataURL();
+                profilePicture.style.display = 'block';
+                defaultIcon.style.display = 'none';
+                cropperModal.style.display = 'none';
+                cropper.destroy();
+                toggleDefaultIcon();
+            } else {
+                console.error('Cropper is not initialized');
+            }
+        });
+    }
+
+    if (closeModal) {
+        closeModal.addEventListener('click', function() {
+            if (cropper) {
+                cropperModal.style.display = 'none';
+                cropper.destroy();
+                cropper = null; // Reset cropper
+            }
+        });
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == cropperModal) {
+            if (cropper) {
+                cropperModal.style.display = 'none';
+                cropper.destroy();
+                cropper = null; // Reset cropper
+            }
+        }
+    });
+
+    if (deleteButton) {
+        deleteButton.addEventListener('click', function() {
+            profilePicture.src = '';
+            profilePicture.style.display = 'none';
+            defaultIcon.style.display = 'block';
+            toggleDefaultIcon();
+        });
     }
 
     if (hamburgerMenu) {
@@ -69,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    const activeLink = localStorage.getItem('activeLink');
     if (activeLink) {
         const activeElement = document.querySelector(`.category-links a[href="${activeLink}"]`);
         if (activeElement) {
@@ -76,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    const links = document.querySelectorAll('.category-links a');
     links.forEach(link => {
         link.addEventListener('click', function(event) {
             event.preventDefault(); // Prevent the default link behavior
@@ -98,26 +185,35 @@ document.addEventListener('DOMContentLoaded', function() {
         links.forEach(link => link.classList.remove('active'));
     }
 
-    document.getElementById('password').addEventListener('input', function() {
-        let password = document.getElementById('password').value;
-        let passwordHelp = document.getElementById('passwordHelp');
-        if (password.length < 8) {
-            passwordHelp.style.display = 'block';
-        } else {
-            passwordHelp.style.display = 'none';
-        }
-    });
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            let password = passwordInput.value;
+            let passwordHelp = document.getElementById('passwordHelp');
+            if (password.length < 8) {
+                passwordHelp.style.display = 'block';
+            } else {
+                passwordHelp.style.display = 'none';
+            }
+        });
+    }
 
-    document.getElementById('closePopup').addEventListener('click', function() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('popup').style.display = 'none';
-        document.querySelector('header').classList.remove('grayed-out');
-    });
+    const closePopupButton = document.getElementById('closePopup');
+
+    if (closePopupButton) {
+        closePopupButton.addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+            document.querySelector('header').classList.remove('grayed-out');
+        });
+    }
     
-    document.getElementById('overlay').addEventListener('click', function() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('popup').style.display = 'none';
-    });
+    const overlay = document.getElementById('overlay');
+    if (overlay && popup) {
+        // Show the pop-up and gray out the header when the page loads or when a specific event occurs
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+    }
 
     // Show the pop-up and gray out the header when the page loads or when a specific event occurs
     document.addEventListener('DOMContentLoaded', function() {
@@ -135,113 +231,5 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-
-    // Dont touch for future reference
-    // function showSection(sectionId) {
-    //     contentSections.forEach(section => {
-    //         if (section.id === sectionId) {
-    //             section.style.display = 'block';
-    //         } else {
-    //             section.style.display = 'none';
-    //         }
-    //     });
-    // }
-
-
-    function toggleDefaultIcon() {
-        if (profilePicture.src && profilePicture.src !== window.location.href) {
-            defaultIcon.classList.add('hidden');
-            profilePicture.style.display = 'block';
-        } else {
-            defaultIcon.classList.remove('hidden');
-            profilePicture.style.display = 'none';
-        }
-    }
-
-    // Initial check
-    toggleDefaultIcon();
-
-    uploadInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                profilePicture.src = e.target.result;
-                toggleDefaultIcon();
-                cropperImage.src = e.target.result;
-                cropperModal.style.display = 'block';
-                cropper = new Cropper(cropperImage, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    cropButton.addEventListener('click', function() {
-        if (cropper) {
-        const canvas = cropper.getCroppedCanvas({
-            width: 150,
-            height: 150,
-        });
-        profilePicture.src = canvas.toDataURL();
-        profilePicture.style.display = 'block';
-        defaultIcon.style.display = 'none';
-        cropperModal.style.display = 'none';
-        cropper.destroy();
-        toggleDefaultIcon();
-    } else {
-        console.error('Cropper is not initialized');
-    }
-    });
-
-    closeModal.addEventListener('click', function() {
-        if (cropper) {
-            cropperModal.style.display = 'none';
-            cropper.destroy();
-            cropper = null; // Reset cropper
-        }
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target == cropperModal) {
-            if (cropper) {
-                cropperModal.style.display = 'none';
-                cropper.destroy();
-                cropper = null; // Reset cropper
-            }
-        }
-    });
-
-    deleteButton.addEventListener('click', function() {
-        profilePicture.src = '';
-        profilePicture.style.display = 'none';
-        defaultIcon.style.display = 'block';
-        toggleDefaultIcon();
-    });
-
-    document.getElementById('save-button').addEventListener('click', function() {
-        // Get the input elements
-        let contactEmail = document.getElementById('contact-email');
-        let currentPassword = document.getElementById('current-password');
-        let newPassword = document.getElementById('new-password');
-    
-        // Update the placeholder only if the input has a value
-        if (contactEmail.value) {
-            contactEmail.placeholder = contactEmail.value;
-            contactEmail.value = '';
-        }
-        if (currentPassword.value) {
-            currentPassword.placeholder = currentPassword.value;
-            currentPassword.value = '';
-        }
-        if (newPassword.value) {
-            newPassword.placeholder = newPassword.value;
-            newPassword.value = '';
-        }
-    });
-
-
 
 });

@@ -1,5 +1,194 @@
-{% extends "base.html" %} 
-{% block title %} Favourites {% endblock %} 
-{% block content%} 
-    
+{% extends "base2.html" %}
+{% block title %} Favourites {% endblock %}
+{% block content %}
+<div class="favourites-container">
+    <h1 class="text-center">Based on the Movies you loved... Your Favorite Genre is</h1>
+    <div class="genre-box text-center">
+        <h2>Action</h2> <!-- Dummy genre -->
+    </div>
+    <h3 class="text-center">Thus, we would like to recommend</h3>
+    <div class="carousel-container">
+        <button class="carousel-button left-button">&lt;</button>
+        <div class="carousel">
+            <!-- Commenting out actual data for demo purpose -->
+            <!-- {% for movie in recommended_movies %}
+            <div class="carousel-item">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+                <p class="movie-details">{{ movie.year }} ‧ {{ movie.genre }} ‧ {{ movie.duration }}</p>
+                <p class="movie-synopsis">{{ movie.synopsis }}</p>
+                <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary">See More</a>
+                <i class="fas fa-heart favourite-icon"></i>
+            </div>
+            {% endfor %} -->
+
+            <!-- Dummy data for demo purpose -->
+            <div class="carousel-item">
+                <h4 class="movie-title">Movie 1</h4>
+                <p class="movie-details">2023 ‧ Action | Adventure ‧ 2h 10m</p>
+                <p class="movie-synopsis">An epic adventure of a hero saving the world.</p>
+                <a href="#" class="btn btn-primary">See More</a>
+                <i class="fas fa-heart favourite-icon"></i>
+            </div>
+            <div class="carousel-item">
+                <h4 class="movie-title">Movie 2</h4>
+                <p class="movie-details">2022 ‧ Action | Thriller ‧ 1h 50m</p>
+                <p class="movie-synopsis">A thrilling chase between a detective and a criminal mastermind.</p>
+                <a href="#" class="btn btn-primary">See More</a>
+                <i class="fas fa-heart favourite-icon"></i>
+            </div>
+            <div class="carousel-item">
+                <h4 class="movie-title">Movie 3</h4>
+                <p class="movie-details">2021 ‧ Action | Sci-Fi ‧ 2h 5m</p>
+                <p class="movie-synopsis">A futuristic battle to save humanity from an alien invasion.</p>
+                <a href="#" class="btn btn-primary">See More</a>
+                <i class="fas fa-heart favourite-icon"></i>
+            </div>
+        </div>
+        <button class="carousel-button right-button">&gt;</button>
+    </div>
+</div>
+
+<style>
+.favourites-container {
+    padding: 20px;
+}
+
+.genre-box {
+    margin: 20px 550px;
+    padding: 10px;
+    border: 2px solid #ccc;
+    justify-content: center;
+}
+
+.carousel-container {
+    position: relative;
+    perspective: 1000px;
+    margin: 20px 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; /* Center the carousel items */
+}
+
+.carousel {
+    display: flex;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    border: 1px solid black;
+    margin-left: 150px;
+}
+
+.carousel-item {
+    margin: 20px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    display: inline-block;
+    justify-content: center;
+    width: 250px; /* Adjust the width */
+    height: 350px; /* Adjust the height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better card look */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    background-color: #fff; /* Optional: Add background color */
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for the hover effect */
+}
+
+.carousel-item:hover {
+    transform: scale(1.05); /* Slightly enlarge the item */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance the shadow */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+.carousel-item.selected {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.carousel-item:not(.selected) {
+    opacity: 0.5;
+}
+
+.movie-title {
+    font-weight: bold;
+}
+
+.movie-details {
+    font-size: 14px;
+    color: #666;
+}
+
+.movie-synopsis {
+    margin: 10px 0;
+}
+
+.favourite-icon {
+    font-size: 24px;
+    color: #e74c3c;
+    cursor: pointer;
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.left-button, .right-button {
+    position: absolute;
+    top: 50%;
+    background-color: rgba(22, 22, 97, 0.8);
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1;
+}
+
+.left-button {
+    left: 10px;
+}
+
+.right-button {
+    right: 10px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.carousel');
+    const items = document.querySelectorAll('.carousel-item');
+    const leftButton = document.querySelector('.left-button');
+    const rightButton = document.querySelector('.right-button');
+    let selectedIndex = 0;
+
+    function updateCarousel() {
+        items.forEach((item, index) => {
+            const offset = (index - selectedIndex) * 100;
+            item.style.transform = `translateX(${offset}%)`;
+        });
+    }
+    leftButton.addEventListener('click', () => {
+        selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+        updateCarousel();
+    });
+
+    rightButton.addEventListener('click', () => {
+        selectedIndex = (selectedIndex + 1) % items.length;
+        updateCarousel();
+    });
+
+    items.forEach((item, index) => {
+        item.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the event from propagating
+            selectedIndex = index;
+            updateCarousel();
+        });
+    });
+
+    updateCarousel();
+});
+</script>
 {% endblock %}

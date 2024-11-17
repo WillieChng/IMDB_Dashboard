@@ -1,39 +1,89 @@
 {% extends "base2.html" %} 
 {% block title %} Sign Up {% endblock %} 
 {% block content%} 
-<div id="overlay"></div>
-<div id="popup">
-    <button id="closePopup" class="close-btn">&times;</button>
-    <h1>CineSurfer</h1>
-    <h3>Sign Up</h3>
-    <form method="POST">
-        <div class="form-group">
-            <label for="firstName">First Name:</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter First Name" />
-        </div>
-        <div class="form-group">
-            <label for="lastName">Last Name:</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter Last Name" />
-        </div>
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" />
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" />
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" />
-            <small id="passwordHelp" class="form-text text-muted" style="display:none;">*Must have more than 7 characters</small>
-        </div>
-        <div class="form-group">
-            <label for="rePassword">Re-enter Password:</label>
-            <input type="password" class="form-control" id="rePassword" name="rePassword" placeholder="Re-enter Password" />
-        </div>
-        <button type="submit" class="btn btn-primary">Create your CineSurfer account</button>
-        <p>Already have an account? <a href="/login">Sign in</a></p>
-    </form>
+
+<div class="signup-container">
+    <div class="profile-container">
+        <h1 class="text-center">Sign up</h1>
+        <h3 class="text-center">Create your account</h3>
+        <form method="POST">
+            <div class="row">
+                <div class="col-space">
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter First Name" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter Last Name" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-space">
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" />
+                        <small id="passwordHelp" class="form-text text-muted" style="display:none;">*Must have more than 7 characters</small>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="rePassword">Re-enter Password:</label>
+                        <input type="password" class="form-control" id="rePassword" name="rePassword" placeholder="Re-enter Password" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-right">
+                    <button type="submit" class="btn btn-primary">Create your CineSurfer account</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Already have an account? <a href="/login">Sign in</a></p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="benefits-container">
+        <h2>Benefits of having your very own free Cinesurfer account</h2>
+        <ul>
+            <li>
+                <strong>Personalized dashboard</strong>
+                <p>Customize your dashboard with favorite genres, top-rated movies, and recent releases</p>
+            </li>
+            <li>
+                <strong>Favourites</strong>
+                <p>Easily track movies you saved as favorites for quick access</p>
+            </li>
+            <li>
+                <strong>Save filters and preferences</strong>
+                <p>Save filters like genres, actors, release year</p>
+            </li>
+        </ul>
+    </div>
 </div>
+
 {% endblock %}

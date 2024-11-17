@@ -152,6 +152,7 @@ header {
 .category-links a.active {
     border-bottom: 3px solid black; /* Show border on hover and active */
     color: black;
+    text-decoration: none;
 }
 
 #side-panel {
