@@ -204,7 +204,7 @@ header {
 }
 
 .main-content {
-    margin-left: 100px; /* Same width as the side panel */
+    margin-left: 0; /* Same width as the side panel */
     padding: 20px;
     flex-grow: 1;
 }
