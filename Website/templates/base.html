@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="../static/profile.css">
     <link rel="stylesheet" href="../static/signup.css">
     <link rel="stylesheet" href="../static/basic.css">
+    <link rel="stylesheet" href="../static/favourites.css">
+    <link rel="stylesheet" href="../static/personalized.css">
+    <link rel="stylesheet" href="../static/movie_details.css">
 </head>
 <body>
     <header>
@@ -38,7 +41,7 @@
             </div>
         </div>
     </header>
-    {% if request.path not in ['/settings.html', '/profile.html'] %}
+    {% if request.path not in ['/settings.html', '/profile.html', '/favourites.html', '/personalized.html', '/movie_details.html'] %}
     <section class="categories">
         <div class="category-links">
             <a href="basic.html">Basic</a>

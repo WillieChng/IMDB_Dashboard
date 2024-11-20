@@ -164,10 +164,11 @@ header {
     flex-direction: column; /* Vertical layout */
     justify-content: center; /* Center vertically */
     position: fixed; /* Fixed sidebar */
-    top: 60px; /* Offset by the height of the header */
+    top: 0px; /* Offset by the height of the header */
     left: -200px; /* Initially hide the side panel */
     transition: left 0.3s; /* Smooth transition */
     border-right: 1px solid #333; /* Add a vertical line on the right side */
+    overflow-y: auto;
     z-index: 1; /* Ensure the side panel is above the content */
 }
 

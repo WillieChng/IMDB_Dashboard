@@ -27,8 +27,12 @@ def advanced():
     return render_template("advanced.html")
 
 @views.route('/favourites.html')
-def favourite_page():
+def favourites():
     return render_template("favourites.html")
+
+@views.route('/personalized.html')
+def personalized():
+    return render_template("personalized.html")
 
 @views.route('/settings.html')
 def settings_page():
@@ -37,6 +41,10 @@ def settings_page():
 @views.route('/profile.html')
 def profile_page():
     return render_template("profile.html")
+
+@views.route('/movie_details.html')
+def movie_details_page():
+    return render_template("movie_details.html")
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
