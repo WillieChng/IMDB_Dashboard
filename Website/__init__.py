@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path, environ
 from dotenv import load_dotenv
 from flask_login import LoginManager
+import pymysql
 
 db = SQLAlchemy() #db = database connection that used to interact with database
 db_name = "moviedb"
@@ -23,11 +24,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disables modification tracking, improving performance
     db.init_app(app) #Initialize flask app to the 
     
-    #Initialize blueprint components to the app
-    from .views import views
-    from .auth import auth
-    app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(auth, url_prefix='/')
     
     # Initialize Flask-Login
     login_manager = LoginManager()
@@ -40,6 +36,12 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    #Initialize blueprint components to the app
+    from .views import views
+    from .auth import auth
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
+    
     #define class/table (from models.py) before initializing db
     with app.app_context(): # Required for creating tables in the app context
         #create database/schema automatically if it doesnt exist
@@ -51,15 +53,14 @@ def create_app():
 
 def create_database_if_not_exists():
     #Connect to MySQL server without specifying a database
-    import pymysql
-    connection = pymysql.connect(
-    #use .env to fill in host, user and password variable
-        host=environ.get("host"), 
-        user=environ.get("user"),
-        password=environ.get("password")
-    )
+    load_dotenv()
     
-    with connection.cursor() as cursor:
-        #Check if database exists
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
+    connection = pymysql.connect(
+        host=environ.get("DB_HOST"),
+        user=environ.get("DB_USER"),
+        password=environ.get("DB_PASSWORD")
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {environ.get('DB_NAME')}")
+    cursor.close()
     connection.close()
