@@ -97,7 +97,7 @@
 
 .btn:hover {
     cursor: pointer;
-    background-color: #e1dbdb;
+    background-color: #ccc;
 }
 
 .upload-btn {
@@ -204,13 +204,18 @@
     text-align: right;
 }
 
-.btn-primary {
-    padding: 5px;
-    border: 2px solid transparent; /* Default border */
-    background-color: transparent;
+#save-button {
+    padding: 10px;
     border-radius: 5px; /* Optional: Add rounded corners */
-    width: 80px;
+    width: 100px;
     height: 40px;
     font-size: 15px;
-    border-color: rgb(69, 204, 28); 
+    border-color: #007bff; 
+    background-color: white;
+    color: black;
 }
+
+#save-button:hover {
+    background-color: #ccc;
+}
+

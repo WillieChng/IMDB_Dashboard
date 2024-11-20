@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const hamburgerMenu = document.getElementById('hamburger-menu');
     const exploreButton = document.getElementById('explore-button');
     const favouritesButton = document.querySelector('a[href="favourites.html"]');
     const settingsButton = document.querySelector('a[href="settings.html"]');
     const profileButton = document.querySelector('a[href="profile.html"]');
-    const sidePanel = document.getElementById('side-panel');
-    const contentSections = document.querySelectorAll('.content');
     const uploadInput = document.getElementById('upload');
     const profilePicture = document.getElementById('profile-picture');
     const cropperModal = document.getElementById('cropperModal');
@@ -16,16 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultIcon = document.getElementById('default-icon');
     let cropper;
 
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const sidePanel = document.getElementById('side-panel');
+    const contentSections = document.querySelectorAll('.content');
+
     function toggleSidePanel() {
         if (sidePanel) {
-            console.log('sidePanel found');
             sidePanel.classList.toggle('show');
             contentSections.forEach(section => {
                 section.classList.toggle('shifted');
             });
-        } else {
-            console.log('sidePanel not found');
         }
+    }
+
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', toggleSidePanel);
     }
     
     function navigateWithTransition(url) {
@@ -123,13 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (hamburgerMenu) {
-        console.log('hamburgerMenu found');
-        hamburgerMenu.addEventListener('click', toggleSidePanel);
-    } else {
-        console.log('hamburgerMenu not found');
-    }
-
     if (exploreButton) {
         exploreButton.addEventListener('click', () => {
             navigateWithTransition('../login');
@@ -221,15 +216,64 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('popup').style.display = 'block';
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const exploreButton = document.querySelector('.explore-link');
-    
-        if (exploreButton) {
-            exploreButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent the default link behavior
-                navigateWithTransition('/signup'); // Use the correct URL for the signup page
-            });
-        }
-    });
+    const exploreLink = document.querySelector('.explore-link');
+    if (exploreLink) {
+        exploreLink.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+            navigateWithTransition('/signup'); // Use the correct URL for the signup page
+        });
+    }
 
+    //favourites
+
+    const rightButton = document.querySelector('.fav-right-btn');
+    const leftButton = document.querySelector('.fav-left-btn');
+    const cards = document.querySelectorAll('.fav-carousell > div');
+    let currentIndex = 0;
+
+    function updateCards() {
+        cards.forEach((card, index) => {
+            if (index === currentIndex) {
+                card.style.zIndex = 3;
+                card.style.left = '50%';
+            } else if (index === (currentIndex - 1 + cards.length) % cards.length) {
+                card.style.zIndex = 2;
+                card.style.left = 'calc(50% - 150px)';
+            } else if (index === (currentIndex + 1) % cards.length) {
+                card.style.zIndex = 2;
+                card.style.left = 'calc(50% + 150px)';
+            } else {
+                card.style.zIndex = 1;
+                card.style.left = '100%'; // Position off-screen
+            }
+            card.style.transform = 'translateX(-50%)';
+        });
+    }
+
+    if (rightButton) {
+        rightButton.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % cards.length;
+            updateCards();
+        });
+    }
+
+    if (leftButton) {
+        leftButton.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            updateCards();
+        });
+    }
+
+    updateCards(); // Initialize the positions
+
+    const escButtons = document.querySelectorAll('.fav-card-1-esc, .fav-card-2-esc, .fav-card-3-esc');
+    escButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const parentCard = button.closest('.fav-card-1, .fav-card-2, .fav-card-3');
+            if (parentCard) {
+                parentCard.remove();
+                updateCards(); // Update the positions after removing a card
+            }
+        });
+    });
 });
