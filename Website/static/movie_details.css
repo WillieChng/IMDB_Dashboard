@@ -1,0 +1,84 @@
+.movie-details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.movie-details-title {
+    font-size: 35px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.movie-details-container {
+    border: 1px solid black;
+    box-shadow: 0px 0px 2px black;
+    width: 800px;
+    height: 500px;
+    position: relative;
+    margin-top: 30px;
+}
+
+.movie-details-fav {
+    font-size: 30px; /* Resize the favorite icon */
+    position: absolute; /* Position it relative to the container */
+    top: -45px; /* Position it outside the top left corner */
+    right: -0.1px; /* Position it outside the top left corner */
+    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+}
+
+.movie-details-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space between children */
+    padding: 20px;
+    height: 100%; /* Ensure it takes the full height of the container */
+    box-sizing: border-box; /* Include padding in the height calculation */
+}
+
+.movie-details-info {
+    display: flex;
+    width: 100%;
+}
+
+.movie-details-info-1 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.movie-details-movie {
+    font-size: 25px;
+}
+
+.movie-details-details {
+    font-size: 15px;
+    color: grey;
+}
+
+.movie-details-status {
+    font-size: 22px;
+    border-left: 2px solid black;
+    padding-left: 20px;
+}
+
+.movie-details-synopsis {
+    font-size: 20px;
+    font-weight: normal;
+    margin-top: 50px;
+    width: 90%;
+}
+
+.movie-details-ori-lang, .movie-details-director, .movie-details-writer, .movie-details-cast, .movie-details-release-date {
+    font-size: 18px;
+    margin-top: 10px;
+    font-weight: normal;
+}
+
+.movie-details-bts {
+    margin-top: auto; /* Push to the bottom */
+    padding-top: 20px; /* Add padding to separate from above content */
+    border-top: 1px solid #ccc; /* Optional: Add a top border for separation */
+}

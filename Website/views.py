@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from Website.models import User
 from . import db
 
 views = Blueprint('views', __name__)  # Define blueprint
@@ -27,8 +27,12 @@ def advanced():
     return render_template("advanced.html")
 
 @views.route('/favourites.html')
-def favourite_page():
+def favourites():
     return render_template("favourites.html")
+
+@views.route('/personalized.html')
+def personalized():
+    return render_template("personalized.html")
 
 @views.route('/settings.html')
 def settings_page():
@@ -37,6 +41,10 @@ def settings_page():
 @views.route('/profile.html')
 def profile_page():
     return render_template("profile.html")
+
+@views.route('/movie_details.html')
+def movie_details_page():
+    return render_template("movie_details.html")
 
 @views.route('/login', methods=['GET', 'POST'])
 def login():
@@ -86,3 +94,11 @@ def sign_up():
 def logout():
     logout_user()
     return redirect(url_for('views.login'))
+
+@views.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        # Handle forgot password logic here
+        flash('If an account with that email exists, a password reset link has been sent.', 'info')
+        return redirect(url_for('login'))
+    return render_template('forgot_password.html')

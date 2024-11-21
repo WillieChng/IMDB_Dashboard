@@ -1,0 +1,120 @@
+.personalized {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.personalized-title {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.personalized-genre {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 2px;
+    box-shadow: 0px 0px 2px black;
+}
+
+.personalized-description {
+    font-size: 25px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.personalized-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 900px;
+    height: 550px;
+    position: relative;
+}
+
+.personalized-carousell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.personalized-card-1, .personalized-card-2, .personalized-card-3 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 300px; /* Fixed width */
+    height: 450px; /* Fixed height */
+    border: 2px solid black;
+    border-radius: 11px;
+    box-shadow: 0px 0px 1px black;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    background-color: white; /* Add background color to separate text */
+    padding: 20px; /* Add padding to create space around text */
+    transition: left 0.5s ease, z-index 0.5s ease; /* Add transition for sliding effect */
+}
+
+.personalized-card-1 {
+    z-index: 3;
+    left: 50%; /* Center card 1 */
+    transform: translateX(-50%);
+}
+
+.personalized-card-2 {
+    z-index: 2;
+    left: calc(50% - 150px); /* Position card 2 partially behind card 1 */
+    transform: translateX(-50%);
+}
+
+.personalized-card-3 {
+    z-index: 1;
+    left: calc(50% + 150px); /* Position card 3 partially behind card 1 */
+    transform: translateX(-50%);
+}
+
+.personalized-card-1-title, .personalized-card-2-title, .personalized-card-3-title {
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.personalized-card-1-details, .personalized-card-2-details, .personalized-card-3-details {
+    font-size: 15px;
+    text-align: center;
+    color: grey;
+    margin-top: 10px;
+    margin-bottom: 13px;
+}
+
+.personalized-card-1-synopsis, .personalized-card-2-synopsis, .personalized-card-3-synopsis {
+    font-size: 18px;
+    text-align: center;
+    font-weight: normal;
+}
+
+.personalized-card-1-synopsis p, .personalized-card-2-synopsis p, .personalized-card-3-synopsis p {
+    font-weight: normal; /* Unbold the <p> element */
+}
+
+.personalized-card-1-btn, .personalized-card-2-btn, .personalized-card-3-btn {
+    border: 1px solid black;
+    border-radius: 8px;
+    padding: 5px;
+    width: 100px;
+    margin-top: 20px;
+}
+
+.personalized-card-1-btn a, .personalized-card-2-btn a, .personalized-card-3-btn a {
+    text-decoration: none;
+    color: black;
+}
