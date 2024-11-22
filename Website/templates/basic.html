@@ -1,5 +1,21 @@
 {% extends "base.html" %} 
 {% block title %} Basic {% endblock %} 
 {% block content%} 
-    <h1 class="text-center">Explore the Essentials of Cinema Analytics</h1>
+    <h2>Top 10 Most Popular Movies (By Vote Count)</h2>
+    <div id="chart">{{chart1|safe}}</div>
+
+    <h2>Top 10 Most Prolific Movie Directors (By Vote Count of their movie)</h2>
+    <div id="chart2">{{ chart2|safe }}</div>
+
+    <h2>Genre Distribution</h2>
+    <div id="chart3">{{ chart3|safe }}</div>
+
+    <h2>Total Number of Movies Per Year</h2>
+    <div id="chart4">{{ chart4|safe }}</div>
+
+    <h2>Adult vs. Non-Adult Movies Count</h2>
+    <div id="chart5">{{ chart5|safe }}</div>
+
+    <h2>Most Starred Actors/Actresses</h2>
+    <div id="chart6">{{ chart6|safe }}</div>
 {% endblock %}
