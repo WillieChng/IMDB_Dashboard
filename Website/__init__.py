@@ -9,7 +9,6 @@ from flask_login import LoginManager
 import pymysql
 
 db = SQLAlchemy() #db = database connection that used to interact with database
-db_name = "moviedb"
 
 def create_app():
     app = Flask(__name__) #name of the file, __init__.py

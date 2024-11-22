@@ -1,11 +1,72 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from Website.models import User
+from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
+import plotly.express as px
+import plotly.io as pio
+import pandas as pd
+from dotenv import load_dotenv
+from os import environ
 from . import db
+
+load_dotenv()
 
 views = Blueprint('views', __name__)  # Define blueprint
 
+def get_movie_data():
+    #Query all required columns from the database
+    query = db.session.query(
+        Actor.name.label('actor_name'),
+        Director.name.label('director_name'),
+        Genre.name.label('genre_name'), 
+        Movie.title,
+        Movie.overview, 
+        Movie.status,
+        Movie.release_year,
+        Movie.popularity,        
+        Movie.vote_average, 
+        Movie.vote_count,
+        Movie.runtime,
+        Movie.adult, 
+        Movie.overview_sentiment,
+        Movie.all_combined_keywords,
+        Movie.Star1,
+        Movie.Star2,
+        Movie.Star3,
+        Movie.Star4    
+       ).join(MovieActor, Movie.movie_id == MovieActor.movie_id)\
+        .join(Actor, Actor.actor_id == MovieActor.actor_id)\
+        .join(MovieDirector, Movie.movie_id == MovieDirector.movie_id)\
+        .join(Director, Director.director_id == MovieDirector.director_id)\
+        .join(MovieGenre, Movie.movie_id == MovieGenre.movie_id)\
+        .join(Genre, Genre.genre_id == MovieGenre.genre_id)\
+        .all()
+        
+    #Create a DataFrame from the query results
+    data = [{
+        'actor_name': row[0],
+        'director_name': row[1],
+        'genre_name': row[2],
+        'title': row[3],
+        'overview': row[4],
+        'status': row[5],
+        'release_year': row[6],
+        'popularity': row[7],
+        'vote_average': row[8],
+        'vote_count': row[9],
+        'runtime': row[10],
+        'adult': row[11],
+        'overview_sentiment': row[12],
+        'all_combined_keywords': row[13],
+        'Star1': row[14],
+        'Star2': row[15],
+        'Star3': row[16],
+        'Star4': row[17]
+    } for row in query]
+    df = pd.DataFrame(data)
+    
+    return df
+    
 @views.route('/testing.html')
 def testing():
     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
@@ -16,14 +77,40 @@ def base():
 
 @views.route('/basic.html')
 def basic():
+    df = get_movie_data()
+    
     return render_template("basic.html")
 
-@views.route('/intermediate.html')
+@views.route('/intermediate.html', methods=['GET', 'POST'])
 def intermediate():
-    return render_template("intermediate.html")
+    df = get_movie_data()
+    ##CHART 1: Number of Movie Releases by Genre Over Time
+    df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='coutn')
+    fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre", title='Number of Movie Releases by Genre Over Time')
+    fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
+    chart1 = pio.to_html(fig1, full_html=False)
+    
+    ##CHART 2: Average Movie Runtime by year
+    df2 = df.groupby('release_year').runtime.mean().reset_index()
+    fig2 = px.line(df2, x="release_year", y="runtime", title='Average Movie Runtime by Year')
+    fig2.update_xaxes(dtick = 1)
+    chart2 = pio.to_html(fig2, full_html=False)
+    
+    ##CHART 3: Frequent Actors/Actresses Across Genres
+    
+    
+    ##CHART 4:
+    
+    
+    ##CHART 5:
+    
+    
+    return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5)
 
 @views.route('/advanced.html')
 def advanced():
+    df = get_movie_data()
+    
     return render_template("advanced.html")
 
 @views.route('/favourites.html')

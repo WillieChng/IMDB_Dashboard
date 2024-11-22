@@ -31,6 +31,7 @@ class Movie(db.Model):
     adult = db.Column(db.Boolean, nullable=True)
     overview_sentiment = db.Column(db.Float, nullable=True)
     all_combined_keywords = db.Column(db.Text, nullable=True)
+    runtime = db.Column(db.Integer, nullable=True)
     Star1 = db.Column(db.String(100), nullable=True)
     Star2 = db.Column(db.String(100), nullable=True)
     Star3 = db.Column(db.String(100), nullable=True)
