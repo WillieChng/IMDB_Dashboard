@@ -31,6 +31,7 @@ def get_movie_data():
         Movie.adult, 
         Movie.overview_sentiment,
         Movie.all_combined_keywords,
+        Movie.production_country,
         Movie.Star1,
         Movie.Star2,
         Movie.Star3,
@@ -59,10 +60,11 @@ def get_movie_data():
         'adult': row[11],
         'overview_sentiment': row[12],
         'all_combined_keywords': row[13],
-        'Star1': row[14],
-        'Star2': row[15],
-        'Star3': row[16],
-        'Star4': row[17]
+        'production_country': row[14],
+        'Star1': row[15],
+        'Star2': row[16],
+        'Star3': row[17],
+        'Star4': row[18]
     } for row in query]
     df = pd.DataFrame(data)
     
@@ -162,7 +164,7 @@ def advanced():
     df = get_movie_data()
     ##CHART 1: Number of Movies by Production Country
     df1 = df.groupby('production_country').size().reset_index(name='count')
-    fig1 = px.choropleth(df1, locations='production_country', locationmode='country names', color='count', title='Number of Movies by Production Country')
+    fig1 = px.choropleth(df1, locations='production_country', locationmode='country names', color='count', hover_name='production_country', title='Number of Movies by Production Country')
     chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Data Comparison Tools (Real-Time Popularity Tracker)
