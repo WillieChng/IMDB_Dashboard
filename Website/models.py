@@ -42,24 +42,41 @@ class Movie(db.Model):
     actors = db.relationship('Actor', secondary='movie_actors', backref=db.backref('movies', lazy='dynamic'))
     directors = db.relationship('Director', secondary='movie_directors', backref=db.backref('movies', lazy='dynamic'))
 
-class MovieGenre(db.Model):
-    __tablename__ = 'movie_genres'
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True)
-    genre_id = db.Column(db.Integer, db.ForeignKey('genres.genre_id'), primary_key=True)
+# Association table for movies and genres
+MovieGenre = db.Table('movie_genres',
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('genres.genre_id'), primary_key=True)
+)
 
-class MovieActor(db.Model):
-    __tablename__ = 'movie_actors'
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True)
-    actor_id = db.Column(db.Integer, db.ForeignKey('actors.actor_id'), primary_key=True)
+# Association table for movies and actors
+MovieActor = db.Table('movie_actors',
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True),
+    db.Column('actor_id', db.Integer, db.ForeignKey('actors.actor_id'), primary_key=True)
+)
 
-class MovieDirector(db.Model):
-    __tablename__ = 'movie_directors'
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True)
-    director_id = db.Column(db.Integer, db.ForeignKey('directors.director_id'), primary_key=True)
+# Association table for movies and directors
+MovieDirector = db.Table('movie_directors',
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True),
+    db.Column('director_id', db.Integer, db.ForeignKey('directors.director_id'), primary_key=True)
+)
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+    favourite_movies = db.relationship('Movie', secondary='user_favourites', backref=db.backref('users'), lazy='dynamic')
+    recommended_movies = db.relationship('Movie', secondary='user_recommendations', backref=db.backref('users'), lazy='dynamic')
+    
+# Association table for users and favorite movies
+UserFavourite = db.Table('user_favourites',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True)
+)
+
+# Association table for users and recommended movies
+UserRecommendation = db.Table('user_recommendations',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'), primary_key=True),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.movie_id'), primary_key=True)
+)
