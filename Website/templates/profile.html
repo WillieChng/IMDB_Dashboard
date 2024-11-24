@@ -1,130 +1,148 @@
-{% extends "base.html" %} 
-{% block title %} Profile {% endblock %} 
+{% extends "base.html" %}
+{% block title %} Profile {% endblock %}
 {% block content %} 
 
 <div class="profile-container content">
-    <!-- First Row -->
-    <div class="row">
-        <div class="col">
-            <div class="profile-picture-container">
-                <img src="" alt="Profile" class="profile-picture" id="profile-picture">
-                <i class="far fa-user-circle default-icon hidden" id="default-icon"></i>
+    <form method="POST" enctype="multipart/form-data">
+        <!-- First Row -->
+        <div class="row">
+            <div class="col">
+                <div class="profile-picture-container">
+                    <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_picture or 'default.png')) }}" class="profile-picture" id="profile-picture">
+                    <i class="far fa-user-circle default-icon hidden" id="default-icon"></i>
+                </div>
             </div>
-        </div>
-        <div class="col">
-            <h3 class="prof-pic-text">Profile Picture</h3>
-        </div>
-        <div class="col">
-            <form id="upload-form">
+            <div class="col">
+                <h3 class="prof-pic-text">Profile Picture</h3>
+            </div>
+            <div class="col">
                 <label for="upload" class="btn upload-btn">Upload New Picture</label>
                 <input type="file" id="upload" name="profile-picture" class="file-input" accept="image/*">
-            </form>        
-        </div>
-        <div class="col">
-            <button id="delete-btn" class="btn delete-btn">Delete</button>
-        </div>
-    </div>
-
-    <!-- Cropper Modal -->
-    <div id="cropperModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="cropper-container">
-                <img id="cropper-image" src="" alt="Cropper">
             </div>
-            <button id="crop-button" class="btn">Crop</button>
+            <div class="col">
+                <button type="button" id="delete-btn" class="btn delete-btn">Delete</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Second Row -->
-    <div class="row">
-        <div class="col">
-            <h3>Full Name</h3>
+        <!-- Cropper Modal -->
+        <div id="cropperModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div class="cropper-container">
+                    <img id="cropper-image" src="" alt="Cropper">
+                </div>
+                <button id="crop-button" class="btn">Crop</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Third Row -->
-    <div class="row">
-        <div class="col">
-            <h4>First Name</h4>
+        <!-- Second Row -->
+        <div class="row">
+            <div class="col">
+                <h3>Username</h3>
+            </div>
         </div>
-        <div class="col">
-            <h4>Last Name</h4>
-        </div>
-    </div>
 
-    <!-- Fourth Row -->
-    <div class="row">
-        <div class="col">
-            <input type="text" id="first-name" class="textbox" placeholder="First Name">
+        <!-- Third Row -->
+        <div class="row">
+            <div class="col" id="username">
+                <input type="text" id="username" name="username" class="textbox" value="{{ user.username }}">
+            </div>
         </div>
-        <div class="col">
-            <input type="text" id="last-name" class="textbox" placeholder="Last Name">
-        </div>
-    </div>
 
-    <!-- Fifth Row -->
-    <div class="row">
-        <div class="line"></div>
-    </div>
-
-    <!-- Sixth Row -->
-    <div class="row">
-        <div class="col">
-            <h3 class="contact-email-text">Contact Email</h3>
+        <!-- Fourth Row -->
+        <div class="row">
+            <div class="line"></div>
         </div>
-    </div>
 
-    <!-- Seventh Row -->
-    <div class="row">
-        <div class="col">
-            <input type="email" id="contact-email" class="contact-email-input" placeholder="example@gmail.com">
+        <!-- Fifth Row -->
+        <div class="row">
+            <div class="col">
+                <h4>First Name</h4>
+            </div>
+            <div class="col">
+                <h4>Last Name</h4>
+            </div>
         </div>
-    </div>
 
-    <!-- Eighth Row -->
-    <div class="row">
-        <div class="line"></div>
-    </div>
+        <!-- Sixth Row -->
+        <div class="row">
+            <div class="col">
+                <input type="text" id="firstName" name="firstName" class="textbox" value="{{ user.firstName }}">
+            </div>
+            <div class="col">
+                <input type="text" id="lastName" name="lastName" class="textbox" value="{{ user.lastName }}">
+            </div>
+        </div>
 
-    <!-- Ninth Row -->
-    <div class="row">
-        <div class="col">
-            <h3 class="password-text">Password</h3>
-            <p class="modify-password-text">Modify your current password.</p>
+        <!-- Seventh Row -->
+        <div class="row">
+            <div class="col">
+                <h4>Email</h4>
+            </div>
+        </div>
 
+        <!-- Eighth Row -->
+        <div class="row">
+            <div class="col">
+                <input type="email" id="email" name="email" class="textbox" value="{{ user.email }}">
+            </div>
         </div>
-    </div>
 
-    <!-- Eleventh Row -->
-    <div class="password-row">
-        <div class="password-col">
-            <h4>Current Password</h4>
+        <!-- Tenth Row -->
+        <div class="row">
+            <div class="line"></div>
         </div>
-        <div class="password-col">
-            <h4>New Password</h4>
-        </div>
-    </div>
 
-    <!-- Current & new password -->
-    <div class="password-row">
-        <div class="password-col">
-            <input type="password" id="current-password" class="password-input" placeholder="Current Password">
+        <!-- Eleventh Row -->
+        <div class="row">
+            <div class="col">
+                <h3 class="password-text">Password</h3>
+                <p class="modify-password-text">Modify your current password.</p>
+            </div>
         </div>
-        <div class="password-col">
-            <input type="password" id="new-password"class="password-input" placeholder="New Password">
+        
+        <!-- Twelfth Row -->
+        <div class="password-row">
+            <div class="password-col">
+                <h4>Current Password</h4>
+            </div>
+            <div class="password-col">
+                <h4>New Password</h4>
+            </div>
         </div>
-    </div>
 
-    <!-- Save Button Row -->
-    <div class="row">
-        <div class="col text-right">
-            <button type="button" id="save-button" class="btn">Save</button>
+        <!-- Current & New Password -->
+        <div class="password-row">
+            <div class="password-col">
+                <input type="password" id="current-password" name="current-password" class="password-input" placeholder="Current Password">
+            </div>
+            <div class="password-col">
+                <input type="password" id="new-password" name="new-password" class="password-input" placeholder="New Password">
+            </div>
         </div>
-    </div>
+
+        <!-- Save Button Row -->
+        <div class="row">
+            <div class="col text-right">
+                <button type="submit" id="save-button" class="btn">Save</button>
+            </div>
+        </div>
+    </form>
 </div>
 
-<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script>
+    // Clear password fields if current password is incorrect
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% if category == 'error' and 'Current password is invalid' in message %}
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+</script>
 
 {% endblock %}

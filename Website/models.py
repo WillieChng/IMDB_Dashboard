@@ -38,9 +38,9 @@ class Movie(db.Model):
     Star3 = db.Column(db.String(100), nullable=True)
     Star4 = db.Column(db.String(100), nullable=True)
 
-    genres = db.relationship('Genre', secondary='movie_genres', backref=db.backref('movies', lazy='dynamic'))
-    actors = db.relationship('Actor', secondary='movie_actors', backref=db.backref('movies', lazy='dynamic'))
-    directors = db.relationship('Director', secondary='movie_directors', backref=db.backref('movies', lazy='dynamic'))
+    genres = db.relationship('Genre', secondary='movie_genres', backref=db.backref('genre_movies', lazy='dynamic'))
+    actors = db.relationship('Actor', secondary='movie_actors', backref=db.backref('actor_movies', lazy='dynamic'))
+    directors = db.relationship('Director', secondary='movie_directors', backref=db.backref('director_movies', lazy='dynamic'))
 
 # Association table for movies and genres
 MovieGenre = db.Table('movie_genres',
@@ -63,11 +63,17 @@ MovieDirector = db.Table('movie_directors',
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
+    firstName = db.Column(db.String(150), nullable=False)
+    lastName = db.Column(db.String(150), nullable=False)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    favourite_movies = db.relationship('Movie', secondary='user_favourites', backref=db.backref('users'), lazy='dynamic')
-    recommended_movies = db.relationship('Movie', secondary='user_recommendations', backref=db.backref('users'), lazy='dynamic')
+    profile_picture = db.Column(db.String(150), nullable=True)
+    user_favourites = db.relationship('Movie', secondary='user_favourites', backref=db.backref('favourited_by', lazy='dynamic'))
+    user_recommendations = db.relationship('Movie', secondary='user_recommendations', backref=db.backref('recommended_to', lazy='dynamic'))
+
+    def get_id(self):
+        return self.user_id
     
 # Association table for users and favorite movies
 UserFavourite = db.Table('user_favourites',

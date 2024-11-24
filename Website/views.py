@@ -1,19 +1,33 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import current_user, login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import current_user, login_required
 from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
+from Website.movie_api import fetch_api_data, process_movie_data, feature_extraction
+from Website.auth import validate_user_details
+from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+import os
+from . import db
+import requests
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
-from dotenv import load_dotenv
-from os import environ
-from . import db
 from wordcloud import WordCloud
+from datetime import datetime
 
-load_dotenv()
+# Define blueprint
+views = Blueprint('views', __name__)  
 
-views = Blueprint('views', __name__)  # Define blueprint
+#Define the upload folder
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'Website', 'static', 'profile_pics')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+#Helper function to check allowed file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+#Helper function to get movie data
 def get_movie_data():
     #Query all required columns from the database
     query = db.session.query(
@@ -44,7 +58,11 @@ def get_movie_data():
         .join(Genre, Genre.genre_id == MovieGenre.genre_id)\
         .all()
         
-        
+    # if user_id:
+    #     query = query.outerjoin(favorite_movies, (Movie.movie_id == favorite_movies.c.movie_id) & (favorite_movies.c.user_id == user_id))\
+    #                  .outerjoin(recommended_movies, (Movie.movie_id == recommended_movies.c.movie_id) & (recommended_movies.c.user_id == user_id))
+    
+    # result = query.all()
         
     #Create a DataFrame from the query results
     data = [{
@@ -68,21 +86,81 @@ def get_movie_data():
         'Star3': row[17],
         'Star4': row[18]
     } for row in query]
+
     df = pd.DataFrame(data)
-    
     return df
     
-@views.route('/testing.html')
-def testing():
-    return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
+# @views.route('/testing.html')
+# def testing():
+#     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
+
+@views.route('/profile.html', methods=['GET', 'POST'])
+@login_required
+def profile_page():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        username = request.form.get('username')
+        firstName = request.form.get('firstName')
+        lastName = request.form.get('lastName')
+        current_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        profile_picture = request.files.get('profile-picture')
+        
+        # Retain existing values if form fields are empty
+        email = email or current_user.email
+        username = username or current_user.username
+        firstName = firstName or current_user.firstName
+        lastName = lastName or current_user.lastName
+        
+        # Validate user details
+        if validate_user_details(firstName, lastName, username, email):
+            # Check to see if user wanna change password
+            if new_password:
+                if len(new_password) >= 7:
+                    if check_password_hash(current_user.password, current_password): 
+                        current_user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+                    else:
+                        flash('Current password is invalid', category='error')
+                        return redirect(url_for('views.profile_page'))
+                else:
+                    flash('Password must be at least 7 characters', category='error')
+                    return redirect(url_for('views.profile_page'))
+            
+            # Check if profile picture is uploaded      
+            if profile_picture and allowed_file(profile_picture.filename):
+                filename = secure_filename(profile_picture.filename)
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                profile_picture.save(file_path)
+                current_user.profile_picture = filename
+
+            current_user.email = email
+            current_user.username = username
+            current_user.firstName = firstName
+            current_user.lastName = lastName
+            db.session.commit()
+            flash('Your profile details have been updated successfully!', category='success')
+        else:
+            flash('Profile update failed. Please check your details.', category='error')
+            return redirect(url_for('views.profile_page'))  
+
+    return render_template("profile.html", user=current_user)
+
+@views.route('/favourites.html')
+@login_required
+def favourites():
+    return render_template("favourites.html")
+
+@views.route('/personalized.html')
+@login_required
+def personalized():
+    return render_template("personalized.html")
 
 @views.route('/')  # Root function
-def base():
+def homepage():
     return render_template("homepage.html")
 
 @views.route('/basic.html', methods=['GET', 'POST'])
 def basic():
-    
     df = get_movie_data()
     ##CHART 1: Top 10 Most Popular Movies (By vote_count and Popularity)
     df1 = df.groupby('title').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10)
@@ -161,96 +239,44 @@ def intermediate():
     
     return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
 
-@views.route('/advanced.html')
-def advanced():
-    df = get_movie_data()
+@views.route('/advanced.html', methods=['GET', 'POST'])
+def advanced():    
     ##CHART 1: Number of Movies by Production Country
-    df1 = df.groupby('production_country').size().reset_index(name='count')
-    fig1 = px.choropleth(df1, 
-                         locations='production_country', 
-                         locationmode='country names', 
-                         color='count', 
-                         hover_name='production_country'
-                         )
-    chart1 = pio.to_html(fig1, full_html=False)
+    # df = get_movie_data()
+    # df1 = df.groupby('production_country').size().reset_index(name='count')
+    # fig1 = px.choropleth(df1, 
+    #                      locations='production_country', 
+    #                      locationmode='country names', 
+    #                      color='count', 
+    #                      hover_name='production_country'
+    #                      )
+    # chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Data Comparison Tools (Real-Time Popularity Tracker)
+    all_movies = []
+    for page in range(1,20):
+        api_data = fetch_api_data(page)
+        for movie in api_data['results']:
+            movies = process_movie_data(movie)
+            all_movies.append(movies)
+
+    df2 = pd.DataFrame(all_movies)
+    df2 = feature_extraction(df2)
     
-    return render_template("advanced.html", chart1=chart1, chart2=chart2)
-
-@views.route('/favourites.html')
-def favourites():
-    return render_template("favourites.html")
-
-@views.route('/personalized.html')
-def personalized():
-    return render_template("personalized.html")
-
-@views.route('/settings.html')
-def settings_page():
-    return render_template("settings.html")
-
-@views.route('/profile.html')
-def profile_page():
-    return render_template("profile.html")
+    #Spider Chart 1
+    fig2 = px.line_polar(df2, r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
+    chart2 = pio.to_html(fig2, full_html=False)
+    
+    #Spider Chart 2
+    fig3 = px.line_polar(df2,r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
+    chart3 = pio.to_html(fig3, full_html=False)
+    
+    return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
 
 @views.route('/movie_details.html')
 def movie_details_page():
     return render_template("movie_details.html")
 
-@views.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            flash('Logged in successfully!', category='success')
-            return redirect(url_for('views.base'))
-        else:
-            flash('Login failed. Check your email and password.', category='error')
-    return render_template("login.html")
-
-@views.route('/signup', methods=['GET', 'POST'])
-def sign_up():
-    if request.method == 'POST':
-        firstName = request.form.get('firstName')
-        lastName = request.form.get('lastName')
-        email = request.form.get('email')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-        
-        if len(email) < 4:
-            flash('Insufficient characters for email', category='error')
-        elif '@' not in email:
-            flash('Email must contain an alias \'@\'', category='error')
-        elif len(firstName) < 2:
-            flash('First name must contain more than 1 character', category='error')
-        elif len(lastName) < 2:
-            flash('Last name must contain more than 1 character', category='error')
-        elif len(password1) < 7:
-            flash('Password must be at least 7 characters', category='error')
-        elif password1 != password2:
-            flash('Re-entered password does not match', category='error')
-        else:
-            new_user = User(first_name=firstName, last_name=lastName, email=email, password=generate_password_hash(password1, method='sha256'))
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Your account is created!', category='success')
-            return redirect(url_for('views.login'))
-    return render_template("signup.html")
-
-@views.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('views.login'))
-
-@views.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    if request.method == 'POST':
-        # Handle forgot password logic here
-        flash('If an account with that email exists, a password reset link has been sent.', 'info')
-        return redirect(url_for('login'))
-    return render_template('forgot_password.html')
+@views.route('/settings.html')
+def settings_page():
+    return render_template("settings.html")
