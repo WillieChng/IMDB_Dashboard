@@ -50,12 +50,12 @@ def get_movie_data():
         Movie.Star2,
         Movie.Star3,
         Movie.Star4    
-       ).join(MovieActor, Movie.movie_id == MovieActor.movie_id)\
-        .join(Actor, Actor.actor_id == MovieActor.actor_id)\
-        .join(MovieDirector, Movie.movie_id == MovieDirector.movie_id)\
-        .join(Director, Director.director_id == MovieDirector.director_id)\
-        .join(MovieGenre, Movie.movie_id == MovieGenre.movie_id)\
-        .join(Genre, Genre.genre_id == MovieGenre.genre_id)\
+       ).join(MovieActor, Movie.movie_id == MovieActor.c.movie_id)\
+        .join(Actor, Actor.actor_id == MovieActor.c.actor_id)\
+        .join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+        .join(Director, Director.director_id == MovieDirector.c.director_id)\
+        .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+        .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
         .all()
         
     # if user_id:
