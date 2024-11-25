@@ -1,8 +1,62 @@
-.text-center {
-    text-align: center;
-    font-family: 'Poppins', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    margin-top: 20px;
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    grid-template-rows: auto auto auto; /* Three rows */
+    gap: 20px; /* Space between grid items */
+    width: 100%;
+    max-width: 1200px;
+    margin: auto; /* Center the grid container */
+    text-align: center; /* Center text within the grid */
 }
 
+.chart-container {
+    width: 100%;
+    height: 400px; /* Adjust the height as needed */
+    border: 2px solid black; /* Add a border to each chart container */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px 10px 10px 10px; /* Add padding to the top for the title */
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+    background-color: white; /* Ensure background color is white */
+    position: relative; /* Ensure the title is positioned relative to the container */
+}
+
+.chart-container h2 {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white; /* Ensure the title has a background color */
+    padding: 0 10px; /* Add padding to the title */
+    z-index: 1; /* Ensure the title is above the chart */
+    white-space: nowrap; /* Prevent line breaks */
+}
+
+.chart1 { grid-area: chart1; }
+.chart2 { grid-area: chart2; }
+.chart3 { grid-area: chart3; }
+.chart4 { grid-area: chart4; }
+.chart5 { grid-area: chart5; }
+.chart6 { grid-area: chart6; }
+
+.chart-grid {
+    grid-template-areas:
+        "chart1 chart2"
+        "chart4 chart3"
+        "chart5 chart6";
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .chart-grid {
+        grid-template-columns: 1fr; /* Single column */
+        grid-template-areas:
+            "chart1"
+            "chart2"
+            "chart3"
+            "chart4"
+            "chart5"
+            "chart6";
+    }
+}
