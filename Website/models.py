@@ -71,10 +71,17 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     __table_args__ = {'extend_existing': True}
     user_id = db.Column(db.Integer, primary_key=True)
+    firstName = db.Column(db.String(150), nullable=False)   
+    lastName = db.Column(db.String(150), nullable=False)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    favourites = db.relationship('Movie', secondary='user_favourites', backref=db.backref('favourited_by', lazy='dynamic'))
+    profile_picture = db.Column(db.String(150), nullable=True)
+    user_favourites = db.relationship('Movie', secondary='user_favourites', backref=db.backref('favourited_by', lazy='dynamic'))
+    user_recommendations = db.relationship('Movie', secondary='user_recommendations', backref=db.backref('recommended_to', lazy='dynamic'))
+
+    def get_id(self):
+        return (self.user_id)
 
 # Association table for users and favorite movies
 UserFavourite = db.Table('user_favourites',

@@ -45,17 +45,17 @@ def get_movie_data():
         Movie.adult, 
         Movie.overview_sentiment,
         Movie.all_combined_keywords,
-        Movie.production_country,
+        Movie.production_countries,
         Movie.Star1,
         Movie.Star2,
         Movie.Star3,
         Movie.Star4    
-       ).join(MovieActor, Movie.movie_id == MovieActor.movie_id)\
-        .join(Actor, Actor.actor_id == MovieActor.actor_id)\
-        .join(MovieDirector, Movie.movie_id == MovieDirector.movie_id)\
-        .join(Director, Director.director_id == MovieDirector.director_id)\
-        .join(MovieGenre, Movie.movie_id == MovieGenre.movie_id)\
-        .join(Genre, Genre.genre_id == MovieGenre.genre_id)\
+       ).join(MovieActor, Movie.movie_id == MovieActor.c.movie_id)\
+        .join(Actor, Actor.actor_id == MovieActor.c.actor_id)\
+        .join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+        .join(Director, Director.director_id == MovieDirector.c.director_id)\
+        .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+        .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
         .all()
         
     # if user_id:
@@ -80,7 +80,7 @@ def get_movie_data():
         'adult': row[11],
         'overview_sentiment': row[12],
         'all_combined_keywords': row[13],
-        'production_country': row[14],
+        'production_countries': row[14],
         'Star1': row[15],
         'Star2': row[16],
         'Star3': row[17],
@@ -168,13 +168,13 @@ def basic():
     chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Top 10 Most Prolific Directors (By vote_count and popularity)
-    df2 = df.groupby('director').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10)
-    fig2 = px.treemap(df2, path=['Director'], values='vote_count', color='popularity')
+    df2 = df.groupby('director').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10).reset_index()
+    fig2 = px.treemap(df2, path=['director'], values='vote_count', color='popularity')
     chart2 = pio.to_html(fig2, full_html=False)
     
     ##CHART 3: Genre Distribution
     df3 = df.groupby('genre').size().reset_index(name="count")
-    fig3 = px.pie(df2, values="count", names="genre")
+    fig3 = px.pie(df3, values="count", names="genre")
     chart3 = pio.to_html(fig3, full_html=False) 
     
     ##CHART 4: Total Number of Movies Released Per Year
@@ -242,15 +242,15 @@ def intermediate():
 @views.route('/advanced.html', methods=['GET', 'POST'])
 def advanced():    
     ##CHART 1: Number of Movies by Production Country
-    # df = get_movie_data()
-    # df1 = df.groupby('production_country').size().reset_index(name='count')
-    # fig1 = px.choropleth(df1, 
-    #                      locations='production_country', 
-    #                      locationmode='country names', 
-    #                      color='count', 
-    #                      hover_name='production_country'
-    #                      )
-    # chart1 = pio.to_html(fig1, full_html=False)
+    df = get_movie_data()
+    df1 = df.groupby('production_country').size().reset_index(name='count')
+    fig1 = px.choropleth(df1, 
+                         locations='production_country', 
+                         locationmode='country names', 
+                         color='count', 
+                         hover_name='production_country'
+                         )
+    chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Data Comparison Tools (Real-Time Popularity Tracker)
     all_movies = []
