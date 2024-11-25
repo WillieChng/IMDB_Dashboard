@@ -11,7 +11,7 @@ from . import db
 import requests
 import plotly.express as px
 import plotly.io as pio
-import polars as pl
+import pandas as pd
 from wordcloud import WordCloud
 from datetime import datetime
 
@@ -87,7 +87,7 @@ def get_movie_data():
         'Star4': row[18]
     } for row in query]
 
-    df = pl.DataFrame(data)
+    df = pd.DataFrame(data)
     return df
     
 # @views.route('/testing.html')
@@ -163,32 +163,32 @@ def homepage():
 def basic():
     df = get_movie_data()
     ##CHART 1: Top 10 Most Popular Movies (By vote_count and Popularity)
-    df1 = df.groupby('title').agg([pl.sum('vote_count'), pl.mean('popularity')]).sort(by=['vote_count_sum', 'popularity_mean'], reverse=True).head(10)
-    fig1 = px.bar(df1.to_pandas(), x='vote_count_sum', y='title', orientation='h')
+    df1 = df.groupby('title').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10)
+    fig1 = px.bar(df1, x='vote_count', y=df1.index, orientation='h')
     chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Top 10 Most Prolific Directors (By vote_count and popularity)
-    df2 = df.groupby('director').agg([pl.sum('vote_count'), pl.mean('popularity')]).sort(by=['vote_count_sum', 'popularity_mean'], reverse=True).head(10)
-    fig2 = px.treemap(df2.to_pandas(), path=['director'], values='vote_count_sum', color='popularity_mean')
+    df2 = df.groupby('director').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10).reset_index()
+    fig2 = px.treemap(df2, path=['director'], values='vote_count', color='popularity')
     chart2 = pio.to_html(fig2, full_html=False)
     
     ##CHART 3: Genre Distribution
-    df3 = df.groupby('genre').count().rename({'count': 'count'}).to_pandas()
+    df3 = df.groupby('genre').size().reset_index(name="count")
     fig3 = px.pie(df3, values="count", names="genre")
     chart3 = pio.to_html(fig3, full_html=False) 
     
     ##CHART 4: Total Number of Movies Released Per Year
-    df4 = df.groupby('release_year').count().rename({'count': 'count'}).to_pandas()
+    df4 = df.groupby('release_year').size().reset_index(name="count")
     fig4 = px.line(df4, x='release_year', y='count')
     chart4 = pio.to_html(fig4, full_html=False)
     
     ##CHART 5: Adult vs Non-Adult Movies Count
-    df5 = df.groupby('adult').count().rename({'count': 'count'}).to_pandas()
-    fig5 = px.bar(df5, x='adult', y='count')
-    chart5 = pio.to_html(fig5, full_html=False)
+    df5 = df.groupby('adult').size().reset_index(name="count")
+    fig4 = px.bar(df5, x='adult', y='count')
+    chart5 = pio.to_html(fig4, full_html=False)
     
     ##CHART 6: Most Starred Actors/Actresses (Star1, Star2, Star3, Star4)
-    df6 = pl.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).to_series().value_counts().to_frame().reset_index()
+    df6 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
     df6.columns = ['actor', 'count']
     wordCloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df6['actor']))
     fig6 = px.imshow(wordCloud)
@@ -201,37 +201,39 @@ def intermediate():
     df = get_movie_data()
     
     ##CHART 1: Number of Movie Releases by Genre Over Time
-    df1 = df.groupby(['release_year', 'genre']).count().rename({'count': 'count'}).to_pandas()
+    df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
     fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
     fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
     chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Average Movie Runtime by year
-    df2 = df.groupby('release_year').agg(pl.mean('runtime')).rename({'runtime_mean': 'runtime'}).to_pandas()
+    df2 = df.groupby('release_year').runtime.mean().reset_index()
     fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
     fig2.update_xaxes(dtick = 1)
     chart2 = pio.to_html(fig2, full_html=False)
     
     ##CHART 3: Top 10 Starred Actors/Actresses Across Genres
-    df3 = pl.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).to_series().value_counts().to_frame().reset_index()
+    df3 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
     df3.columns = ['actor', 'count']
-    df3 = df3.groupby(["actor", "genre"]).agg(pl.sum("count")).pivot(index="actor", columns="genre", values="count").fill_null(0).to_pandas()
+    df3 = df.groupby(["actor", "genres"])["count"].sum().reset_index()
+    df3 = df3.pivot(index="actor", columns="genre", values="count")["count"].fillna(0)
     fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
     fig3.update_layout(width=500, height=500)
+    fig3.show()
     chart3 = pio.to_html(fig3, full_html=False)
     
     ##CHART 4: Most Associated Cast Members for Top 10 Directors
-    df4 = df.groupby(['director', 'actor']).count().rename({'count': 'count'}).to_pandas()
+    df4 = df.groupby(['director', 'actor']).size().reset_index(name='count')
     fig4 = px.sunburst(df4, path=['director', 'actor'], values='count')
     chart4 = pio.to_html(fig4, full_html=False)
     
     ##CHART 5: Average Popularity and Sentiment of Movies by Genre
-    df5 = df.groupby('genre').agg([pl.mean('popularity'), pl.mean('overview_sentiment')]).rename({'popularity_mean': 'popularity', 'overview_sentiment_mean': 'overview_sentiment'}).to_pandas()
-    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color='genre', hover_data=['genre'])
+    df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
+    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
     chart5 = pio.to_html(fig5, full_html=False)
     
     ##CHART 6: Popularity Success of Genres by Director
-    df6 = df.groupby(['director', 'genre']).agg(pl.mean('popularity')).rename({'popularity_mean': 'popularity'}).to_pandas()
+    df6 = df.groupby(['director', 'genre']).popularity.mean().reset_index()
     fig6 = px.bar(df6, x='director', y='genre', color='popularity')
     chart6 = pio.to_html(fig6, full_html=False)
     
@@ -241,12 +243,12 @@ def intermediate():
 def advanced():    
     ##CHART 1: Number of Movies by Production Country
     df = get_movie_data()
-    df1 = df.groupby('production_countries').count().rename({'count': 'count'}).to_pandas()
+    df1 = df.groupby('production_country').size().reset_index(name='count')
     fig1 = px.choropleth(df1, 
-                         locations='production_countries', 
+                         locations='production_country', 
                          locationmode='country names', 
                          color='count', 
-                         hover_name='production_countries'
+                         hover_name='production_country'
                          )
     chart1 = pio.to_html(fig1, full_html=False)
     
@@ -258,15 +260,15 @@ def advanced():
             movies = process_movie_data(movie)
             all_movies.append(movies)
 
-    df2 = pl.DataFrame(all_movies)
-    df2 = feature_extraction(df2.to_pandas())
+    df2 = pd.DataFrame(all_movies)
+    df2 = feature_extraction(df2)
     
     #Spider Chart 1
     fig2 = px.line_polar(df2, r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
     chart2 = pio.to_html(fig2, full_html=False)
     
     #Spider Chart 2
-    fig3 = px.line_polar(df2, r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
+    fig3 = px.line_polar(df2,r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
     chart3 = pio.to_html(fig3, full_html=False)
     
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
