@@ -6,9 +6,12 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path, environ
 from dotenv import load_dotenv
 from flask_login import LoginManager
+from flask_caching import Cache
 import pymysql
 
 db = SQLAlchemy() #db = database connection that used to interact with database
+cache = Cache()
+login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__) #name of the file, __init__.py
@@ -16,31 +19,32 @@ def create_app():
     #load environment variables from .env file
     load_dotenv()
     
-    app.config['SECRET_KEY'] = "KDJFASasldfgjsfdfs"
-    
-    #Add Database 
-    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URI') #sqlalchemy is stored within this location
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disables modification tracking, improving performance
+    app.config['SECRET_KEY'] = environ.get('SECRET_KEY', 'KDJFASasldfgjsfdfs')
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URI', 'sqlite:///yourdatabase.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['CACHE_TYPE'] = 'SimpleCache'  # Use SimpleCache for in-memory caching
+
     db.init_app(app) #Initialize flask app to the 
-    
-    
-    # Initialize Flask-Login
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'  # Set the login view
+    cache.init_app(app)
     login_manager.init_app(app)
     
-    from .models import User
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
-
     #Initialize blueprint components to the app
     from .views import views
     from .auth import auth
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-    
+    # Initialize Flask-Login
+
+    login_manager.login_view = 'auth.login'  # Set the login view
+
+
+    from .models import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+   
+   
     #define class/table (from models.py) before initializing db
     with app.app_context(): # Required for creating tables in the app context
         #create database/schema automatically if it doesnt exist

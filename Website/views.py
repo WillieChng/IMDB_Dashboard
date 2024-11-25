@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_caching import Cache
 from flask_login import current_user, login_required
 from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
 from Website.movie_api import fetch_api_data, process_movie_data, feature_extraction
@@ -7,16 +8,20 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
-from . import db
+from . import db, cache
 import requests
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
 from wordcloud import WordCloud
 from datetime import datetime
-
+from sqlalchemy.orm import joinedload
 # Define blueprint
 views = Blueprint('views', __name__)  
+
+
+
+
 
 #Define the upload folder
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'Website', 'static', 'profile_pics')
@@ -160,41 +165,55 @@ def homepage():
     return render_template("homepage.html")
 
 @views.route('/basic.html', methods=['GET', 'POST'])
+@cache.cached(timeout=300)
 def basic():
-    df = get_movie_data()
-    ##CHART 1: Top 10 Most Popular Movies (By vote_count and Popularity)
-    df1 = df.groupby('title').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10)
-    fig1 = px.bar(df1, x='vote_count', y=df1.index, orientation='h')
+    # Optimize the query by using joinedload to reduce the number of queries
+    query = db.session.query(Movie).options(
+        joinedload(Movie.actors),
+        joinedload(Movie.directors),
+        joinedload(Movie.genres)
+    ).limit(100).all()
+
+    data = [{
+        'title': row.title,
+        'overview': row.overview,
+        'status': row.status,
+        'release_year': row.release_year,
+        'popularity': row.popularity,
+        'vote_average': row.vote_average,
+        'vote_count': row.vote_count,
+        'runtime': row.runtime,
+        'adult': row.adult,
+        'overview_sentiment': row.overview_sentiment,
+        'all_combined_keywords': row.all_combined_keywords,
+        'production_countries': row.production_countries,
+        'Star1': row.Star1,
+        'Star2': row.Star2,
+        'Star3': row.Star3,
+        'Star4': row.Star4,
+        'actors': [actor.name for actor in row.actors],
+        'directors': [director.name for director in row.directors],
+        'genres': ', '.join([genre.name for genre in row.genres])  # Convert list of genres to a comma-separated string
+    } for row in query]
+
+    df = pd.DataFrame(data)
+
+    # Generate charts
+    # Example Chart 1: Number of Movie Releases by Genre Over Time
+    df1 = df.groupby(['release_year', 'genres']).size().reset_index(name='count')
+    fig1 = px.area(df1, x="release_year", y="count", color="genres", line_group="genres")
+    fig1.update_xaxes(dtick=1)  # Update x-axis to set the interval to one year
     chart1 = pio.to_html(fig1, full_html=False)
-    
-    ##CHART 2: Top 10 Most Prolific Directors (By vote_count and popularity)
-    df2 = df.groupby('director').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10).reset_index()
-    fig2 = px.treemap(df2, path=['director'], values='vote_count', color='popularity')
+
+    # Example Chart 2: Average Movie Runtime by year
+    df2 = df.groupby('release_year').runtime.mean().reset_index()
+    fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
+    fig2.update_xaxes(dtick=1)
     chart2 = pio.to_html(fig2, full_html=False)
-    
-    ##CHART 3: Genre Distribution
-    df3 = df.groupby('genre').size().reset_index(name="count")
-    fig3 = px.pie(df3, values="count", names="genre")
-    chart3 = pio.to_html(fig3, full_html=False) 
-    
-    ##CHART 4: Total Number of Movies Released Per Year
-    df4 = df.groupby('release_year').size().reset_index(name="count")
-    fig4 = px.line(df4, x='release_year', y='count')
-    chart4 = pio.to_html(fig4, full_html=False)
-    
-    ##CHART 5: Adult vs Non-Adult Movies Count
-    df5 = df.groupby('adult').size().reset_index(name="count")
-    fig4 = px.bar(df5, x='adult', y='count')
-    chart5 = pio.to_html(fig4, full_html=False)
-    
-    ##CHART 6: Most Starred Actors/Actresses (Star1, Star2, Star3, Star4)
-    df6 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
-    df6.columns = ['actor', 'count']
-    wordCloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df6['actor']))
-    fig6 = px.imshow(wordCloud)
-    chart6 = pio.to_html(fig6, full_html=False)
-    
-    return render_template("basic.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
+
+    return render_template('basic.html', data=df.to_dict(orient='records'), chart1=chart1, chart2=chart2)
+
+  
 
 @views.route('/intermediate.html', methods=['GET', 'POST'])
 def intermediate():
