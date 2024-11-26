@@ -1,11 +1,25 @@
 {% extends "base.html" %} 
 {% block title %} Basic {% endblock %} 
 {% block content %} 
+    <div id="side-panel" class="side-panel">
+        <!-- Side panel content here -->
+    </div>
+    <h1 class="page-title">Explore the Essentials of Cinema Analytics</h1>
     <div class="chart-grid">
         <div class="chart1">
             <div class="chart-container">
                 <h2>Top 10 Most Popular Movies (By Vote Count)</h2>
                 {{ chart1|safe }}
+            </div>
+        </div>
+        <div class="chart1-description chart-description">
+            <p>Top 10 movies highlight the massive popularity of superhero films, led by Avengers: Endgame, while diverse genres like thrillers and animated features also captivate audiences through high vote counts.</p>
+        </div>
+
+        <div class="chart4">
+            <div class="chart-container">
+                <h2>Top 10 Most Prolific Movie Directors<br>(By Vote Count of their movie)</h2>
+                {{ chart2|safe }}
             </div>
         </div>
 
@@ -16,6 +30,10 @@
             </div>
         </div>
 
+        <div class="chart4-description">
+            <p>Top directors like the Russo Brothers and Steven Spielberg drive massive audience engagement, while Drama, Comedy, and Thriller dominate as the most popular genres, showcasing diverse viewer preferences.</p>
+        </div>
+
         <div class="chart3">
             <div class="chart-container">
                 <h2>Total Number of Movies Per Year</h2>
@@ -23,11 +41,12 @@
             </div>
         </div>
 
-        <div class="chart4">
-            <div class="chart-container">
-                <h2>Top 10 Most Prolific Movie Directors<br>(By Vote Count of their movie)</h2>
-                {{ chart2|safe }}
-            </div>
+        <div class="chart3-description">
+            <p>The total number of movies released each year shows steady growth, peaking in 2022 before experiencing a slight decline in 2023, reflecting evolving industry trends and production dynamics.</p>
+        </div>
+
+        <div class="chart5-description">
+            <p>Non-adult movies dominate the industry, reflecting a strong focus on broad audience appeal, while adult movies remain a niche category.</p>
         </div>
 
         <div class="chart5">
@@ -42,6 +61,10 @@
                 <h2>Most Starred Actors/Actresses</h2>
                 {{ chart6|safe }}
             </div>
+        </div>
+
+        <div class="chart6-description">
+            <p>Hollywood's spotlight shines brightest on James, John, and Michael —leading a galaxy of cinematic stars!</p>
         </div>
     </div>
 {% endblock %}

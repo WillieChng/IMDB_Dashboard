@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburgerMenu = document.getElementById('hamburger-menu');
     const sidePanel = document.getElementById('side-panel');
     const contentSections = document.querySelectorAll('.content');
+    const chartGrid = document.querySelector('.chart-grid');
+    const pageTitle = document.querySelector('.page-title');
 
     function toggleSidePanel() {
         if (sidePanel) {
@@ -23,6 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
             contentSections.forEach(section => {
                 section.classList.toggle('shifted');
             });
+            if (chartGrid) {
+                chartGrid.classList.toggle('shifted');
+            }
+            if (pageTitle) {
+                pageTitle.classList.toggle('shifted');
+            }
         }
     }
 
