@@ -58,6 +58,7 @@ header {
 }
 
 .search-bar {
+    width: 400px;
     flex-grow: 1; /* Allow the search bar to grow and take up available space */
     padding: 8px 12px;
     padding-left: 40px; /* Add padding to the left to make space for the icon */
@@ -71,20 +72,67 @@ header {
     left: 10px; /* Position the icon inside the search bar */
     font-size: 18px;
     color: #ccc;
+    top: 12px;
+}
+
+.search-suggestions {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    top: 50px;
+}
+
+.search-suggestions a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.search-suggestions a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-state {
+    position: sticky;
+    bottom: 0;
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.dropdown-state.top-searches {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.dropdown-state.alphabetical {
+    background-color: #fff3cd;
+    color: #856404;
 }
 
 .user-icon-container {
-    display: flex; /* Use flexbox for alignment */
+    display: relative; /* Use flexbox for alignment */
     align-items: center; /* Center the icon vertically */
     margin-left: auto; /* Push the user icon to the right */
     padding: 0 30px; /* Add padding for spacing */
     position: relative;
+    margin-right: -30px; /* Adjust margin for spacing */
+    z-index: 1;
 }
 
 .user-icon-container i {
     font-size: 26px; /* Adjust icon size */
     color: #333; /* Set icon color */
-    margin-right: 7px;
+    margin-right: 1px;
     cursor: pointer; /* Change cursor to pointer on hover */
 }
 
@@ -98,10 +146,10 @@ header {
     display: none;
     position: absolute;
     background-color: white;
-    min-width: 100px;
+    min-width: 120px;
     box-shadow: 0px 8px 16px 0px #000000a9;
-    z-index: 1;
-    right: 0; /* Align the dropdown menu to the right */
+    z-index: 2;
+    left: -50px; /* Align the dropdown menu to the right */
     top: 45px;
     border-radius: 7px;
 }
@@ -110,7 +158,7 @@ header {
     content: "";
     position: absolute;
     top: -29px; /* Position the triangle above the menu */
-    right: 45px; /* Adjust this value to align the triangle */
+    right: 10px; /* Adjust this value to align the triangle */
     border-width: 15px;
     border-style: solid;
     border-color: transparent transparent white transparent; /* Create the triangle */
@@ -125,6 +173,7 @@ header {
 
 .dropdown-menu a:hover {
     background-color: #f1f1f1;
+    text-decoration: none;
 }
 
 .user-icon-container:hover .dropdown-menu {
@@ -138,7 +187,6 @@ header {
     z-index: 1;
     background-color: white; /* Ensure background color matches header */
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for separation */
-    position: sticky; /* Make the categories section sticky */
     top: 60px; /* Stick below the header */
 }
 
@@ -209,9 +257,10 @@ header {
 }
 
 .main-content {
-    margin-left: 0; /* Same width as the side panel */
+    margin: 20px; /* Same width as the side panel */
     padding: 30px;
     flex-grow: 1;
+    border-radius: 10px;
     margin-top: 80px; /* Add margin to move content down from the header */
 }
 
@@ -339,7 +388,14 @@ body.dark-mode {
     background-color: #1e1e1e;
 }
 
-.dark-mode .settings-container {
+.content {
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 6px 6px 6px rgba(0, 0, 0.3, 0.3); 
+    border: 1px solid black;
+}
+
+.dark-mode .content {
     background-color: #1e1e1e;
     color: #ffffff;
 }

@@ -1,0 +1,14 @@
+.searched li {
+    margin: 10px 0; /* Add some margin between list items */
+}
+
+.searched a {
+    color: black; /* Default font color */
+    text-decoration: none; /* Remove underline */
+    font-size: 18px; /* Adjust font size */
+}
+
+.searched a:hover {
+    color: rgb(13, 29, 132); /* Font color during hover */
+    text-decoration: none; /* Add underline during hover */
+}

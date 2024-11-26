@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='search_results.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='movie_details.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='favourites.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='basic.css') }}">
@@ -23,8 +26,11 @@
             <a href="./" class="brand">CineSurfer</a>
         </span>
         <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-bar" placeholder="Browse...">
+            <form action="{{ url_for('views.search') }}" method="GET">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-bar" name="query" placeholder="Browse..." id="search-input">
+                <div id="search-suggestions" class="search-suggestions"></div>
+            </form>
         </div>
         <div class="user-icon-container">
             <i class="fas fa-user-alt"></i>
@@ -40,7 +46,7 @@
             </div>
         </div>
     </header>
-    {% if request.path not in ['/settings.html', '/profile.html', '/favourites.html', '/personalized.html', '/movie_details.html'] %}
+    {% if request.path not in ['/settings.html', '/profile.html', '/user_favourites.html', '/personalized.html'] and not request.path.startswith('/search') and not request.path.startswith('/movie_details') %}
     <section class="categories">
         <div class="category-links">
             <a href="basic.html">Basic</a>
@@ -53,7 +59,7 @@
     <nav id="side-panel">
         <div class="nav-links">
             <a href="./"><i class="fas fa-home"></i> HomePage</a>
-            <a href="favourites.html"><i class="fas fa-star"></i> Favourites</a>
+            <a href="user_favourites.html"><i class="fas fa-star"></i> Favourites</a>
             <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
         </div>
         <div class="logout-container">
@@ -87,5 +93,6 @@
         {% endif %}
     {% endwith %}
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </body>
 </html>

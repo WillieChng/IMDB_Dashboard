@@ -201,6 +201,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    if (typeof flashedMessages !== 'undefined') {
+        flashedMessages.forEach(([category, message]) => {
+            if (category === 'error' && message.includes('Current password is invalid')) {
+                const currentPassword = document.getElementById('current-password');
+                const newPassword = document.getElementById('new-password');
+                if (currentPassword) currentPassword.value = '';
+                if (newPassword) newPassword.value = '';
+            }
+        });
+    }
+
     const closePopupButton = document.getElementById('closePopup');
 
     if (closePopupButton) {
@@ -212,17 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const overlay = document.getElementById('overlay');
+    const popup = document.getElementById('popup');
     if (overlay && popup) {
         // Show the pop-up and gray out the header when the page loads or when a specific event occurs
         overlay.style.display = 'block';
         popup.style.display = 'block';
     }
-
-    // Show the pop-up and gray out the header when the page loads or when a specific event occurs
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('popup').style.display = 'block';
-    });
 
     const exploreLink = document.querySelector('.explore-link');
     if (exploreLink) {
@@ -243,18 +249,17 @@ document.addEventListener('DOMContentLoaded', function() {
         cards.forEach((card, index) => {
             if (index === currentIndex) {
                 card.style.zIndex = 3;
-                card.style.left = '50%';
-            } else if (index === (currentIndex - 1 + cards.length) % cards.length) {
-                card.style.zIndex = 2;
-                card.style.left = 'calc(50% - 150px)';
+                card.style.transform = 'translateX(0)';
             } else if (index === (currentIndex + 1) % cards.length) {
                 card.style.zIndex = 2;
-                card.style.left = 'calc(50% + 150px)';
-            } else {
+                card.style.transform = 'translateX(100%)';
+            } else if (index === (currentIndex + 2) % cards.length) {
                 card.style.zIndex = 1;
-                card.style.left = '100%'; // Position off-screen
+                card.style.transform = 'translateX(200%)';
+            } else {
+                card.style.zIndex = 0;
+                card.style.transform = 'translateX(-100%)';
             }
-            card.style.transform = 'translateX(-50%)';
         });
     }
 
@@ -273,11 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateCards(); // Initialize the positions
-
-    const escButtons = document.querySelectorAll('.fav-card-1-esc, .fav-card-2-esc, .fav-card-3-esc');
+    
+    const escButtons = document.querySelectorAll('.fav-card-esc');
     escButtons.forEach(button => {
         button.addEventListener('click', function(event) {
-            const parentCard = button.closest('.fav-card-1, .fav-card-2, .fav-card-3');
+            const parentCard = button.closest('.fav-card');
             if (parentCard) {
                 parentCard.remove();
                 updateCards(); // Update the positions after removing a card
@@ -350,7 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     updateImageSource(); // Ensure the correct image is displayed on page load
 
-
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', function() {
             body.classList.toggle('dark-mode');
@@ -364,4 +368,82 @@ document.addEventListener('DOMContentLoaded', function() {
             updateImageSource();
         });
     }
+
+    /* search */
+    const searchInput = document.getElementById('search-input');
+    const searchSuggestions = document.getElementById('search-suggestions');
+
+    searchInput.addEventListener('input', function() {
+        const query = searchInput.value.trim();
+        if (query.length > 0) {
+            fetch(`/top_searches?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchSuggestions.innerHTML = '';
+                    if (data.length > 0) {
+                        searchSuggestions.style.display = 'block';
+                        data.forEach(item => {
+                            const suggestion = document.createElement('a');
+                            suggestion.href = `/search?query=${item.title}`;
+                            suggestion.textContent = item.title;
+                            searchSuggestions.appendChild(suggestion);
+                        });
+                        searchSuggestions.insertAdjacentHTML('beforeend', '<div class="dropdown-state">Based on top searches</div>');
+                    } else {
+                        fetch(`/alphabetical_searches?query=${query}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                searchSuggestions.innerHTML = '';
+                                if (data.length > 0) {
+                                    searchSuggestions.style.display = 'block';
+                                    data.forEach(item => {
+                                        const suggestion = document.createElement('a');
+                                        suggestion.href = `/search?query=${item.title}`;
+                                        suggestion.textContent = item.title;
+                                        searchSuggestions.appendChild(suggestion);
+                                    });
+                                    searchSuggestions.insertAdjacentHTML('beforeend', '<div class="dropdown-state">Based on alphabetically</div>');
+                                } else {
+                                    searchSuggestions.style.display = 'none';
+                                }
+                            });
+                    }
+                });
+        } else {
+            searchSuggestions.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!searchInput.contains(event.target) && !searchSuggestions.contains(event.target)) {
+            searchSuggestions.style.display = 'none';
+        }
+    });
+
+    /* movie details fav */
+    const movieDetailsFav = document.getElementById('movie-details-fav');
+
+    if (movieDetailsFav) {
+        movieDetailsFav.addEventListener('click', function() {
+            const movieId = movieDetailsFav.getAttribute('data-movie-id');
+            const isFavorite = movieDetailsFav.classList.contains('clicked');
+            const url = isFavorite ? '/remove_from_favourites' : '/add_to_favourites';
+
+            fetch(`${url}?movie_id=${movieId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    movieDetailsFav.classList.toggle('clicked'); // Toggle the 'clicked' class
+                } else {
+                    alert('Failed to update favourites.');
+                }
+            });
+        });
+    }
+    
 });

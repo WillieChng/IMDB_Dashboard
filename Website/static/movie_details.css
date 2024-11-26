@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-top: 20px;
 }
 
 .movie-details-title {
@@ -12,8 +13,9 @@
 }
 
 .movie-details-container {
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.3); 
     border: 1px solid black;
-    box-shadow: 0px 0px 2px black;
+    border-radius: 7px;
     width: 800px;
     height: 500px;
     position: relative;
@@ -21,11 +23,16 @@
 }
 
 .movie-details-fav {
-    font-size: 30px; /* Resize the favorite icon */
+    font-size: 40px; /* Resize the favorite icon */
     position: absolute; /* Position it relative to the container */
     top: -45px; /* Position it outside the top left corner */
     right: -0.1px; /* Position it outside the top left corner */
     cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+    color: black; /* Default color */
+}
+
+.movie-details-fav.clicked {
+    color: red; /* Change color to red when clicked */
 }
 
 .movie-details-main {

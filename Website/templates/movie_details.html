@@ -1,31 +1,29 @@
-{% extends "base.html" %} 
-{% block title %} Movie Details {% endblock %} 
-{% block content%} 
-
-<div class="movie-details content">
+{% extends "base.html" %}
+{% block title %} Movie Details {% endblock %}
+{% block content %}
+<div class="movie-details">
     <div class="movie-details-title">Movie Details</div>
     <div class="movie-details-container">
-        <div id="movie-details-fav" class="movie-details-fav">&#x2661;</div>
+        <div id="movie-details-fav" class="movie-details-fav" data-movie-id="{{ movie.movie_id }}">&#x2661;</div>
         <div class="movie-details-main">
             <div class="movie-details-info">
                 <div class="movie-details-info-1">
-                <div class="movie-details-movie">Valt The Wonder Deer Season 2</div>
-                <div class="movie-details-details">2023 ‧ Adventure | Family | Animation ‧ 2h 10m</div>
+                    <div class="movie-details-movie">{{ movie.title }}</div>
+                    <div class="movie-details-details">{{ movie.release_year }} ‧ {{ movie.genres | join(', ') }} ‧ {{ movie.runtime }} mins</div>
                 </div>
                 <div class="movie-details-info-2">
-                    <div class="movie-details-status">In Production</div>
+                    <div class="movie-details-status">{{ movie.status }}</div>
                 </div>
             </div>
-            <div class="movie-details-synopsis"><p>Catch the second season of Valt The Wonder Deer and his adventures in the Land of Wood. An incredible adventure awaits in Valt The Wonder Deer Season 2!</p></div>
+            <div class="movie-details-synopsis"><p>{{ movie.overview }}</p></div>
             <div class="movie-details-bts">
-                <div class="movie-details-ori-lang"><strong>Original Language: </strong>En</div>
-                <div class="movie-details-director"><strong>Director: </strong>Lisa F. Jackson, Sarah Teale</div>
-                <div class="movie-details-writer"><strong>Writer: </strong>Quentin Tarantino</div>
-                <div class="movie-details-cast"><strong>Cast: </strong>Johnny Depp, Sydney Sweeny, Tom Holland</div>
-                <div class="movie-details-release-date"><strong>Release Date: </strong>10/10/2023</div>
+                <div class="movie-details-ori-lang"><strong>Original Language: </strong>{{ movie.original_language }}</div>
+                <div class="movie-details-director"><strong>Director: </strong>{{ movie.directors | join(', ') }}</div>
+                <div class="movie-details-writer"><strong>Writer: </strong>{{ movie.writers | join(', ') }}</div>
+                <div class="movie-details-cast"><strong>Cast: </strong>{{ movie.actors | join(', ') }}</div>
+                <div class="movie-details-release-date"><strong>Release Date: </strong>{{ movie.release_date }}</div>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

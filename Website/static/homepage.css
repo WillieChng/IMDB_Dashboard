@@ -38,8 +38,9 @@
     left: 0;
 }
 
-.homepage-explore-button:hover {
-    color: #e38fed; /* Pink on hover */
+.homepage-explore-link:hover {
+    color: #e38fed !important; /* Pink on hover */
+    text-decoration: none;
 }
 
 .homepage-explore-description {

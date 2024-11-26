@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_caching import Cache
 from flask_login import current_user, login_required
 from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
@@ -150,15 +150,32 @@ def profile_page():
 
     return render_template("profile.html", user=current_user)
 
-@views.route('/favourites.html')
-@login_required
-def favourites():
-    return render_template("favourites.html")
-
 @views.route('/personalized.html')
 @login_required
 def personalized():
-    return render_template("personalized.html")
+    # Get user's favorite genres
+    favourite_movies = current_user.user_favourites
+    genre_counts = {}
+    for movie in favourite_movies:
+        for genre in movie.genres:
+            if genre.name in genre_counts:
+                genre_counts[genre.name] += 1
+            else:
+                genre_counts[genre.name] = 1
+
+    # Sort genres by count and get top 3 genres
+    sorted_genres = sorted(genre_counts.items(), key=lambda item: item[1], reverse=True)
+    top_genres = [genre[0] for genre in sorted_genres[:3]]
+    
+    if not top_genres:
+        # Handle case with no favorite genres
+        flash('You have no favorite genres yet. Please add some favorite movies to get personalized recommendations.', 'info')
+        return redirect(url_for('views.user_favourites'))
+
+    # Fetch recommendations based on top genres
+    recommendations = Movie.query.join(Movie.genres).filter(Genre.name.in_(top_genres)).order_by(Movie.popularity.desc()).limit(3).all()
+
+    return render_template("personalized.html", top_genres=top_genres, recommendations=recommendations)
 
 @views.route('/')  # Root function
 def homepage():
@@ -310,9 +327,89 @@ def advanced():
     
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
 
-@views.route('/movie_details.html')
-def movie_details_page():
-    return render_template("movie_details.html")
+# search
+
+@views.route('/search_results.html')
+def search_results_page():
+    return render_template("search_results.html")
+
+@views.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    if query:
+        # Implement your search logic here
+        results = search_movies(query)
+        return render_template('search_results.html', query=query, results=results)
+    else:
+        flash('Please enter a search term', category='error')
+        return redirect(url_for('views.homepage'))
+
+def search_movies(query):
+    results = Movie.query.filter(
+        (Movie.title.ilike(f'%{query}%')) |
+        (Movie.overview.ilike(f'%{query}%')) |
+        (Movie.actors.any(Actor.name.ilike(f'%{query}%'))) |
+        (Movie.genres.any(Genre.name.ilike(f'%{query}%')))
+    ).all()
+    return results
+
+#in search bar, top searches
+@views.route('/top_searches', methods=['GET'])
+def top_searches():
+    query = request.args.get('query', '')
+    if query:
+        results = Movie.query.filter(Movie.title.ilike(f'%{query}%')).limit(10).all()
+    else:
+        results = Movie.query.order_by(Movie.popularity.desc()).limit(10).all()
+    
+    top_searches = [{'title': movie.title} for movie in results]
+    return jsonify(top_searches)
+
+#search bar, alphabetically
+@views.route('/alphabetical_searches', methods=['GET'])
+def alphabetical_searches():
+    query = request.args.get('query', '')
+    if query:
+        results = Movie.query.filter(Movie.title.ilike(f'{query}%')).order_by(Movie.title).limit(10).all()
+    else:
+        results = Movie.query.order_by(Movie.title).limit(10).all()
+    
+    alphabetical_searches = [{'title': movie.title} for movie in results]
+    return jsonify(alphabetical_searches)
+
+@views.route('/movie_details/<int:movie_id>')
+def movie_details_page(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    return render_template('movie_details.html', movie=movie)
+
+#movie favourite handling
+@views.route('/add_to_favourites', methods=['POST'])
+@login_required
+def add_to_favourites():
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get(movie_id)
+    if movie and movie not in current_user.user_favourites:
+        current_user.user_favourites.append(movie)
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'success': False})
+
+@views.route('/remove_from_favourites', methods=['POST'])
+@login_required
+def remove_from_favourites():
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get(movie_id)
+    if movie and movie in current_user.user_favourites:
+        current_user.user_favourites.remove(movie)
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'success': False})
+
+@views.route('/user_favourites.html')
+@login_required
+def user_favourites():
+    favourites = current_user.user_favourites
+    return render_template('user_favourites.html', favourites=favourites)
 
 @views.route('/settings.html')
 def settings_page():

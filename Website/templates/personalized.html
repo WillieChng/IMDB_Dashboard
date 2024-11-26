@@ -1,35 +1,23 @@
 {% extends "base.html" %} 
-{% block title %} Favourites {% endblock %} 
+{% block title %} Personalized Recommendations {% endblock %} 
 {% block content%} 
 
-<div class="personalized contet">
+<div class="personalized content">
     <div class="personalized-title">Based on the Movies you loved... Your Favorite Genre is </div>
-    <div class="personalized-genre">Horror | Drama | Comedy </div>
+    <div class="personalized-genre">{{ top_genres | join(' | ') }}</div>
     <div class="personalized-description">Thus, we would like to recommend</div>
     <div class="personalized-container">
         <button class="fav-left-btn"><i class="fas fa-caret-left"></i></button>
         <div class="fav-carousell">
-            <div class="fav-card-1">
-                <div class="personalized-card-1-title">Which Brings Me to You</div>
-                <div class="personalized-card-1-details">2023 ‧ Drama | Romance  ‧ 1h 45m</div>
-                <div class="personalized-card-1-synopsis"><p>Two romantic burnouts meet at a wedding and almost...</p></div>
-                <button class="personalized-card-1-btn"><a href='movie_details.html'>See More</a></button>
-                <button class="fav-card-1-esc"><a href='#'>&#x2A02;</a></button>
+            {% for movie in recommendations %}
+            <div class="fav-card">
+                <div class="personalized-card-title">{{ movie.title }}</div>
+                <div class="personalized-card-details">{{ movie.release_year }} ‧ {{ movie.genres | join(', ') }} ‧ {{ movie.runtime }} mins</div>
+                <div class="personalized-card-synopsis"><p>{{ movie.overview }}</p></div>
+                <button class="personalized-card-btn"><a href="{{ url_for('views.movie_details_page', movie_id=movie.movie_id) }}">See More</a></button>
+                <button class="fav-card-esc"><a href='#'>&#x2A02;</a></button>
             </div>
-            <div class="fav-card-2">
-                <div class="personalized-card-2-title">Walden</div>
-                <div class="personalized-card-2-details">2023 ‧ Horror | Thriller ‧ 4m</div>
-                <div class="personalized-card-2-synopsis"><p>Walden Dean is a stenographer, whose mind witnessed all types of injustices in...</p></div>
-                <button class="personalized-card-2-btn"><a href='movie_details.html'>See More</a></button>
-                <button class="fav-card-2-esc"><a href='#'>&#x2A02;</a></button>
-            </div>
-            <div class="fav-card-3">
-                <div class="personalized-card-3-title">The Walking Alive- Season One</div>
-                <div class="personalized-card-3-details">2023 ‧ Comedy | Horror ‧ 1 h 43m</div>
-                <div class="personalized-card-3-synopsis"><p>Socttie McClue, the infamous radio talkshow host from Scotland in early 90s is involved...</p></div>
-                <button class="personalized-card-3-btn"><a href='movie_details.html'>See More</a></button>
-                <button class="fav-card-3-esc"><a href='#'>&#x2A02;</a></button>
-            </div>
+            {% endfor %}
         </div>
         <button class="fav-right-btn"><i class="fas fa-caret-right"></i></button>
     </div> 
