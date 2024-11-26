@@ -17,7 +17,7 @@
 <body>
     <header>
         <span class="brand-name">
-            <a href="./" class="brand">CineSurfer</a>
+            <a href="{% if current_user.is_authenticated %}basic.html{% else %}./{% endif %}" class="brand">CineSurfer</a>
         </span>
         <div class="user-icon-container">
             <i class="fas fa-user-alt"></i>

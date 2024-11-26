@@ -439,9 +439,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     movieDetailsFav.classList.toggle('clicked'); // Toggle the 'clicked' class
+                    console.log('Favorite status updated successfully.');
                 } else {
                     alert('Failed to update favourites.');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
         });
     }

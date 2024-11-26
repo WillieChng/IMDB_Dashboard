@@ -3,25 +3,25 @@
 {% block content %}
 <div class="movie-details">
     <div class="movie-details-title">Movie Details</div>
+    <div id="movie-details-fav" class="movie-details-fav" data-movie-id="{{ movie.movie_id }}">&#x2661;</div>
     <div class="movie-details-container">
-        <div id="movie-details-fav" class="movie-details-fav" data-movie-id="{{ movie.movie_id }}">&#x2661;</div>
         <div class="movie-details-main">
             <div class="movie-details-info">
                 <div class="movie-details-info-1">
-                    <div class="movie-details-movie">{{ movie.title }}</div>
-                    <div class="movie-details-details">{{ movie.release_year }} ‧ {{ movie.genres | join(', ') }} ‧ {{ movie.runtime }} mins</div>
+                    <div class="movie-details-movie">{{ movie.title | default('N/A') }}</div>
+                    <div class="movie-details-details">{{ movie.release_year | default('N/A') }} ‧ {{ movie.genres | join(', ') | default('N/A') }} ‧ {{ movie.runtime | default('N/A') }} mins</div>
                 </div>
                 <div class="movie-details-info-2">
-                    <div class="movie-details-status">{{ movie.status }}</div>
+                    <div class="movie-details-status">{{ movie.status | default('N/A') }}</div>
                 </div>
             </div>
-            <div class="movie-details-synopsis"><p>{{ movie.overview }}</p></div>
+            <div class="movie-details-synopsis"><p>{{ movie.overview | default('N/A') }}</p></div>
             <div class="movie-details-bts">
-                <div class="movie-details-ori-lang"><strong>Original Language: </strong>{{ movie.original_language }}</div>
-                <div class="movie-details-director"><strong>Director: </strong>{{ movie.directors | join(', ') }}</div>
-                <div class="movie-details-writer"><strong>Writer: </strong>{{ movie.writers | join(', ') }}</div>
-                <div class="movie-details-cast"><strong>Cast: </strong>{{ movie.actors | join(', ') }}</div>
-                <div class="movie-details-release-date"><strong>Release Date: </strong>{{ movie.release_date }}</div>
+                <div class="movie-details-ori-lang"><strong>Original Language: </strong>{{ movie.original_language | default('N/A') }}</div>
+                <div class="movie-details-director"><strong>Director: </strong>{{ movie.directors | join(', ') | default('N/A') }}</div>
+                <div class="movie-details-writer"><strong>Writer: </strong>{{ movie.writers | join(', ') | default('N/A') }}</div>
+                <div class="movie-details-cast"><strong>Cast: </strong>{{ movie.actors | join(', ') | default('N/A') }}</div>
+                <div class="movie-details-release-date"><strong>Release Date: </strong>{{ movie.release_date | default('N/A') }}</div>
             </div>
         </div>
     </div>

@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col">
                 <div class="profile-picture-container">
-                    <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_picture or 'default.png')) }}" class="profile-picture" id="profile-picture">
+                    <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_picture or 'default.png')) }}" class="profile-picture" id="profile-picture" alt="profile-pic">
                     <i class="far fa-user-circle default-icon hidden" id="default-icon"></i>
                 </div>
             </div>
@@ -38,7 +38,7 @@
         <!-- Second Row -->
         <div class="row">
             <div class="col">
-                <h3>Username</h3>
+                <h3 class="profile-username">Username</h3>
             </div>
         </div>
 
@@ -57,10 +57,10 @@
         <!-- Fifth Row -->
         <div class="row">
             <div class="col">
-                <h4>First Name</h4>
+                <h3 class="profile-first-name">First Name</h3>
             </div>
             <div class="col">
-                <h4>Last Name</h4>
+                <h3 class="profile-last-name">Last Name</h3>
             </div>
         </div>
 
@@ -77,7 +77,7 @@
         <!-- Seventh Row -->
         <div class="row">
             <div class="col">
-                <h4>Email</h4>
+                <h3 class="profile-email">Email</h3>
             </div>
         </div>
 

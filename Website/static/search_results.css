@@ -12,3 +12,11 @@
     color: rgb(13, 29, 132); /* Font color during hover */
     text-decoration: none; /* Add underline during hover */
 }
+
+.dark-mode .searched a {
+    color: white; /* Default font color in dark mode */
+}
+
+.dark-mode .searched a:hover {
+    color: rgb(238, 213, 172); /* Default font color in dark mode */
+}

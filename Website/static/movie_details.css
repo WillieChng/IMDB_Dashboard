@@ -20,13 +20,14 @@
     height: 500px;
     position: relative;
     margin-top: 30px;
+    overflow: hidden; /* Hide overflow content */
 }
 
 .movie-details-fav {
     font-size: 40px; /* Resize the favorite icon */
     position: absolute; /* Position it relative to the container */
-    top: -45px; /* Position it outside the top left corner */
-    right: -0.1px; /* Position it outside the top left corner */
+    top: 165px; /* Position it outside the top left corner */
+    right: 270px; /* Position it outside the top left corner */
     cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
     color: black; /* Default color */
 }
@@ -94,4 +95,12 @@
 .dark-mode .movie-details-container {
     border: 1px solid white;
     box-shadow: 0px 0px 2px white;
+}
+
+.dark-mode .movie-details-fav {
+    color: white; /* Default color */
+}
+
+.dark-mode .movie-details-fav.clicked {
+    color: red; /* Change color to red when clicked */
 }
