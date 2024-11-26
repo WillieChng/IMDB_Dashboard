@@ -1,16 +1,17 @@
-.content {
+.homepage-content {
     margin-left: 0; /* Offset content by the width of the sidebar */
     padding: 10px 20px;
     flex-grow: 1; /* Allow content to grow and fill the remaining space */
     transition: margin-left 0.3s; /* Smooth transition for margin change */
 }
 
-.center-container {
+.homepage-center-container {
     text-align: center; /* Center the text */
     position: relative;
+    left: 10%;
 }
 
-.center-container h1 {
+.homepage-title {
     font-family: 'Poppins', sans-serif; 
     font-size: 31px;
     font-weight: 800; /* Set font weight to regular */
@@ -18,30 +19,30 @@
     line-height: 1.5; /* Adjust line height for spacing */
 }
 
-.explore-link {
+.homepage-explore-link {
     text-decoration: none; /* Remove underline */
     color: inherit; /* Inherit color from parent */
 }
 
-#explore-button {
+.homepage-explore-button {
     font-family: 'Poppins', sans-serif; 
     font-size: 100px;
     font-weight: 800; /* Set font weight to regular */
     margin: 0px; /* Remove default margin */
-    line-height: 1.5; /* Adjust line height fo r spacing */
+    line-height: 1.5; /* Adjust line height for spacing */
     cursor: pointer;
-    color: #02d2ba; /* Purple by default*/
+    color: #02d2ba; /* Purple by default */
     display: inline-block; /* Reduce hitbox to text size */
     position: relative;
     top: -60px;
     left: 0;
 }
 
-#explore-button:hover {
+.homepage-explore-button:hover {
     color: #e38fed; /* Pink on hover */
 }
 
-.explore-description {
+.homepage-explore-description {
     font-family: 'Poppins', sans-serif; 
     font-size: 30px;
     font-weight: 400; /* Set font weight to regular */
@@ -51,7 +52,7 @@
     width: 50%;
 }
 
-img.image-1 {
+.homepage-image-1 {
     width: 150px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     float: left;
@@ -60,47 +61,85 @@ img.image-1 {
     top: 0;
 }
 
-.image-2 {
+.homepage-image-2 {
     width: 140px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     float: left;
-    left: 140px;
+    left: 100px;
     position: relative;
-    top: -20px;
+    top: -140px;
 }
 
-.image-3 {
+.homepage-image-3 {
     width: 120px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     float: left;
     position: relative;
-    top: 140px;
-    left: -150px;
+    top: 100px;
+    left: 100px;
 }
 
-.image-4 {
+.homepage-image-4 {
     width: 130px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     bottom: 20px; 
     float: middle;
     position: relative;
-    top: 140px;
-    left: -200px;
+    top: -150px;
+    left: 300px;
 }
 
-.image-5 {
+.homepage-image-5 {
     width: 120px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     float: right;
-    margin-top: -100px; /* Adjust to align beside the explore button */
-    margin-right: 100px; /* Adjust to align beside the explore button */
+    margin-top: 100px; /* Adjust to align beside the explore button */
+    position: relative;
+    left: -200px;
 }
 
-.image-6 {
+.homepage-image-6 {
     width: 140px; /* Adjust the width as needed */
     height: auto; /* Maintain aspect ratio */
     float: right;
-    margin-top: -40px;
-    margin-right: 180px;
+    margin-top: -600px;
+    left: 900px;
+    position:relative;
     clear: right;
+}
+
+/* media query for tablets */
+@media (max-width: 768px) {
+    .homepage-image-1, .homepage-image-2, .homepage-image-3, .homepage-image-4, .homepage-image-5, .homepage-image-6 {
+        width: 100px; /* Adjust the width as needed */
+        top: 0; /* Reset top position */
+        left: 0; /* Reset left position */
+        margin: 10px auto; /* Center images */
+    }
+
+    .homepage-explore-description {
+        width: 80%; /* Adjust width for smaller screens */
+    }
+
+    .homepage-explore-button {
+        font-size: 50px; /* Adjust font size for smaller screens */
+    }
+}
+
+/* media query for mobile devices */
+@media (max-width: 480px) {
+    .homepage-image-1, .homepage-image-2, .homepage-image-3, .homepage-image-4, .homepage-image-5, .homepage-image-6 {
+        width: 80px; /* Adjust the width as needed */
+        top: 0; /* Reset top position */
+        left: 0; /* Reset left position */
+        margin: 5px auto; /* Center images */
+    }
+
+    .homepage-explore-description {
+        width: 90%; /* Adjust width for smaller screens */
+    }
+
+    .homepage-explore-button {
+        font-size: 30px; /* Adjust font size for smaller screens */
+    }
 }

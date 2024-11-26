@@ -1,4 +1,4 @@
-.signup-container {
+.login-container {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
@@ -8,7 +8,7 @@
     height: calc(100vh - 100px); /* Adjust height to account for header */
 }
 
-.profile-container, .benefits-container {
+.login-profile-container, .login-benefits-container {
     flex: 1;
     padding: 20px;
     background-color: #f9f9f9;
@@ -17,35 +17,35 @@
     margin: 10px;
 }
 
-.divider {
+.login-divider {
     width: 1px;
     background-color: #ccc;
     height: auto;
     margin: 0 10px;
 }
 
-.form-group {
+.login-form-group {
     margin-bottom: 15px;
 }
 
-.row {
+.login-row {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 15px;
 }
 
-.col {
+.login-col {
     flex: 1;
     padding: 0 10px;
 }
 
-.col-space {
+.login-col-space {
     flex: 1;
     padding: 0 10px;
     margin-right: 20px; /* Add space between columns */
 }
 
-.form-control {
+.login-form-control {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -54,7 +54,7 @@
     border: 1px solid #ccc;
 }
 
-.btn-primary {
+.login-btn-primary {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -64,7 +64,7 @@
     cursor: pointer;
 }
 
-.btn-primary:hover {
+.login-btn-primary:hover {
     background-color: #0056b3;
 }
 
@@ -100,4 +100,16 @@ ul li {
 ul li strong {
     display: block;
     margin-bottom: 5px;
+}
+
+/* dark mode */
+
+.dark-mode .login-profile-container {
+    background-color: #333 !important;
+    color: #fff;
+}
+
+.dark-mode .login-benefits-container {
+    background-color: #333;
+    color: #fff;
 }

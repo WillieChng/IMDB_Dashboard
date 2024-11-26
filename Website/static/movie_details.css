@@ -82,3 +82,9 @@
     padding-top: 20px; /* Add padding to separate from above content */
     border-top: 1px solid #ccc; /* Optional: Add a top border for separation */
 }
+
+/* dark mode */
+.dark-mode .movie-details-container {
+    border: 1px solid white;
+    box-shadow: 0px 0px 2px white;
+}
