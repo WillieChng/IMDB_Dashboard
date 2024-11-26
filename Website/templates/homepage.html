@@ -1,23 +1,35 @@
 {% extends "base2.html" %} 
 {% block title %} Homepage {% endblock %} 
 {% block content%} 
-<div class="content" id="home">
-    <div class="center-container">
-        <br><h1 class="text-center">Dive into the world of entertainment analytics!</h1><br>
+<div class="homepage-content container" id="home">
+    <div class="homepage-center-container text-center">
+        <br><h1 class="homepage-title text-center">Dive into the world of entertainment analytics!</h1><br>
         <br>
-        <img class="image-1" src="{{ url_for('static', filename='img/analytic-graph.png') }}" alt="">
-        <div class="text-container">
-            <p class="explore-description">
+        <img id="analytic-graph" class="homepage-image-1 img-fluid" src="{{ url_for('static', filename='img/darker-analytic-graph.png') }}" alt="">
+        <div class="homepage-text-container">
+            <p class="homepage-explore-description">
                 Explore a dynamic dashboard tailored for industry professionals seeking insights into performance metrics and audience behavior
             </p>
             <br><br><br><br><br><br>
-            <h2 id="explore-button" class="text-center"><a class="explore-link">Explore</a></h2>
+            <h2 id="explore-button" class="homepage-explore-button text-center"><a class="homepage-explore-link">Explore</a></h2>
         </div>
-        <img class="image-2" src="{{ url_for('static', filename='img/bar-chart.png') }}" alt="">
-        <img class="image-3" src="{{ url_for('static', filename='img/candlestick-chart.png') }}" alt="">
-        <img class="image-4" src="{{ url_for('static', filename='img/line-chart.png') }}" alt="">
-        <img class="image-5" src="{{ url_for('static', filename='img/organization-chart.png') }}" alt="">
-        <img class="image-6" src="{{ url_for('static', filename='img/pie-chart.png') }}" alt="">
+        <div class="homepage-row row">
+            <div class="homepage-col col-6 col-md-3">
+                <img id="bar-chart" class="homepage-image-2 img-fluid" src="{{ url_for('static', filename='img/darker-bar-chart.png') }}" alt="">
+            </div>
+            <div class="homepage-col col-6 col-md-3">
+                <img id="candlestick-chart" class="homepage-image-3 img-fluid" src="{{ url_for('static', filename='img/darker-candlestick-chart.png') }}" alt="">
+            </div>
+            <div class="homepage-col col-6 col-md-3">
+                <img id="line-chart" class="homepage-image-4 img-fluid" src="{{ url_for('static', filename='img/darker-line-chart.png') }}" alt="">
+            </div>
+            <div class="homepage-col col-6 col-md-3">
+                <img id="org-chart" class="homepage-image-5 img-fluid" src="{{ url_for('static', filename='img/darker-organization-chart.png') }}" alt="">
+            </div>
+            <div class="homepage-col col-6 col-md-3">
+                <img id="pie-chart" class="homepage-image-6 img-fluid" src="{{ url_for('static', filename='img/darker-pie-chart.png') }}" alt="">
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

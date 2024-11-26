@@ -22,7 +22,7 @@ header {
     display: flex;
     align-items: center;
     padding: 0 20px;
-    position: relative;
+    position: fixed; /* Make the header sticky */
     z-index: 2;
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.3); /* Add a dark shadow beneath the header */
 }
@@ -49,7 +49,7 @@ header {
 
 .search-container {
     position: absolute;
-    left: 37%; /* Center horizontally */
+    left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Adjust for centering */
     display: flex;
     align-items: center;
@@ -59,7 +59,6 @@ header {
 
 .search-bar {
     flex-grow: 1; /* Allow the search bar to grow and take up available space */
-    min-width: 800px; /* Adjust the width as needed */
     padding: 8px 12px;
     padding-left: 40px; /* Add padding to the left to make space for the icon */
     font-size: 16px;
@@ -75,11 +74,10 @@ header {
 }
 
 .user-icon-container {
-    display: inline-block; /* Use flexbox for alignment */
+    display: flex; /* Use flexbox for alignment */
     align-items: center; /* Center the icon vertically */
     margin-left: auto; /* Push the user icon to the right */
     padding: 0 30px; /* Add padding for spacing */
-    margin-right: 0px;
     position: relative;
 }
 
@@ -87,7 +85,9 @@ header {
     font-size: 26px; /* Adjust icon size */
     color: #333; /* Set icon color */
     margin-right: 7px;
+    cursor: pointer; /* Change cursor to pointer on hover */
 }
+
 .user-icon-container a {
     text-decoration: none; /* Remove underline from the link */
     color: #333; /* Set link color */
@@ -98,10 +98,10 @@ header {
     display: none;
     position: absolute;
     background-color: white;
-    min-width: 120px;
+    min-width: 100px;
     box-shadow: 0px 8px 16px 0px #000000a9;
     z-index: 1;
-    right: 30px;
+    right: 0; /* Align the dropdown menu to the right */
     top: 45px;
     border-radius: 7px;
 }
@@ -110,12 +110,11 @@ header {
     content: "";
     position: absolute;
     top: -29px; /* Position the triangle above the menu */
-    right: 6px; /* Adjust this value to align the triangle */
+    right: 45px; /* Adjust this value to align the triangle */
     border-width: 15px;
     border-style: solid;
     border-color: transparent transparent white transparent; /* Create the triangle */
 }
-
 
 .dropdown-menu a {
     color: black;
@@ -137,6 +136,10 @@ header {
     text-align: center;
     position: relative;
     z-index: 1;
+    background-color: white; /* Ensure background color matches header */
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for separation */
+    position: sticky; /* Make the categories section sticky */
+    top: 60px; /* Stick below the header */
 }
 
 .category-links a {
@@ -164,7 +167,7 @@ header {
     flex-direction: column; /* Vertical layout */
     justify-content: center; /* Center vertically */
     position: fixed; /* Fixed sidebar */
-    top: 0px; /* Offset by the height of the header */
+    top: 60px; /* Offset by the height of the header */
     left: -200px; /* Initially hide the side panel */
     transition: left 0.3s; /* Smooth transition */
     border-right: 1px solid #333; /* Add a vertical line on the right side */
@@ -207,8 +210,9 @@ header {
 
 .main-content {
     margin-left: 0; /* Same width as the side panel */
-    padding: 20px;
+    padding: 30px;
     flex-grow: 1;
+    margin-top: 80px; /* Add margin to move content down from the header */
 }
 
 .logout-container {
@@ -224,3 +228,169 @@ header {
     transition: margin-left 0.3s; /* Smooth transition for margin change */
 }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .search-container {
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 300px; /* Adjust max-width for smaller screens */
+    }
+
+    .search-bar {
+        min-width: 200px; /* Adjust min-width for smaller screens */
+    }
+
+    .category-links a {
+        margin: 0 10px;
+        font-size: 14px; /* Adjust font size for smaller screens */
+    }
+
+    #side-panel {
+        width: 150px; /* Adjust width for smaller screens */
+        left: -150px; /* Initially hide the side panel */
+    }
+
+    .content.shifted {
+        margin-left: 150px; /* Adjust margin for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .search-container {
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 200px; /* Adjust max-width for smaller screens */
+    }
+
+    .search-bar {
+        min-width: 150px; /* Adjust min-width for smaller screens */
+    }
+
+    .category-links a {
+        margin: 0 5px;
+        font-size: 12px; /* Adjust font size for smaller screens */
+    }
+
+    #side-panel {
+        width: 120px; /* Adjust width for smaller screens */
+        left: -120px; /* Initially hide the side panel */
+    }
+
+    .content.shifted {
+        margin-left: 120px; /* Adjust margin for smaller screens */
+    }
+}
+
+/* Toggle switch styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* end of toggle switch styles */
+
+/* Dark mode */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode header {
+    background-color: #1e1e1e;
+}
+
+.dark-mode .settings-container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .btn {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-mode #side-panel {
+    background-color: #1e1e1e;
+    border-right: 1px solid #fff;
+    border-right: 1px solid #333; /* Add a vertical line on the right side */
+}
+
+.dark-mode #side-panel a {
+    color: #fff;
+}
+
+.dark-mode #side-panel a:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-mode .user-icon-container i {
+    color: #ffffff; /* Change icon color to white */
+}
+
+.dark-mode .dropdown-menu {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .dropdown-menu::before {
+    border-color: transparent transparent #1e1e1e transparent; /* Change triangle color */
+}
+
+.dark-mode .dropdown-menu a {
+    color: #ffffff;
+}
+
+.dark-mode .dropdown-menu a:hover {
+    background-color: #333;
+    text-decoration: none;
+}
+
+.dark-mode .category-links a {
+    color: #ffffff;
+}
+
+.dark-mode .category-links a:hover, .dark-mode .category-links a.active {
+    border-bottom: 3px solid #ffffff;
+    color: #ffffff;
+}

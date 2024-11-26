@@ -1,5 +1,12 @@
 {% extends "base.html" %} 
 {% block title %} Settings {% endblock %} 
 {% block content %} 
-    
+    <div class="settings-container content">
+        <h2>Settings</h2>
+        <label class="switch">
+            <input type="checkbox" id="dark-mode-toggle">
+            <span class="slider round"></span>
+        </label>
+        <span id="mode-label">Light Mode</span>
+    </div>
 {% endblock %}

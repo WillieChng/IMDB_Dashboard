@@ -6,15 +6,12 @@
     <title>{% block title %}Dashboard{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="../static/base.css">
-    <link rel="stylesheet" href="../static/homepage.css">
-    <link rel="stylesheet" href="../static/profile.css">
-    <link rel="stylesheet" href="../static/signup.css">
-    <link rel="stylesheet" href="../static/basic.css">
-    <link rel="stylesheet" href="../static/favourites.css">
-    <link rel="stylesheet" href="../static/personalized.css">
-    <link rel="stylesheet" href="../static/movie_details.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
     <header>
@@ -22,7 +19,7 @@
             &#9776; <!-- Unicode character for the hamburger icon -->
         </div>
         <span class="brand-name">
-            <a href="./" class="brand" >CineSurfer</a>
+            <a href="./" class="brand">CineSurfer</a>
         </span>
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
@@ -62,6 +59,7 @@
             <a href="#logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
+
     <div class="main-content">
         {% block content %}{% endblock %}
     </div>
@@ -69,7 +67,7 @@
     {% with messages = get_flashed_messages(with_categories=true)%}
         {% if messages %}
             {% for category, message in messages %}
-                {% if category =='error' %}
+                {% if category == 'error' %}
                     <div class="alert alert-danger alter-dismissable fade show" role="alert">
                     {{ message }}
                         <button type="button" class="close" data-dismiss="alert">
@@ -84,12 +82,9 @@
                         </button>
                     </div>
                 {% endif %}
-            {% endfor%}
+            {% endfor %}
         {% endif %}
     {% endwith %}
-    </div>
-    <script src={{ url_for('static', filename='script.js')}}></script>
-</body>
-</html>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

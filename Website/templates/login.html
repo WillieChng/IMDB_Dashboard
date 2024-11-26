@@ -2,49 +2,49 @@
 {% block title %} Login {% endblock %} 
 {% block content%} 
 
-<div class="signup-container">
-    <div class="profile-container">
+<div class="login-container">
+    <div class="login-profile-container">
         <h1 class="text-center">Login</h1>
         <!-- <h3 class="text-center">Si your account</h3> -->
         <form method="POST">
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
+            <div class="login-row">
+                <div class="login-col">
+                    <div class="login-form-group">
                         <label for="username">Email:</label>
-                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email" />
+                        <input type="text" class="login-form-control" id="email" name="email" placeholder="Enter Email" />
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-space">
-                    <div class="form-group">
+            <div class="login-row">
+                <div class="login-col-space">
+                    <div class="login-form-group">
                         <label for="password">Password:</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" />
+                        <input type="password" class="login-form-control" id="password" name="password" placeholder="Enter Password" />
                         <small id="passwordHelp" class="form-text text-muted" style="display:none;">*Must have more than 7 characters</small>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col text-right">
-                    <button type="submit" class="btn btn-primary">Sign in</button>
+            <div class="login-row">
+                <div class="login-col text-right">
+                    <button type="submit" class="login-btn-primary">Sign in</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
+            <div class="login-row">
+                <div class="login-col">
                     <a href="/forgot_password">Forgot password?</a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
+            <div class="login-row">
+                <div class="login-col">
                     <p>Don't have an account? <a href="/signup">Sign Up</a></p>
                 </div>
             </div>
         </form>
     </div>
 
-    <div class="divider"></div>
+    <div class="login-divider"></div>
 
-    <div class="benefits-container">
+    <div class="login-benefits-container">
         <h2>Benefits of having your very own free Cinesurfer account</h2>
         <ul>
             <li>

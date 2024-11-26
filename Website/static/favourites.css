@@ -157,3 +157,47 @@
     text-decoration: none;
     color: white;
 }
+
+/* Dark mode styles */
+body.dark-mode .favourites {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .fav-title {
+    color: #ffffff;
+}
+
+body.dark-mode .fav-container {
+    background-color: #1e1e1e;
+}
+
+body.dark-mode .fav-card-1, 
+body.dark-mode .fav-card-2, 
+body.dark-mode .fav-card-3 {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+body.dark-mode .fav-card-1-btn a, 
+body.dark-mode .fav-card-2-btn a, 
+body.dark-mode .fav-card-3-btn a {
+    color: #1e1e1e;
+}
+
+body.dark-mode .fav-card-1-esc a, 
+body.dark-mode .fav-card-2-esc a, 
+body.dark-mode .fav-card-3-esc a {
+    color: #ffffff;
+}
+
+body.dark-mode .see-personalized-btn {
+    background-color: #333;
+    color: #ffffff;
+}
+
+.dark-mode, .fav-left-btn, .fav-right-btn{
+    color: #ffffff;
+}
+

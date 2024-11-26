@@ -5,6 +5,7 @@
 .row {
     display: flex;
     align-items: center;
+    /* background-color: #121212; */
 }
 
 .col {
@@ -217,5 +218,52 @@
 
 #save-button:hover {
     background-color: #ccc;
+}
+
+/* Dark mode styles */
+body.dark-mode .profile-container {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .row {
+    /* background-color: #1e1e1e; */
+}
+
+body.dark-mode .col {
+    color: #ffffff;
+}
+
+body.dark-mode .profile-picture-container {
+    background-color: #1e1e1e;
+}
+
+body.dark-mode .profile-picture {
+    border: 2px solid #ffffff;
+}
+
+body.dark-mode .btn {
+    background-color: #333;
+    color: #ffffff;
+}
+
+body.dark-mode .textbox, 
+body.dark-mode .password-input {
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+body.dark-mode .line {
+    background-color: #ffffff;
+}
+
+body.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .cropper-container {
+    background-color: #1e1e1e;
 }
 

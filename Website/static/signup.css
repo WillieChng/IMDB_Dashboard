@@ -8,7 +8,7 @@
     height: calc(100vh - 100px); /* Adjust height to account for header */
 }
 
-.profile-container, .benefits-container {
+.signup-profile-container, .signup-benefits-container {
     flex: 1;
     padding: 20px;
     background-color: #f9f9f9;
@@ -17,36 +17,35 @@
     margin: 10px;
 }
 
-.divider {
+.signup-divider {
     width: 1px;
     background-color: #ccc;
     height: auto;
     margin: 0 10px;
 }
 
-.form-group {
+.signup-form-group {
     margin-bottom: 15px;
 }
 
-.row {
+.signup-row {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 15px;
-    margin-right: 10px; /* Add space between columns */
 }
 
-.col {
+.signup-col {
     flex: 1;
     padding: 0 10px;
 }
 
-.col-space {
+.signup-col-space {
     flex: 1;
     padding: 0 10px;
     margin-right: 20px; /* Add space between columns */
 }
 
-.form-control {
+.signup-form-control {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -55,7 +54,7 @@
     border: 1px solid #ccc;
 }
 
-.btn-primary {
+.signup-btn-primary {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -65,15 +64,15 @@
     cursor: pointer;
 }
 
-.btn-primary:hover {
+.signup-btn-primary:hover {
     background-color: #0056b3;
 }
 
-.text-center {
+.signup-text-center {
     text-align: center;
 }
 
-.text-right {
+.signup-text-right {
     text-align: right;
 }
 
@@ -101,4 +100,16 @@ ul li {
 ul li strong {
     display: block;
     margin-bottom: 5px;
+}
+
+/* dark mode */
+
+.dark-mode .signup-profile-container {
+    background-color: #333 !important;
+    color: #fff;
+}
+
+.dark-mode .signup-benefits-container {
+    background-color: #333;
+    color: #fff;
 }

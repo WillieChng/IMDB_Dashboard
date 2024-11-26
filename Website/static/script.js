@@ -276,4 +276,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+    const modeLabel = document.getElementById('mode-label');
+    const analyticGraph = document.getElementById('analytic-graph');
+    const barChart = document.getElementById('bar-chart');
+    const candleChart = document.getElementById('candlestick-chart');
+    const lineChart = document.getElementById('line-chart');
+    const orgChart = document.getElementById('org-chart');
+    const pieChart = document.getElementById('pie-chart');
+
+    // Function to update image source based on dark mode
+    function updateImageSource() {
+        if (analyticGraph) {
+            if (body.classList.contains('dark-mode')) {
+                analyticGraph.src = "/static/img/lighter-analytic-graph.png"; // Update with the correct path
+            } else {
+                analyticGraph.src = "/static/img/darker-analytic-graph.png"; // Update with the correct path
+            }
+        }
+        if (barChart) {
+            if (body.classList.contains('dark-mode')) {
+                barChart.src = "/static/img/lighter-bar-chart.png"; // Update with the correct path
+            } else {
+                barChart.src = "/static/img/darker-bar-chart.png"; // Update with the correct path
+            }
+        }
+        if (candleChart) {
+            if (body.classList.contains('dark-mode')) {
+                candleChart.src = "/static/img/lighter-candlestick-chart.png"; // Update with the correct path
+            } else {
+                candleChart.src = "/static/img/darker-candlestick-chart.png"; // Update with the correct path
+            }
+        }
+        if (lineChart) {
+            if (body.classList.contains('dark-mode')) {
+                lineChart.src = "/static/img/lighter-line-chart.png"; // Update with the correct path
+            } else {
+                lineChart.src = "/static/img/darker-line-chart.png"; // Update with the correct path
+            }
+        }
+        if (orgChart) {
+            if (body.classList.contains('dark-mode')) {
+                orgChart.src = "/static/img/lighter-organization-chart.png"; // Update with the correct path
+            } else {
+                orgChart.src = "/static/img/darker-organization-chart.png"; // Update with the correct path
+            }
+        }
+        if (pieChart) {
+            if (body.classList.contains('dark-mode')) {
+                pieChart.src = "/static/img/lighter-pie-chart.png"; // Update with the correct path
+            } else {
+                pieChart.src = "/static/img/darker-pie-chart.png"; // Update with the correct path
+            }
+        }
+    }
+     // Check for saved user preference, if any, on load of the website
+     if (localStorage.getItem('darkMode') === 'enabled') {
+        body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.checked = true;
+        if (modeLabel) modeLabel.textContent = 'Dark Mode';
+    } else if (modeLabel) {
+        modeLabel.textContent = 'Light Mode';
+    }
+    updateImageSource(); // Ensure the correct image is displayed on page load
+
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', function() {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                if (modeLabel) modeLabel.textContent = 'Dark Mode';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                if (modeLabel) modeLabel.textContent = 'Light Mode';
+            }
+            updateImageSource();
+        });
+    }
 });
