@@ -3,6 +3,7 @@
     margin: 20px 0; /* Add some margin to the top and bottom */
     font-size: 2em; /* Adjust the font size as needed */
     transition: transform 0.3s ease; /* Smooth transition for shifting */
+    font-weight: 700; /* Use a bold font weight */
 }
 
 .chart-grid {
@@ -40,6 +41,9 @@
     padding: 0 10px; /* Add padding to the title */
     z-index: 1; /* Ensure the title is above the chart */
     white-space: nowrap; /* Prevent line breaks */
+    font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
+    font-weight: 700; /* Use a bold font weight */
+    font-size: 1.5em;
 }
 
 .chart2 .chart-container {
@@ -72,7 +76,7 @@
     margin-left: 0px; /* Add a small space between the chart and the description */
     text-align: left; /* Align text to the left */
     font-size: 2.2em; /* Adjust the font size as needed */
-    width: 580px; /* Set a fixed width for the description */
+    width: 600px; /* Set a fixed width for the description */
     display: flex;
     align-items: center;
     grid-column: span 2; /* Span across two columns */
@@ -94,7 +98,7 @@
     margin-bottom: 60px; /* Add space below the description */
     text-align: center; /* Align text to the left */
     font-size: 1.5em; /* Adjust the font size as needed */
-    width: 1250px; /* Set a fixed width for the description */
+    width: 1270px; /* Set a fixed width for the description */
     display: flex;
     align-items: center;
     color: #333; /* Change text color */
@@ -115,7 +119,7 @@
     margin-bottom: 60px; /* Add space below the description */
     text-align: center; /* Align text to the left */
     font-size: 1.5em; /* Adjust the font size as needed */
-    width: 1250px; /* Set a fixed width for the description */
+    width: 1270px; /* Set a fixed width for the description */
     display: flex;
     align-items: center;
     color: #333; /* Change text color */
@@ -151,8 +155,8 @@
 }
 
 .chart6-description {
-    width: 580px; /* Match the width of chart6 */
-    height: 450px; /* Match the height of chart6 */
+    width: 600px; /* Match the width of chart6 */
+    height: 470px; /* Match the height of chart6 */
     display: flex;
     align-items: center; /* Center content vertically */
     justify-content: center; /* Center content horizontally */
@@ -166,6 +170,7 @@
     padding: 10px; /* Add padding */
     border-radius: 5px; /* Add rounded corners */
     transition: background-color 0.3s ease; /* Smooth transition for background color */
+    line-height: 1.8; /* Add line spacing */
 }
 
 .chart6-description:hover {
