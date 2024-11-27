@@ -1,35 +1,45 @@
+.fav-title {
+    font-size: 35px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.fav-container {
+    display: flex;
+    flex-direction: row; /* Change to row to align buttons and carousel horizontally */
+    align-items: center;
+    width: 100%;
+}
+
 .fav-carousell {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100%;
+    height: 450px; /* Adjust height as needed */
+    perspective: 50000px; /* Add perspective for 3D effect */
     position: relative;
-    overflow: hidden; /* Hide overflow to create a stackable view */
-}
-
-.fav-carousell > .fav-card {
-    position: absolute;
-    transition: transform 0.5s ease-in-out;
+    overflow: hidden;
 }
 
 .fav-card {
+    position: absolute;
+    width: 300px; /* Adjust width as needed */
+    height: 450px; /* Adjust height as needed */
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    backface-visibility: hidden;
+    border-radius: 7px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 300px; /* Fixed width */
-    height: 450px; /* Fixed height */
-    border-radius: 11px;
-    box-shadow: 0px 0px 1px black;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    background-color: white; /* Add background color to separate text */
-    padding: 20px; /* Add padding to create space around text */
-    transition: transform 0.5s ease, z-index 0.5s ease; /* Add transition for sliding effect */
+    justify-content: space-between; /* Distribute space between elements */
+    padding: 20px; /* Add padding for better appearance */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
 .fav-card-title {
-    font-size: 25px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
     margin-top: 20px;
@@ -44,7 +54,7 @@
 }
 
 .fav-card-synopsis {
-    font-size: 18px;
+    font-size: 14px;
     text-align: center;
     font-weight: normal;
 }
@@ -53,15 +63,92 @@
     font-weight: normal; /* Unbold the <p> element */
 }
 
-.fav-card-btn {
-    border: 1px solid black;
-    border-radius: 8px;
-    padding: 5px;
-    width: 100px;
-    margin-top: 20px;
+.fav-card-btn, .fav-card-esc {
+    display: block; /* Make each button take up the full width */
+    width: 100%; /* Ensure the buttons are full width */
+    text-align: center; /* Center the text inside the buttons */
+    margin-top: 10px; /* Add some margin to separate the buttons */
+    padding: 10px; /* Add padding for better appearance */
+    border: none; /* Remove default border */
+    background-color: #f0f0f0; /* Light background color */
+    border-radius: 5px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
 }
 
-.fav-card-btn a {
+.fav-card-btn a, .fav-card-esc a {
+    display: block; /* Ensure the links inside the buttons are block elements */
+    width: 100%; /* Ensure the links take up the full width */
+    text-decoration: none; /* Remove underline from links */
+    color: black; /* Set text color */
+}
+
+.fav-card-esc {
+    margin-top: 5px; /* Add some margin to separate from the "See More" button */
+}
+
+.fav-card-btn:hover, .fav-card-esc:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.see-personalized-btn {
+    display: block; /* Make the button take up the full width */
+    width: 15%; /* Ensure the button is full width */
+    text-align: center; /* Center the text inside the button */
+    margin: 20px auto; /* Center the button and add margin */
+    padding: 5px; /* Add padding for better appearance */
+    background-color: white;
+    border: 1px solid black; /* Remove default border */
+    border-radius: 5px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+.see-personalized-btn a {
+    display: block; /* Ensure the link inside the button is a block element */
+    width: 100%; /* Ensure the link takes up the full width */
+    text-decoration: none; /* Remove underline from link */
+    color: black; /* Set text color */
+}
+
+.see-personalized-btn:hover, .see-personalized-btn a:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
     text-decoration: none;
-    color: black;
+}
+
+.fav-left-btn, .fav-right-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px; /* Add margin to create space around the buttons */
+}
+
+/* Dark mode styles */
+body.dark-mode .fav-card {
+    background-color: black; /* Dark background color */
+    color: white; /* Light text color */
+    box-shadow: 0px 0px 1px white; /* Light shadow */
+}
+
+body.dark-mode .fav-card-details {
+    color: lightgrey; /* Light grey text color */
+}
+
+body.dark-mode .fav-card-btn {
+    border: 1px solid white; /* Light border */
+}
+
+body.dark-mode .fav-card-btn a {
+    color: black; /* Light text color */
+}
+
+body.dark-mode .fav-left-btn, body.dark-mode .fav-right-btn {
+    color: white; /* Light text color */
+}
+
+body.dark-mode .fav-left-btn:hover, body.dark-mode .fav-right-btn:hover {
+    color: lightgrey; /* Light grey text color */
+}
+
+body.dark-mode .fav-card-btn a:hover {
+    color: black; /* Dark text color */
 }

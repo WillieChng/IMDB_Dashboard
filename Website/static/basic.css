@@ -32,11 +32,11 @@
     box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
     background-color: white; /* Ensure background color is white */
     position: relative; /* Ensure the title is positioned relative to the container */
+    color:black;
 }
 
 .chart-container h2 {
     margin: 0 0 10px 0; /* Add margin to the bottom to create space between the title and the chart */
-    padding: 0;
     background-color: white; /* Ensure the title has a background color */
     padding: 0 10px; /* Add padding to the title */
     z-index: 1; /* Ensure the title is above the chart */
@@ -44,6 +44,7 @@
     font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
     font-weight: 700; /* Use a bold font weight */
     font-size: 1.5em;
+    color: black;
 }
 
 .chart2 .chart-container {

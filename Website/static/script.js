@@ -242,37 +242,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const rightButton = document.querySelector('.fav-right-btn');
     const leftButton = document.querySelector('.fav-left-btn');
-    const cards = document.querySelectorAll('.fav-carousell > div');
     let currentIndex = 0;
 
     function updateCards() {
+        const cards = document.querySelectorAll('.fav-carousell > .fav-card');
+        const totalCards = cards.length;
+        const spacing = 1.2; // Adjust this value to increase/decrease spacing
+    
         cards.forEach((card, index) => {
-            if (index === currentIndex) {
-                card.style.zIndex = 3;
-                card.style.transform = 'translateX(0)';
-            } else if (index === (currentIndex + 1) % cards.length) {
-                card.style.zIndex = 2;
-                card.style.transform = 'translateX(100%)';
-            } else if (index === (currentIndex + 2) % cards.length) {
-                card.style.zIndex = 1;
-                card.style.transform = 'translateX(200%)';
-            } else {
-                card.style.zIndex = 0;
-                card.style.transform = 'translateX(-100%)';
-            }
+            const angle = (index - currentIndex) * (360 / totalCards) * spacing;
+            card.style.transform = `rotateY(${angle}deg) translateZ(300px)`;
         });
     }
 
     if (rightButton) {
         rightButton.addEventListener('click', function() {
-            currentIndex = (currentIndex + 1) % cards.length;
+            currentIndex = (currentIndex + 1) % document.querySelectorAll('.fav-carousell > .fav-card').length;
             updateCards();
         });
     }
 
     if (leftButton) {
         leftButton.addEventListener('click', function() {
-            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            currentIndex = (currentIndex - 1 + document.querySelectorAll('.fav-carousell > .fav-card').length) % document.querySelectorAll('.fav-carousell > .fav-card').length;
             updateCards();
         });
     }
@@ -283,9 +275,26 @@ document.addEventListener('DOMContentLoaded', function() {
     escButtons.forEach(button => {
         button.addEventListener('click', function(event) {
             const parentCard = button.closest('.fav-card');
+            const movieId = parentCard.getAttribute('data-movie-id');
             if (parentCard) {
-                parentCard.remove();
-                updateCards(); // Update the positions after removing a card
+                fetch(`/remove_from_favourites?movie_id=${movieId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        parentCard.remove();
+                        updateCards(); // Update the positions after removing a card
+                    } else {
+                        alert('Failed to remove from favourites.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
         });
     });
@@ -424,8 +433,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const movieDetailsFav = document.getElementById('movie-details-fav');
 
     if (movieDetailsFav) {
+        const movieId = movieDetailsFav.getAttribute('data-movie-id');
+
+        // Check if the movie is already favorited
+        fetch(`/is_favorited?movie_id=${movieId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_favorited) {
+                    movieDetailsFav.classList.add('clicked'); // Mark as favorited
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
         movieDetailsFav.addEventListener('click', function() {
-            const movieId = movieDetailsFav.getAttribute('data-movie-id');
             const isFavorite = movieDetailsFav.classList.contains('clicked');
             const url = isFavorite ? '/remove_from_favourites' : '/add_to_favourites';
 
@@ -440,6 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     movieDetailsFav.classList.toggle('clicked'); // Toggle the 'clicked' class
                     console.log('Favorite status updated successfully.');
+                    updateFavouritesCarousel();
                 } else {
                     alert('Failed to update favourites.');
                 }
@@ -449,5 +472,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
+    function updateFavouritesCarousel() {
+        fetch('/user_favourites.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newCarousel = doc.querySelector('.fav-carousell');
+                const currentCarousel = document.querySelector('.fav-carousell');
+                if (currentCarousel) {
+                    currentCarousel.innerHTML = newCarousel.innerHTML;
+                    updateCards(); // Reinitialize the positions after updating the carousel
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 });
