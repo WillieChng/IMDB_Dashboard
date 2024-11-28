@@ -1,0 +1,74 @@
+.page-title {
+    text-align: center;
+    margin: 20px 0; /* Add some margin to the top and bottom */
+    font-size: 2em; /* Adjust the font size as needed */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
+    font-weight: 700; /* Use a bold font weight */
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: auto auto; /* Two columns: one for the chart and one for the description with fixed width */
+    grid-template-rows: auto auto auto auto auto auto auto auto auto; /* Nine rows */
+    gap: 20px; /* Add space between grid items */
+    width: 100%;
+    max-width: 1200px;
+    margin: auto; /* Center the grid container */
+    text-align: center; /* Center text within the grid */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
+    position: relative; /* Ensure the description can be positioned absolutely */
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 650px;
+    height: 470px; /* Adjust the height as needed */
+    border: 2px solid black; /* Add a border to each chart container */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Add padding to the top for the title */
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+    background-color: white; /* Ensure background color is white */
+    position: relative; /* Ensure the title is positioned relative to the container */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for opacity and transform */
+}
+
+.chart-container h2 {
+    margin: 0 0 10px 0; /* Add margin to the bottom to create space between the title and the chart */
+    padding: 0;
+    background-color: white; /* Ensure the title has a background color */
+    padding: 0 10px; /* Add padding to the title */
+    z-index: 1; /* Ensure the title is above the chart */
+    white-space: nowrap; /* Prevent line breaks */
+    font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
+    font-weight: 700; /* Use a bold font weight */
+    font-size: 1.5em;
+}
+
+.chart-description {
+    position: relative; /* Change to relative positioning */
+    margin-left: 0px; /* Add a small space between the chart and the description */
+    text-align: left; /* Align text to the left */
+    font-size: 2.2em; /* Adjust the font size as needed */
+    width: 600px; /* Set a fixed width for the description */
+    display: flex;
+    align-items: center;
+    grid-column: span 2; /* Span across two columns */
+    color: #333; /* Change text color */
+    background-color: #f9f9f9; /* Change background color */
+    padding: 10px; /* Add padding */
+    border-radius: 5px; /* Add rounded corners */
+    line-height: 1.6; /* Add line spacing */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.chart-description:hover {
+    background-color: #bebebe; /* Change background color on hover */
+}
+
+/* Shifted state for when the side panel is open */
+.shifted {
+    transform: translateX(65px); /* Adjust based on the width of the side panel */
+}

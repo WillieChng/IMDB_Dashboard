@@ -449,5 +449,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
+    // Populate the year dropdown with options
+    const yearSelect = document.getElementById('year-select');
+    const currentYear = new Date().getFullYear();
+    for (let year = 2000; year <= currentYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+
+    // Handle the update chart button click
+    const updateChartButton = document.getElementById('update-chart');
+    updateChartButton.addEventListener('click', function() {
+        const selectedYears = Array.from(yearSelect.selectedOptions).map(option => option.value);
+        updateChart(selectedYears);
+    });
+
+    // Function to update the chart based on selected years
+    function updateChart(years) {
+        fetch(`/update_chart1?years=${years.join(',')}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartContainer = document.getElementById('chart1');
+                chartContainer.innerHTML = data.chart_html;
+            })
+            .catch(error => console.error('Error updating chart:', error));
+    }
 });
