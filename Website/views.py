@@ -302,6 +302,7 @@ def intermediate():
 @views.route('/advanced.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
 def advanced():    
+    ##CHART 1: Map visualization of movie production countries
     df = get_movie_data()
     df1 = df.groupby('production_countries').size().reset_index(name='vote_count')
     fig1 = px.choropleth(df1, 
@@ -312,6 +313,7 @@ def advanced():
                          )
     chart1 = pio.to_html(fig1, full_html=False)
     
+    ##CHART 2: Comparison of real-time movie ratings with two spider charts
     all_movies = []
     for page in range(1, 20):
         api_data = fetch_api_data(page)
@@ -332,7 +334,6 @@ def advanced():
     
     fig1 = go.Figure()
     fig2 = go.Figure()
-    fig3 = go.Figure()
     
     for title in df2_long['title'].unique():
         subset = df2_long[df2_long['title'] == title]
@@ -350,23 +351,12 @@ def advanced():
             mode='lines',
             line=dict(color='blue', dash='solid')  # Valid properties
         ))
-        fig3.add_trace(go.Scatterpolar(
-            r=subset['value'],
-            theta=subset['metric'],
-            name=title,
-            mode='lines',
-            line=dict(color='blue', dash='solid')  # Valid properties
-        ))
         
     fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)))
     fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)))
-    fig3.update_layout(polar=dict(angularaxis=dict(rotation=90)))
 
-    chart1 = pio.to_html(fig1, full_html=False)
-    chart2 = pio.to_html(fig2, full_html=False)
-    chart3 = pio.to_html(fig3, full_html=False)
-    
-    
+    chart2 = pio.to_html(fig1, full_html=False)
+    chart3 = pio.to_html(fig2, full_html=False)
     
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
 # search
