@@ -477,4 +477,31 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error updating chart:', error));
     }
+
+    const updateChart1Button = document.getElementById('update-chart1');
+    const updateChart2Button = document.getElementById('update-chart2');
+
+    updateChart1Button.addEventListener('click', function() {
+        const movieTitle = document.getElementById('search-movie1').value;
+        const width = document.getElementById('width1').value;
+        const height = document.getElementById('height1').value;
+        updateChart('chart2', movieTitle, width, height);
+    });
+
+    updateChart2Button.addEventListener('click', function() {
+        const movieTitle = document.getElementById('search-movie2').value;
+        const width = document.getElementById('width2').value;
+        const height = document.getElementById('height2').value;
+        updateChart('chart3', movieTitle, width, height);
+    });
+
+    function updateChart(chartId, movieTitle, width, height) {
+        fetch(`/update_chart?chart_id=${chartId}&movie_title=${movieTitle}&width=${width}&height=${height}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartContainer = document.getElementById(chartId);
+                chartContainer.innerHTML = data.chart_html;
+            })
+            .catch(error => console.error('Error updating chart:', error));
+    }
 });

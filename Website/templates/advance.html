@@ -1,0 +1,35 @@
+{% extends "base.html" %} 
+{% block title %} Advance {% endblock %} 
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='advance.css') }}">
+{% endblock %}
+
+{% block content%} 
+    <h2>Number of Movies by Production Country</h2> 
+    <div class="chart-wrapper">
+        <div id="chart">{{chart1|safe}}</div>
+    </div>
+
+    <h2>Spider Chart 1</h2>
+    <div class="search-container">
+        <input type="text" id="search-movie1" placeholder="Search for Movie 1">
+        <input type="number" id="width1" placeholder="Width" value="650">
+        <input type="number" id="height1" placeholder="Height" value="470">
+        <button id="update-chart1">Update Chart 1</button>
+    </div>
+    <div class="chart-wrapper">
+        <div id="chart2">{{chart2|safe}}</div>
+    </div>
+
+    <h2>Spider Chart 2</h2>
+    <div class="search-container">
+        <input type="text" id="search-movie2" placeholder="Search for Movie 2">
+        <input type="number" id="width2" placeholder="Width" value="650">
+        <input type="number" id="height2" placeholder="Height" value="470">
+        <button id="update-chart2">Update Chart 2</button>
+    </div>
+    <div class="chart-wrapper">
+        <div id="chart3">{{chart3|safe}}</div>
+    </div>
+{% endblock %}

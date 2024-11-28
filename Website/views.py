@@ -296,12 +296,12 @@ def intermediate():
     
         return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
     
-    
- 
 
-@views.route('/advanced.html', methods=['GET', 'POST'])
+
+
+@views.route('/advance.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
-def advanced():    
+def advance():    
     ##CHART 1: Map visualization of movie production countries
     df = get_movie_data()
     df1 = df.groupby('production_countries').size().reset_index(name='vote_count')
@@ -313,7 +313,6 @@ def advanced():
                          )
     chart1 = pio.to_html(fig1, full_html=False)
     
-    ##CHART 2: Comparison of real-time movie ratings with two spider charts
     all_movies = []
     for page in range(1, 20):
         api_data = fetch_api_data(page)
@@ -352,15 +351,49 @@ def advanced():
             line=dict(color='blue', dash='solid')  # Valid properties
         ))
         
-    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)))
-    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)))
+    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
+    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
 
     chart2 = pio.to_html(fig1, full_html=False)
     chart3 = pio.to_html(fig2, full_html=False)
     
-    return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
-# search
+    return render_template("advance.html", chart1=chart1, chart2=chart2, chart3=chart3)
 
+@views.route('/update_chart', methods=['GET'])
+def update_chart():
+    chart_id = request.args.get('chart_id')
+    movie_title = request.args.get('movie_title')
+    width = request.args.get('width', 650)
+    height = request.args.get('height', 470)
+
+    df = get_movie_data()
+    if df is None:
+        return jsonify(error="Error fetching movie data"), 500
+
+    df2 = feature_extraction(df)
+    df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'runtime', 'trend_score'], var_name='metric', value_name='value')
+
+    fig = go.Figure()
+    subset = df2_long[df2_long['title'].str.contains(movie_title, case=False, na=False)]
+    fig.add_trace(go.Scatterpolar(
+        r=subset['value'],
+        theta=subset['metric'],
+        name=movie_title,
+        mode='lines',
+        line=dict(dash='solid')  # Valid properties
+    ))
+
+    fig.update_layout(
+        polar=dict(angularaxis=dict(rotation=90)),
+        title=f"Details for {movie_title}",
+        width=int(width),
+        height=int(height)
+    )
+
+    chart_html = pio.to_html(fig, full_html=False)
+    return jsonify(chart_html=chart_html)
+
+# search
 @views.route('/search_results.html')
 def search_results_page():
     return render_template("search_results.html")
