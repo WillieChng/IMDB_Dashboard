@@ -14,13 +14,13 @@ import plotly.express as px
 import plotly.io as pio
 import pandas as pd
 from wordcloud import WordCloud
+import numpy as np
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+import plotly.graph_objects as go
+
 # Define blueprint
 views = Blueprint('views', __name__)  
-
-
-
 
 
 #Define the upload folder
@@ -183,6 +183,7 @@ def homepage():
 
 @views.route('/basic.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
+@login_required
 def basic():
     # Optimize the query by using joinedload to reduce the number of queries
     query = db.session.query(Movie).options(
@@ -212,6 +213,8 @@ def basic():
         'directors': [director.name for director in row.directors],
         'genres': ', '.join([genre.name for genre in row.genres])  # Convert list of genres to a comma-separated string
     } for row in query]
+    
+    
 
     df = get_movie_data()
     ##CHART 1: Top 10 Most Popular Movies (By vote_count and Popularity)
@@ -251,82 +254,121 @@ def basic():
   
 
 @views.route('/intermediate.html', methods=['GET', 'POST'])
+@cache.cached(timeout=300)
 def intermediate():
-    df = get_movie_data()
+        df = get_movie_data()
     
     ##CHART 1: Number of Movie Releases by Genre Over Time
-    df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
-    fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
-    fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
-    chart1 = pio.to_html(fig1, full_html=False)
+        df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
+        fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
+        fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
+        chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Average Movie Runtime by year
-    df2 = df.groupby('release_year').runtime.mean().reset_index()
-    fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
-    fig2.update_xaxes(dtick = 1)
-    chart2 = pio.to_html(fig2, full_html=False)
+        df2 = df.groupby('release_year').runtime.mean().reset_index()
+        fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
+        fig2.update_xaxes(dtick = 1)
+        chart2 = pio.to_html(fig2, full_html=False)
     
     ##CHART 3: Top 10 Starred Actors/Actresses Across Genres
-    df3 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
-    df3.columns = ['actor', 'count']
-    df3 = df.groupby(["actor", "genres"])["count"].sum().reset_index()
-    df3 = df3.pivot(index="actor", columns="genre", values="count")["count"].fillna(0)
-    fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
-    fig3.update_layout(width=500, height=500)
-    fig3.show()
-    chart3 = pio.to_html(fig3, full_html=False)
+        df3 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
+        df3.columns = ['actor', 'vote_count']
+        df3 = df.groupby(["actor", "genre"])["vote_count"].sum().reset_index()
+        df3 = df3.pivot(index="actor", columns="genre", values="vote_count").fillna(0)
+        fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
+        fig3.update_layout(width=500, height=500)
+        chart3 = pio.to_html(fig3, full_html=False)
     
     ##CHART 4: Most Associated Cast Members for Top 10 Directors
-    df4 = df.groupby(['director', 'actor']).size().reset_index(name='count')
-    fig4 = px.sunburst(df4, path=['director', 'actor'], values='count')
-    chart4 = pio.to_html(fig4, full_html=False)
+        df4 = df.groupby(['director', 'actor']).size().reset_index(name='count')
+        fig4 = px.sunburst(df4, path=['director', 'actor'], values='count')
+        chart4 = pio.to_html(fig4, full_html=False)
     
     ##CHART 5: Average Popularity and Sentiment of Movies by Genre
-    df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
-    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
-    chart5 = pio.to_html(fig5, full_html=False)
+        df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
+        fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
+        chart5 = pio.to_html(fig5, full_html=False)
     
     ##CHART 6: Popularity Success of Genres by Director
-    df6 = df.groupby(['director', 'genre']).popularity.mean().reset_index()
-    fig6 = px.bar(df6, x='director', y='genre', color='popularity')
-    chart6 = pio.to_html(fig6, full_html=False)
+        df6 = df.groupby(['director', 'genre']).popularity.mean().reset_index()
+        fig6 = px.bar(df6, x='director', y='genre', color='popularity')
+        chart6 = pio.to_html(fig6, full_html=False)
     
-    return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
+        return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
+    
+    
+ 
 
 @views.route('/advanced.html', methods=['GET', 'POST'])
+@cache.cached(timeout=300)
 def advanced():    
-    ##CHART 1: Number of Movies by Production Country
     df = get_movie_data()
-    df1 = df.groupby('production_country').size().reset_index(name='count')
+    df1 = df.groupby('production_countries').size().reset_index(name='vote_count')
     fig1 = px.choropleth(df1, 
-                         locations='production_country', 
+                         locations='production_countries', 
                          locationmode='country names', 
-                         color='count', 
-                         hover_name='production_country'
+                         color='vote_count', 
+                         hover_name='production_countries'
                          )
     chart1 = pio.to_html(fig1, full_html=False)
     
-    ##CHART 2: Data Comparison Tools (Real-Time Popularity Tracker)
     all_movies = []
-    for page in range(1,20):
+    for page in range(1, 20):
         api_data = fetch_api_data(page)
-        for movie in api_data['results']:
-            movies = process_movie_data(movie)
-            all_movies.append(movies)
-
+        if api_data:
+            if 'results' in api_data:
+                for movie in api_data['results']:
+                    movies = process_movie_data(movie)
+                    all_movies.append(movies)
+            else:
+                print(f"'results' key not found in API response for page {page}")
+        else:
+            print(f"Failed to fetch data for page {page}")
+    
     df2 = pd.DataFrame(all_movies)
-    df2 = feature_extraction(df2)
+    df2 = feature_extraction(df2)        
+
+    df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'runtime', 'trend_score'], var_name='metric', value_name='value')
     
-    #Spider Chart 1
-    fig2 = px.line_polar(df2, r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
+    fig1 = go.Figure()
+    fig2 = go.Figure()
+    fig3 = go.Figure()
+    
+    for title in df2_long['title'].unique():
+        subset = df2_long[df2_long['title'] == title]
+        fig1.add_trace(go.Scatterpolar(
+            r=subset['value'],
+            theta=subset['metric'],
+            name=title,
+            mode='lines',
+            line=dict(color='blue', dash='solid')  # Valid properties
+        ))
+        fig2.add_trace(go.Scatterpolar(
+            r=subset['value'],
+            theta=subset['metric'],
+            name=title,
+            mode='lines',
+            line=dict(color='blue', dash='solid')  # Valid properties
+        ))
+        fig3.add_trace(go.Scatterpolar(
+            r=subset['value'],
+            theta=subset['metric'],
+            name=title,
+            mode='lines',
+            line=dict(color='blue', dash='solid')  # Valid properties
+        ))
+        
+    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)))
+    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)))
+    fig3.update_layout(polar=dict(angularaxis=dict(rotation=90)))
+
+    chart1 = pio.to_html(fig1, full_html=False)
     chart2 = pio.to_html(fig2, full_html=False)
-    
-    #Spider Chart 2
-    fig3 = px.line_polar(df2,r=[df2['vote_average'], df2['popularity'], df2['vote_count'], df2['runtime'], df2['trend_score']], theta='title', line_close=True)
     chart3 = pio.to_html(fig3, full_html=False)
     
+    
+    
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
-
 # search
 
 @views.route('/search_results.html')
@@ -414,3 +456,7 @@ def user_favourites():
 @views.route('/settings.html')
 def settings_page():
     return render_template("settings.html")
+
+
+
+

@@ -26,7 +26,7 @@
             <a href="{% if current_user.is_authenticated %}basic.html{% else %}./{% endif %}" class="brand">CineSurfer</a>
         </span>
         <div class="search-container">
-            <form id="search-form" action="{{ url_for('views.search') }}" method="GET">
+            <form action="{{ url_for('views.search') }}" method="GET">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-bar" name="query" placeholder="Browse..." id="search-input">
                 <div id="search-suggestions" class="search-suggestions"></div>
