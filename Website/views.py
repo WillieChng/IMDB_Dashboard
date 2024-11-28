@@ -299,9 +299,9 @@ def intermediate():
 
 
 
-@views.route('/advance.html', methods=['GET', 'POST'])
+@views.route('/advanced.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
-def advance():    
+def advanced():    
     ##CHART 1: Map visualization of movie production countries
     df = get_movie_data()
     df1 = df.groupby('production_countries').size().reset_index(name='vote_count')
@@ -357,7 +357,7 @@ def advance():
     chart2 = pio.to_html(fig1, full_html=False)
     chart3 = pio.to_html(fig2, full_html=False)
     
-    return render_template("advance.html", chart1=chart1, chart2=chart2, chart3=chart3)
+    return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
 
 @views.route('/update_chart', methods=['GET'])
 def update_chart():
