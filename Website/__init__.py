@@ -7,6 +7,7 @@ from os import path, environ
 from dotenv import load_dotenv
 from flask_login import LoginManager
 from flask_caching import Cache
+from flask_migrate import Migrate
 import pymysql
 
 db = SQLAlchemy() #db = database connection that used to interact with database
@@ -15,6 +16,8 @@ login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__) #name of the file, __init__.py
+    
+    migrate = Migrate()
     
     #load environment variables from .env file
     load_dotenv()
@@ -25,6 +28,7 @@ def create_app():
     app.config['CACHE_TYPE'] = 'SimpleCache'  # Use SimpleCache for in-memory caching
 
     db.init_app(app) #Initialize flask app to the 
+    migrate.init_app(app, db) #Set up Flask-Migrate
     cache.init_app(app)
     login_manager.init_app(app)
     
