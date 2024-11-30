@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
 from . import db, cache
-import requests
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
@@ -18,8 +17,7 @@ import numpy as np
 from datetime import datetime
 from sqlalchemy.orm import joinedload, selectinload
 import plotly.graph_objects as go
-import time
-import logging
+
 
 # Define blueprint
 views = Blueprint('views', __name__) 
@@ -333,7 +331,7 @@ def intermediate():
     actor_counts = df3.groupby('actor')['count'].sum().reset_index()
 
     # Step 5: Select the top 10 actors based on the total count
-    top_10_actors = actor_counts.nlargest(20, 'count')['actor']
+    top_10_actors = actor_counts.nlargest(10, 'count')['actor']
 
     # Step 6: Filter the original DataFrame to include only the top 10 actors
     df3 = df3[df3['actor'].isin(top_10_actors)]
@@ -430,6 +428,8 @@ def advanced():
     chart3 = pio.to_html(fig2, full_html=False)
     
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
+
+
 
 @views.route('/update_chart', methods=['GET'])
 def update_chart():
