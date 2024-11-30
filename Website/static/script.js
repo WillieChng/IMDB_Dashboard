@@ -246,6 +246,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentIndex = 0;
 
     function updateCards() {
+        if (cards.length === 1) {
+            cards[0].style.zIndex = 3;
+            cards[0].style.transform = 'translateX(0)';
+            return;
+        }
+    
         cards.forEach((card, index) => {
             if (index === currentIndex) {
                 card.style.zIndex = 3;
@@ -256,12 +262,29 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (index === (currentIndex + 2) % cards.length) {
                 card.style.zIndex = 1;
                 card.style.transform = 'translateX(200%)';
+            } else if (index === (currentIndex + 3) % cards.length) {
+                card.style.zIndex = 0;
+                card.style.transform = 'translateX(300%)';
             } else {
                 card.style.zIndex = 0;
                 card.style.transform = 'translateX(-100%)';
             }
         });
     }
+
+    const deleteButtons = document.querySelectorAll('.fav-card-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const parentCard = button.closest('.fav-card');
+            if (parentCard) {
+                parentCard.remove();
+                cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+                currentIndex = 0; // Reset currentIndex to 0
+                updateCards(); // Update the positions after removing a card
+                alert("No more cards!");
+            }
+        });
+    });
 
     if (rightButton) {
         rightButton.addEventListener('click', function() {
@@ -278,17 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateCards(); // Initialize the positions
-    
-    const escButtons = document.querySelectorAll('.fav-card-esc');
-    escButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            const parentCard = button.closest('.fav-card');
-            if (parentCard) {
-                parentCard.remove();
-                updateCards(); // Update the positions after removing a card
-            }
-        });
-    });
 
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;

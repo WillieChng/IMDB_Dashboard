@@ -519,7 +519,13 @@ def alphabetical_searches():
 @views.route('/movie_details/<int:movie_id>')
 def movie_details_page(movie_id):
     movie = Movie.query.get_or_404(movie_id)
-    return render_template('movie_details.html', movie=movie)
+    
+    # Ensure directors, writers, and actors are loaded as names
+    directors = [director.name for director in movie.directors]
+    writers = [writer.name for writer in movie.writers]
+    actors = [actor.name for actor in movie.actors]
+    
+    return render_template('movie_details.html', movie=movie, director=directors,  actors=actors)
 
 #movie favourite handling
 @views.route('/add_to_favourites', methods=['POST'])
