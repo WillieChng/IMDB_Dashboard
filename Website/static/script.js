@@ -449,5 +449,59 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
+    // Populate the year dropdown with options
+    const yearSelect = document.getElementById('year-select');
+    const currentYear = new Date().getFullYear();
+    for (let year = 2000; year <= currentYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+
+    // Handle the update chart button click
+    const updateChartButton = document.getElementById('update-chart');
+    updateChartButton.addEventListener('click', function() {
+        const selectedYears = Array.from(yearSelect.selectedOptions).map(option => option.value);
+        updateChart(selectedYears);
+    });
+
+    // Function to update the chart based on selected years
+    function updateChart(years) {
+        fetch(`/update_chart1?years=${years.join(',')}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartContainer = document.getElementById('chart1');
+                chartContainer.innerHTML = data.chart_html;
+            })
+            .catch(error => console.error('Error updating chart:', error));
+    }
+
+    const updateChart1Button = document.getElementById('update-chart1');
+    const updateChart2Button = document.getElementById('update-chart2');
+
+    updateChart1Button.addEventListener('click', function() {
+        const movieTitle = document.getElementById('search-movie1').value;
+        const width = document.getElementById('width1').value;
+        const height = document.getElementById('height1').value;
+        updateChart('chart2', movieTitle, width, height);
+    });
+
+    updateChart2Button.addEventListener('click', function() {
+        const movieTitle = document.getElementById('search-movie2').value;
+        const width = document.getElementById('width2').value;
+        const height = document.getElementById('height2').value;
+        updateChart('chart3', movieTitle, width, height);
+    });
+
+    function updateChart(chartId, movieTitle, width, height) {
+        fetch(`/update_chart?chart_id=${chartId}&movie_title=${movieTitle}&width=${width}&height=${height}`)
+            .then(response => response.json())
+            .then(data => {
+                const chartContainer = document.getElementById(chartId);
+                chartContainer.innerHTML = data.chart_html;
+            })
+            .catch(error => console.error('Error updating chart:', error));
+    }
 });

@@ -423,6 +423,8 @@ def advanced():
         
     fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
     fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
+    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
+    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
 
     chart2 = pio.to_html(fig1, full_html=False)
     chart3 = pio.to_html(fig2, full_html=False)
