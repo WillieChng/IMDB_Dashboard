@@ -72,3 +72,9 @@
 .shifted {
     transform: translateX(65px); /* Adjust based on the width of the side panel */
 }
+
+/* Ensure the slider is visible */
+#year-range-slider {
+    width: 100%;
+    margin: 20px 0;
+}

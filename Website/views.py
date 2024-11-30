@@ -31,7 +31,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     
-
 #Helper function to get movie data
 def get_movie_data():
     #Query all required columns from the database
@@ -62,12 +61,6 @@ def get_movie_data():
         .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
         .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
         .all()
-        
-    # if user_id:
-    #     query = query.outerjoin(favorite_movies, (Movie.movie_id == favorite_movies.c.movie_id) & (favorite_movies.c.user_id == user_id))\
-    #                  .outerjoin(recommended_movies, (Movie.movie_id == recommended_movies.c.movie_id) & (recommended_movies.c.user_id == user_id))
-    
-    # result = query.all()
         
     #Create a DataFrame from the query results
     data = [{
@@ -276,9 +269,9 @@ def basic():
 
     return render_template("basic.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
 
-@views.route('/intermediate.html', methods=['GET', 'POST'])
-@cache.cached(timeout=300)
-def intermediate():
+
+#Helper function to get movie data
+def get_intermediate_movie():
     # Retrieve necessary columns for the intermediate page using joinedload
     query = db.session.query(Movie).options(
         selectinload(Movie.directors),   # Load directors eagerly
@@ -303,6 +296,10 @@ def intermediate():
     } for row in query]
 
     df = pd.DataFrame(data)
+
+    return df
+
+def generate_charts(df):
     # Split the 'genre' column into individual genres and explode the DataFrame
     df['genre'] = df['genre'].str.split(', ')
     df = df.explode('genre')
@@ -323,41 +320,74 @@ def intermediate():
     stars = pd.concat([
         df[['Star1', 'genre']].rename(columns={'Star1': 'actor'}),
     ])
-    
     # Group by actor and genre, and count the occurrences
     df3 = stars.groupby(['actor', 'genre']).size().reset_index(name='count')
-    
     # Step 4: Calculate the total count of appearances for each actor
     actor_counts = df3.groupby('actor')['count'].sum().reset_index()
-
     # Step 5: Select the top 10 actors based on the total count
     top_10_actors = actor_counts.nlargest(10, 'count')['actor']
-
     # Step 6: Filter the original DataFrame to include only the top 10 actors
     df3 = df3[df3['actor'].isin(top_10_actors)]
-    
     # Pivot the DataFrame to create matrix of actors and genres
     df3 = df3.pivot(index="actor", columns="genre", values="count").fillna(0)
-    
     #Heatmap
     fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
     fig3.update_layout(width=500, height=500)
     chart3 = pio.to_html(fig3, full_html=False)
     
     ##CHART 4: Average Popularity and Sentiment of Movies by Genre
-    df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
-    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
-    chart4 = pio.to_html(fig5, full_html=False)
+    df4 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
+    fig4 = px.scatter(df4, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
+    chart4 = pio.to_html(fig4, full_html=False)
     
     ##CHART 5: Popularity Success of Genres by Top 10 Directors
     top_directors = df.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).reset_index()
-    df6 = df[df['director'].isin(top_directors['director'])]
-    df6 = df6.groupby(['director', 'genre']).agg({'popularity': "mean"}).sort_values(by=['popularity'], ascending=False).reset_index()
+    df5 = df[df['director'].isin(top_directors['director'])]
+    df5 = df5.groupby(['director', 'genre']).agg({'popularity': "mean"}).sort_values(by=['popularity'], ascending=False).reset_index()
     
-   
-    fig6 = px.bar(df6, x='director', y='popularity', color='genre', barmode='stack')
-    chart5 = pio.to_html(fig6, full_html=False)
+    fig5 = px.bar(df5, x='director', y='popularity', color='genre', barmode='stack')
+    chart5 = pio.to_html(fig5, full_html=False)
 
+
+    return chart1, chart2, chart3, chart4, chart5
+
+@views.route('/filter_data', methods=['POST'])
+def filter_data(): #This route handles AJAX requests for filtering data and returns the filtered charts
+    data = request.json
+    selected_years = data.get('years', [])
+    selected_genres = data.get('genres', [])
+    selected_directors = data.get('directors', [])
+
+    # Load your data
+    df = get_intermediate_movie()
+
+    # Apply filters
+    if selected_years:
+        df = df[df['release_year'].isin(selected_years)]
+    if selected_genres:
+        df = df[df['genre'].isin(selected_genres)]
+    if selected_directors:
+        df = df[df['director'].isin(selected_directors)]
+
+    # Generate charts
+    chart1, chart2, chart3, chart4, chart5 = generate_charts(df)
+    
+    return jsonify({
+        'chart1': chart1,
+        'chart2': chart2,
+        'chart3': chart3,
+        'chart4': chart4,
+        'chart5': chart5
+    })
+    
+@views.route('/intermediate.html', methods=['GET'])
+@cache.cached(timeout=300)
+def intermediate():
+    df = get_intermediate_movie() #load data that are needed for intermediate visualization 
+
+    # Generate initial charts
+    chart1, chart2, chart3, chart4, chart5 = generate_charts(df)
+    
     return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5)
     
 @views.route('/advanced.html', methods=['GET', 'POST'])

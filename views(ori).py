@@ -8,18 +8,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
-from . import db, cache
-import requests
+from .. import db, cache
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
 from wordcloud import WordCloud
 import numpy as np
 from datetime import datetime
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 import plotly.graph_objects as go
-import time
-import logging
+
 
 # Define blueprint
 views = Blueprint('views', __name__) 
@@ -32,6 +30,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 #Helper function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
 
 #Helper function to get movie data
 def get_movie_data():
@@ -95,7 +94,7 @@ def get_movie_data():
 
     df = pd.DataFrame(data)
     return df
-    
+
 # @views.route('/testing.html')
 # def testing():
 #     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
@@ -183,36 +182,78 @@ def homepage():
     return render_template("homepage.html")
 
 @views.route('/testing.html', methods=['GET', 'POST'])
-@cache.cached(timeout=300)
 def testing():
-    return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
+    # Retrieve necessary columns for the basic page using joinedload
+    query = db.session.query(Movie).options(
+        selectinload(Movie.directors),   # Load directors eagerly
+        selectinload(Movie.genres),      # Load genres eagerly
+    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+    .join(Director, Director.director_id == MovieDirector.c.director_id)\
+    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
+    .all()
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+    # Prepare the data for the response
+    data = [{
+        'title': row.title,  # Directly get the movie title
+        'vote_count': row.vote_count,  # Directly get vote count
+        'popularity': row.popularity,  # Directly get popularity
+        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
+        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
+        'release_year': row.release_year,  # Directly get release year
+        'adult': row.adult,  # Directly get adult status
+        'Star1': row.Star1,  # Directly get Star1
+        'Star2': row.Star2,  # Directly get Star2
+        'Star3': row.Star3,  # Directly get Star3
+        'Star4': row.Star4   # Directly get Star4
+    } for row in query]
+
+    return render_template("testing.html", data=data)
 
 @views.route('/basic.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
 @login_required
 def basic():
-    start_time = time.time()
-    
-    query_time = time.time()
-    logging.info(f"Database query time: {query_time - start_time:.2f} seconds")
+    # Retrieve necessary columns for the basic page using joinedload
+    query = db.session.query(Movie).options(
+        selectinload(Movie.directors),   # Load directors eagerly
+        selectinload(Movie.genres),      # Load genres eagerly
+    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+    .join(Director, Director.director_id == MovieDirector.c.director_id)\
+    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
+    .all()
 
-    df = get_movie_data()
+    # Prepare the data for the response
+    data = [{
+        'title': row.title,  # Directly get the movie title
+        'vote_count': row.vote_count,  # Directly get vote count
+        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
+        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
+        'release_year': row.release_year,  # Directly get release year
+        'adult': row.adult,  # Directly get adult status
+        'Star1': row.Star1,  # Directly get Star1
+        'Star2': row.Star2,  # Directly get Star2
+        'Star3': row.Star3,  # Directly get Star3
+        'Star4': row.Star4   # Directly get Star4
+    } for row in query]
+
+    df = pd.DataFrame(data)
     
     ##CHART 1: Top 10 Most Popular Movies (By vote_count and Popularity)
-    df1 = df.groupby('title').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10)
+    df1 = df.groupby('title').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10)
     fig1 = px.bar(df1, x='vote_count', y=df1.index, orientation='h', width=600, height=400)
     chart1 = pio.to_html(fig1, full_html=False)
 
-    ##CHART 2: Top 10 Most Prolific Directors (By vote_count and popularity)
-    df2 = df.groupby('director').agg({'vote_count': 'sum', 'popularity': 'mean'}).sort_values(by=['vote_count', 'popularity'], ascending=False).head(10).reset_index()
-    fig2 = px.treemap(df2, path=['director'], values='vote_count', color='popularity', width=640, height=300)
+    ##CHART 2: Top 10 Most Prolific Directors (By vote_count)
+    df2 = df.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).reset_index()
+    fig2 = px.treemap(df2, path=['director'], values='vote_count', color='vote_count', width=640, height=300,
+                      hover_data={'director': True, 'vote_count': True})
     chart2 = pio.to_html(fig2, full_html=False)
 
     ##CHART 3: Genre Distribution
-    df3 = df.groupby('genre').size().reset_index(name="count")
+    df3 = df['genre'].str.split(', ', expand=True).stack().reset_index(level=1, drop=True).to_frame('genre')
+    df3 = df3.groupby('genre').size().reset_index(name="count")
     fig3 = px.pie(df3, values="count", names="genre", width=570, height=380)
     chart3 = pio.to_html(fig3, full_html=False) 
 
@@ -232,76 +273,118 @@ def basic():
     wordCloud = WordCloud(width=800, height=400, background_color='white').generate(' '.join(df6['actor']))
     fig6 = px.imshow(wordCloud, width=600, height=400)
     chart6 = pio.to_html(fig6, full_html=False)
-    
-    processing_time = time.time()
-    logging.info(f"Data processing and chart generation time: {processing_time - query_time:.2f} seconds")
 
     return render_template("basic.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
-
-
 
 @views.route('/intermediate.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
 def intermediate():
-        df = get_movie_data()
+    # Retrieve necessary columns for the intermediate page using joinedload
+    query = db.session.query(Movie).options(
+        selectinload(Movie.directors),   # Load directors eagerly
+        selectinload(Movie.genres),      # Load genres eagerly
+    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+    .join(Director, Director.director_id == MovieDirector.c.director_id)\
+    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
+    .all()
+
+    # Prepare the data for the response
+    data = [{
+        'title': row.title,  # Directly get the movie title
+        'vote_count': row.vote_count,  # Directly get vote count
+        'popularity': row.popularity,  # Directly get popularity
+        'runtime': row.runtime,  # Directly get runtime
+        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
+        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
+        'release_year': row.release_year,  # Directly get release year
+        'overview_sentiment': row.overview_sentiment,  # Directly get overview sentiment
+        'Star1': row.Star1,  # Directly get Star1
+    } for row in query]
+
+    df = pd.DataFrame(data)
+    # Split the 'genre' column into individual genres and explode the DataFrame
+    df['genre'] = df['genre'].str.split(', ')
+    df = df.explode('genre')
     
     ##CHART 1: Number of Movie Releases by Genre Over Time
-        df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
-        fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
-        fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
-        chart1 = pio.to_html(fig1, full_html=False)
+    df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
+    fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
+    fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
+    chart1 = pio.to_html(fig1, full_html=False)
     
     ##CHART 2: Average Movie Runtime by year
-        df2 = df.groupby('release_year').runtime.mean().reset_index()
-        fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
-        fig2.update_xaxes(dtick = 1)
-        chart2 = pio.to_html(fig2, full_html=False)
+    fig2 = px.box(df, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
+    fig2.update_xaxes(dtick = 1)
+    chart2 = pio.to_html(fig2, full_html=False)
     
-    ##CHART 3: Top 10 Starred Actors/Actresses Across Genres
-        df3 = pd.concat([df['Star1'], df['Star2'], df['Star3'], df['Star4']]).value_counts().reset_index()
-        df3.columns = ['actor', 'vote_count']
-        df3 = df.groupby(["actor", "genre"])["vote_count"].sum().reset_index()
-        df3 = df3.pivot(index="actor", columns="genre", values="vote_count").fillna(0)
-        fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
-        fig3.update_layout(width=500, height=500)
-        chart3 = pio.to_html(fig3, full_html=False)
+    #CHART 3: Top 10 Starred Actors/Actresses Across Genres
+    # Concatenate the Star columns into a single Series\
+    stars = pd.concat([
+        df[['Star1', 'genre']].rename(columns={'Star1': 'actor'}),
+    ])
     
-    ##CHART 4: Most Associated Cast Members for Top 10 Directors
-        df4 = df.groupby(['director', 'actor']).size().reset_index(name='count')
-        fig4 = px.sunburst(df4, path=['director', 'actor'], values='count')
-        chart4 = pio.to_html(fig4, full_html=False)
+    # Group by actor and genre, and count the occurrences
+    df3 = stars.groupby(['actor', 'genre']).size().reset_index(name='count')
     
-    ##CHART 5: Average Popularity and Sentiment of Movies by Genre
-        df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
-        fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
-        chart5 = pio.to_html(fig5, full_html=False)
-    
-    ##CHART 6: Popularity Success of Genres by Director
-        df6 = df.groupby(['director', 'genre']).popularity.mean().reset_index()
-        fig6 = px.bar(df6, x='director', y='genre', color='popularity')
-        chart6 = pio.to_html(fig6, full_html=False)
-    
-        return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
-    
+    # Step 4: Calculate the total count of appearances for each actor
+    actor_counts = df3.groupby('actor')['count'].sum().reset_index()
 
+    # Step 5: Select the top 10 actors based on the total count
+    top_10_actors = actor_counts.nlargest(10, 'count')['actor']
 
+    # Step 6: Filter the original DataFrame to include only the top 10 actors
+    df3 = df3[df3['actor'].isin(top_10_actors)]
+    
+    # Pivot the DataFrame to create matrix of actors and genres
+    df3 = df3.pivot(index="actor", columns="genre", values="count").fillna(0)
+    
+    #Heatmap
+    fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
+    fig3.update_layout(width=500, height=500)
+    chart3 = pio.to_html(fig3, full_html=False)
+    
+    ##CHART 4: Average Popularity and Sentiment of Movies by Genre
+    df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
+    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
+    chart4 = pio.to_html(fig5, full_html=False)
+    
+    ##CHART 5: Popularity Success of Genres by Top 10 Directors
+    top_directors = df.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).reset_index()
+    df6 = df[df['director'].isin(top_directors['director'])]
+    df6 = df6.groupby(['director', 'genre']).agg({'popularity': "mean"}).sort_values(by=['popularity'], ascending=False).reset_index()
+    
+   
+    fig6 = px.bar(df6, x='director', y='popularity', color='genre', barmode='stack')
+    chart5 = pio.to_html(fig6, full_html=False)
 
+    return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5)
+    
 @views.route('/advanced.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
 def advanced():    
     ##CHART 1: Map visualization of movie production countries
-    df = get_movie_data()
-    df1 = df.groupby('production_countries').size().reset_index(name='vote_count')
+    query = db.session.query(Movie.production_countries).all()
+    
+    data = [{'production_countries': row.production_countries} for row in query]
+    
+    df = pd.DataFrame(data)
+    
+    #Split the 'production_countries' column into individual countries and explode the DataFrame
+    df['production_countries'] = df['production_countries'].str.split(', ')
+    df = df.explode('production_countries')
+    
+    df1 = df.groupby('production_countries').size().reset_index(name='No_of_Movies')
     fig1 = px.choropleth(df1, 
                          locations='production_countries', 
                          locationmode='country names', 
-                         color='vote_count', 
+                         color='No_of_Movies', 
                          hover_name='production_countries'
                          )
     chart1 = pio.to_html(fig1, full_html=False)
     
     all_movies = []
-    for page in range(1, 20):
+    for page in range(1, 10):
         api_data = fetch_api_data(page)
         if api_data:
             if 'results' in api_data:
@@ -340,11 +423,15 @@ def advanced():
         
     fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
     fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
+    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
+    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
 
     chart2 = pio.to_html(fig1, full_html=False)
     chart3 = pio.to_html(fig2, full_html=False)
     
     return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
+
+
 
 @views.route('/update_chart', methods=['GET'])
 def update_chart():
