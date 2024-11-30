@@ -139,7 +139,7 @@
     margin-right: 10px; /* Add space to the right of the description */
     text-align: right; /* Align text to the left */
     font-size: 2.5em; /* Adjust the font size as needed */
-    width: 630px; /* Set a fixed width for the description */
+    width: 650px; /* Set a fixed width for the description */
     display: flex;
     align-items: center;
     color: #333; /* Change text color */
