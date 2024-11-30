@@ -9,11 +9,13 @@
         <div class="fav-carousell">
             {% for movie in favourites %}
             <div class="fav-card" data-movie-id="{{ movie.movie_id }}">
+                <button class="fav-card-delete">X</button>
                 <div class="fav-card-title">{{ movie.title }}</div>
-                <div class="fav-card-details">{{ movie.release_year }} | {{ movie.genres | join(', ') }} | {{ movie.runtime }} mins</div>
-                <div class="fav-card-synopsis"><p>{{ movie.overview }}</p></div>
+                <div class="fav-card-details">{{ movie.release_year }} | {{ movie.genres | map(attribute='name') | join(', ') }} | {{ movie.runtime }} mins</div>
+                <div class="fav-card-synopsis">
+                    <p>{{ (movie.overview[:150] if movie.overview else 'N/A') }}{% if movie.overview and movie.overview|length > 100 %}...{% endif %}</p> <!-- Truncate overview -->
+                </div>
                 <button class="fav-card-btn"><a href="{{ url_for('views.movie_details_page', movie_id=movie.movie_id) }}">See More</a></button>
-                <button class="fav-card-esc"><a href='#'>&#x2A02;</a></button>
             </div>
             {% endfor %}
         </div>

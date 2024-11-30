@@ -17,7 +17,6 @@
     border: 1px solid black;
     border-radius: 7px;
     width: 800px;
-    height: 500px;
     position: relative;
     margin-top: 30px;
     overflow: hidden; /* Hide overflow content */
@@ -43,6 +42,7 @@
     padding: 20px;
     height: 100%; /* Ensure it takes the full height of the container */
     box-sizing: border-box; /* Include padding in the height calculation */
+    overflow: hidden;
 }
 
 .movie-details-info {
@@ -89,6 +89,7 @@
     margin-top: auto; /* Push to the bottom */
     padding-top: 20px; /* Add padding to separate from above content */
     border-top: 1px solid #ccc; /* Optional: Add a top border for separation */
+    overflow: hidden;
 }
 
 /* dark mode */

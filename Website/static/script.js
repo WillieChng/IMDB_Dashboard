@@ -246,6 +246,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentIndex = 0;
 
     function updateCards() {
+        if (cards.length === 1) {
+            cards[0].style.zIndex = 3;
+            cards[0].style.transform = 'translateX(0)';
+            return;
+        }
+    
         cards.forEach((card, index) => {
             if (index === currentIndex) {
                 card.style.zIndex = 3;
@@ -256,12 +262,29 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (index === (currentIndex + 2) % cards.length) {
                 card.style.zIndex = 1;
                 card.style.transform = 'translateX(200%)';
+            } else if (index === (currentIndex + 3) % cards.length) {
+                card.style.zIndex = 0;
+                card.style.transform = 'translateX(300%)';
             } else {
                 card.style.zIndex = 0;
                 card.style.transform = 'translateX(-100%)';
             }
         });
     }
+
+    const deleteButtons = document.querySelectorAll('.fav-card-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const parentCard = button.closest('.fav-card');
+            if (parentCard) {
+                parentCard.remove();
+                cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+                currentIndex = 0; // Reset currentIndex to 0
+                updateCards(); // Update the positions after removing a card
+                alert("No more cards!");
+            }
+        });
+    });
 
     if (rightButton) {
         rightButton.addEventListener('click', function() {
@@ -278,17 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateCards(); // Initialize the positions
-    
-    const escButtons = document.querySelectorAll('.fav-card-esc');
-    escButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            const parentCard = button.closest('.fav-card');
-            if (parentCard) {
-                parentCard.remove();
-                updateCards(); // Update the positions after removing a card
-            }
-        });
-    });
 
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
@@ -450,58 +462,153 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Populate the year dropdown with options
-    const yearSelect = document.getElementById('year-select');
-    const currentYear = new Date().getFullYear();
-    for (let year = 2000; year <= currentYear; year++) {
+    // // Populate the year dropdown with options
+    // const yearSelect = document.getElementById('year-select');
+    // const currentYear = new Date().getFullYear();
+    // for (let year = 2019; year <= currentYear; year++) {
+    //     const option = document.createElement('option');
+    //     option.value = year;
+    //     option.textContent = year;
+    //     yearSelect.appendChild(option);
+    // }
+
+    // // Handle the update chart button click
+    // const updateChartButton = document.getElementById('update-chart');
+    // updateChartButton.addEventListener('click', function() {
+    //     const selectedYears = Array.from(yearSelect.selectedOptions).map(option => option.value);
+    //     updateChart(selectedYears);
+    // });
+
+    // // Function to update the chart based on selected years
+    // function updateChart(years) {
+    //     fetch(`/update_chart1?years=${years.join(',')}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const chartContainer = document.getElementById('chart1');
+    //             chartContainer.innerHTML = data.chart_html;
+    //         })
+    //         .catch(error => console.error('Error updating chart:', error));
+    // }
+
+    // const updateChart1Button = document.getElementById('update-chart1');
+    // const updateChart2Button = document.getElementById('update-chart2');
+
+    // updateChart1Button.addEventListener('click', function() {
+    //     const movieTitle = document.getElementById('search-movie1').value;
+    //     const width = document.getElementById('width1').value;
+    //     const height = document.getElementById('height1').value;
+    //     updateChart('chart2', movieTitle, width, height);
+    // });
+
+    // updateChart2Button.addEventListener('click', function() {
+    //     const movieTitle = document.getElementById('search-movie2').value;
+    //     const width = document.getElementById('width2').value;
+    //     const height = document.getElementById('height2').value;
+    //     updateChart('chart3', movieTitle, width, height);
+    // });
+
+    // function updateChart(chartId, movieTitle, width, height) {
+    //     fetch(`/update_chart?chart_id=${chartId}&movie_title=${movieTitle}&width=${width}&height=${height}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const chartContainer = document.getElementById(chartId);
+    //             chartContainer.innerHTML = data.chart_html;
+    //         })
+    //         .catch(error => console.error('Error updating chart:', error));
+    // }
+
+    const yearRangeSlider = document.getElementById('year-range-slider');
+    const yearRangeDisplay = document.getElementById('year-range-display');
+    const genreCheckboxesContainer = document.getElementById('genre-checkboxes');
+    const directorSelect = document.getElementById('director-filter');
+    const updateYearChartButton = document.getElementById('update-year-chart');
+    const updateGenreChartButton = document.getElementById('update-genre-chart');
+    const updateDirectorChartButton = document.getElementById('update-director-chart');
+
+// Initialize the year range slider
+    noUiSlider.create(yearRangeSlider, {
+        start: [2019, 2023],
+        connect: true,
+        range: {
+            'min': 2019,
+            'max': 2023
+        },
+        step: 1,
+        tooltips: true,
+        format: {
+            to: function(value) {
+                return Math.round(value);
+            },
+            from: function(value) {
+                return Number(value);
+            }
+        }
+    });
+
+    // Update the year range display
+    yearRangeSlider.noUiSlider.on('update', function(values, handle) {
+        yearRangeDisplay.textContent = `${values[0]} - ${values[1]}`;
+    });
+
+    // Populate genre and director dropdowns with options (example data)
+    const genres = ['Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'History', 'Horror', 'Music', 'Mystery', 'Romance', 'Science Fiction', 'TV Movie', 'Thriller', 'War', 'Western'];
+    const directors = ['James Mangold', 'Francis Lawrence', 'Jon Watts', 'Darren Aronofsky', 'Robert Schwentke', 'Rob Cohen', 'Joe Russo, Anthony Russo', 'Steven Spielberg', 'Shawn Levy', 'Todd Phillips'];
+
+    genres.forEach(genre => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = genre;
+        checkbox.id = `genre-${genre}`;
+        const label = document.createElement('label');
+        label.htmlFor = `genre-${genre}`;
+        label.textContent = genre;
+        genreCheckboxesContainer.appendChild(checkbox);
+        genreCheckboxesContainer.appendChild(label);
+        genreCheckboxesContainer.appendChild(document.createElement('br'));
+    });
+
+    directors.forEach(director => {
         const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-    }
-
-    // Handle the update chart button click
-    const updateChartButton = document.getElementById('update-chart');
-    updateChartButton.addEventListener('click', function() {
-        const selectedYears = Array.from(yearSelect.selectedOptions).map(option => option.value);
-        updateChart(selectedYears);
+        option.value = director;
+        option.textContent = director;
+        directorSelect.appendChild(option);
     });
 
-    // Function to update the chart based on selected years
-    function updateChart(years) {
-        fetch(`/update_chart1?years=${years.join(',')}`)
-            .then(response => response.json())
-            .then(data => {
-                const chartContainer = document.getElementById('chart1');
-                chartContainer.innerHTML = data.chart_html;
-            })
-            .catch(error => console.error('Error updating chart:', error));
-    }
-
-    const updateChart1Button = document.getElementById('update-chart1');
-    const updateChart2Button = document.getElementById('update-chart2');
-
-    updateChart1Button.addEventListener('click', function() {
-        const movieTitle = document.getElementById('search-movie1').value;
-        const width = document.getElementById('width1').value;
-        const height = document.getElementById('height1').value;
-        updateChart('chart2', movieTitle, width, height);
+    // Year filter button click
+    updateYearChartButton.addEventListener('click', function() {
+        const selectedYears = yearRangeSlider.noUiSlider.get();
+        updateCharts({ years: selectedYears }, ['chart1', 'chart2']);
     });
 
-    updateChart2Button.addEventListener('click', function() {
-        const movieTitle = document.getElementById('search-movie2').value;
-        const width = document.getElementById('width2').value;
-        const height = document.getElementById('height2').value;
-        updateChart('chart3', movieTitle, width, height);
+    // Genre filter button click
+    updateGenreChartButton.addEventListener('click', function() {
+        const selectedGenres = Array.from(genreCheckboxesContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+        updateCharts({ genres: selectedGenres }, ['chart3', 'chart4']);
     });
 
-    function updateChart(chartId, movieTitle, width, height) {
-        fetch(`/update_chart?chart_id=${chartId}&movie_title=${movieTitle}&width=${width}&height=${height}`)
-            .then(response => response.json())
-            .then(data => {
-                const chartContainer = document.getElementById(chartId);
-                chartContainer.innerHTML = data.chart_html;
-            })
-            .catch(error => console.error('Error updating chart:', error));
+    //director filter button click
+    updateDirectorChartButton.addEventListener('click', function() {
+        const selectedDirectors = Array.from(directorSelect.selectedOptions).map(option => option.value);
+        updateChart({ directors: selectedDirectors }, ['chart5']);
+    });
+
+    // Function to update the chart based on selected filters
+    function updateChart(filters, chartIds) {
+        fetch('/filter_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filters)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the specified charts with the new data
+            chartIds.forEach(chartId => {
+                document.getElementById(chartId).innerHTML = data[chartId];
+            });
+        })
+        .catch(error => console.error('Error fetching filtered data:', error));
     }
 });
+
