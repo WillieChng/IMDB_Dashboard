@@ -391,7 +391,6 @@ def intermediate():
     return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5)
     
 @views.route('/advanced.html', methods=['GET', 'POST'])
-@cache.cached(timeout=300)
 def advanced():    
     ##CHART 1: Map visualization of movie production countries
     query = db.session.query(Movie.production_countries).all()
@@ -400,7 +399,7 @@ def advanced():
     
     df = pd.DataFrame(data)
     
-    #Split the 'production_countries' column into individual countries and explode the DataFrame
+    # Split the 'production_countries' column into individual countries and explode the DataFrame
     df['production_countries'] = df['production_countries'].str.split(', ')
     df = df.explode('production_countries')
     
@@ -429,11 +428,12 @@ def advanced():
     df2 = pd.DataFrame(all_movies)
     df2 = feature_extraction(df2)        
 
-    df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'runtime', 'trend_score'], var_name='metric', value_name='value')
+    df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score'], var_name='metric', value_name='value')
     
     fig1 = go.Figure()
     fig2 = go.Figure()
     
+    # Add all movies to the legend without displaying them in the charts
     for title in df2_long['title'].unique():
         subset = df2_long[df2_long['title'] == title]
         fig1.add_trace(go.Scatterpolar(
@@ -441,25 +441,66 @@ def advanced():
             theta=subset['metric'],
             name=title,
             mode='lines',
-            line=dict(color='blue', dash='solid')  # Valid properties
+            line=dict(dash='solid'),  # Valid properties
+            visible='legendonly'  # Only show in legend
         ))
-        fig2.add_trace(go.Scatterpolar(
-            r=subset['value'],
-            theta=subset['metric'],
-            name=title,
-            mode='lines',
-            line=dict(color='blue', dash='solid')  # Valid properties
-        ))
-        
-    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
-    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
-    fig1.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 1")
-    fig2.update_layout(polar=dict(angularaxis=dict(rotation=90)), title="Spider Chart 2")
+
+    title1 = request.args.get('title1')
+    title2 = request.args.get('title2')
+    chart_title = f"{title1} VS. {title2}" if title1 and title2 else "Spider Chart Comparison"
+
+    if title1:
+        print(f"Title1: {title1}")
+        subset = df2_long[df2_long['title'] == title1]
+        print(f"Subset for title1: {subset}")
+        if not subset.empty:
+            fig1.add_trace(go.Scatterpolar(
+                r=subset['value'],
+                theta=subset['metric'],
+                name=title1,
+                mode='lines',
+                line=dict(color='blue', dash='solid')  # Valid properties
+            ))
+        else:
+            print(f"No data found for title1: {title1}")
+
+    if title2:
+        print(f"Title2: {title2}")
+        subset = df2_long[df2_long['title'] == title2]
+        print(f"Subset for title2: {subset}")
+        if not subset.empty:
+            fig1.add_trace(go.Scatterpolar(
+                r=subset['value'],
+                theta=subset['metric'],
+                name=title2,
+                mode='lines',
+                line=dict(color='red', dash='solid')  # Valid properties
+            ))
+        else:
+            print(f"No data found for title2: {title2}")
+
+    # Set the size of the charts and legends
+    fig1.update_layout(
+        showlegend=True,
+        title=dict(
+            text=chart_title,
+            x=0.5,  # Center the title
+            xanchor='center',
+            yanchor='top'
+        ),
+        legend=dict(
+            x=1,
+            y=1,
+            traceorder='normal',
+            font=dict(
+                size=10,  # Adjust the font size of the legend
+            ),
+        )
+    )
 
     chart2 = pio.to_html(fig1, full_html=False)
-    chart3 = pio.to_html(fig2, full_html=False)
     
-    return render_template("advanced.html", chart1=chart1, chart2=chart2, chart3=chart3)
+    return render_template("advanced.html", chart1=chart1, chart2=chart2, title1=title1, title2=title2)
 
 
 

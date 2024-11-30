@@ -7,9 +7,8 @@
 }
 
 .chart-grid {
-    display: grid;
-    grid-template-columns: auto auto; /* Two columns: one for the chart and one for the description with fixed width */
-    grid-template-rows: auto auto auto auto auto auto auto auto auto; /* Nine rows */
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of items */
     gap: 20px; /* Add space between grid items */
     width: 100%;
     max-width: 1200px;
@@ -20,6 +19,7 @@
 }
 
 .chart-wrapper {
+    flex: 1 1 100%; /* Allow the chart to grow and shrink, and take up 100% of the container width */
     margin-bottom: 20px; /* Add some margin to the bottom of each chart wrapper */
     padding: 10px; /* Add padding around the chart container */
     border: 1px solid #ccc; /* Add a border around the chart wrapper */
@@ -32,7 +32,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    width: 650px;
+    width: 100%; /* Make the chart container take the full width */
     height: 470px; /* Adjust the height as needed */
     border: 2px solid black; /* Add a border to each chart container */
     border-radius: 10px; /* Rounded corners */
@@ -74,4 +74,40 @@
 
 .chart-description:hover {
     background-color: #bebebe; /* Change background color on hover */
+}
+
+.bottom-search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Stack items vertically */
+    gap: 30px; /* Add space between the search bars and the button */
+}
+
+.search-container {
+    display: flex;
+    justify-content: center; /* Center the search bars */
+    gap: 100px; /* Add space between the search bars */
+}
+
+.search-bar {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    align-self: center; /* Align the button to the center */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
 }
