@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import os
-from . import db, cache
+from Website import db, cache
 import plotly.express as px
 import plotly.io as pio
 import pandas as pd
@@ -17,87 +17,54 @@ import numpy as np
 from datetime import datetime
 from sqlalchemy.orm import joinedload, selectinload
 import plotly.graph_objects as go
-
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
 
 # Define blueprint
 views = Blueprint('views', __name__) 
 
-#Define the upload folder
+# Define the upload folder
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'Website', 'static', 'profile_pics')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-#Helper function to check allowed file extensions
+# Helper function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    
 
-#Helper function to get movie data
+# Helper function to get movie data
 def get_movie_data():
-    #Query all required columns from the database
-    query = db.session.query(
-        Actor.name.label('actor_name'),
-        Director.name.label('director_name'),
-        Genre.name.label('genre_name'), 
-        Movie.title,
-        Movie.overview, 
-        Movie.status,
-        Movie.release_year,
-        Movie.popularity,        
-        Movie.vote_average, 
-        Movie.vote_count,
-        Movie.runtime,
-        Movie.adult, 
-        Movie.overview_sentiment,
-        Movie.all_combined_keywords,
-        Movie.production_countries,
-        Movie.Star1,
-        Movie.Star2,
-        Movie.Star3,
-        Movie.Star4    
-       ).join(MovieActor, Movie.movie_id == MovieActor.c.movie_id)\
-        .join(Actor, Actor.actor_id == MovieActor.c.actor_id)\
-        .join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
-        .join(Director, Director.director_id == MovieDirector.c.director_id)\
-        .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
-        .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
-        .all()
-        
-    # if user_id:
-    #     query = query.outerjoin(favorite_movies, (Movie.movie_id == favorite_movies.c.movie_id) & (favorite_movies.c.user_id == user_id))\
-    #                  .outerjoin(recommended_movies, (Movie.movie_id == recommended_movies.c.movie_id) & (recommended_movies.c.user_id == user_id))
-    
-    # result = query.all()
-        
-    #Create a DataFrame from the query results
+    # Retrieve necessary columns for the intermediate page using joinedload
+    query = db.session.query(Movie).options(
+        selectinload(Movie.directors),   # Load directors eagerly
+        selectinload(Movie.genres),      # Load genres eagerly
+    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
+    .join(Director, Director.director_id == MovieDirector.c.director_id)\
+    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
+    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
+    .all()
+
+    # Prepare the data for the response
     data = [{
-        'actor': row[0],
-        'director': row[1],
-        'genre': row[2],
-        'title': row[3],
-        'overview': row[4],
-        'status': row[5],
-        'release_year': row[6],
-        'popularity': row[7],
-        'vote_average': row[8],
-        'vote_count': row[9],
-        'runtime': row[10],
-        'adult': row[11],
-        'overview_sentiment': row[12],
-        'all_combined_keywords': row[13],
-        'production_countries': row[14],
-        'Star1': row[15],
-        'Star2': row[16],
-        'Star3': row[17],
-        'Star4': row[18]
+        'title': row.title,  # Directly get the movie title
+        'vote_count': row.vote_count,  # Directly get vote count
+        'popularity': row.popularity,  # Directly get popularity
+        'runtime': row.runtime,  # Directly get runtime
+        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
+        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
+        'release_year': row.release_year,  # Directly get release year
+        'overview_sentiment': row.overview_sentiment,  # Directly get overview sentiment
+        'Star1': row.Star1,  # Directly get Star1
     } for row in query]
 
     df = pd.DataFrame(data)
+    
+    # Split the 'genre' column into individual genres and explode the DataFrame
+    df['genre'] = df['genre'].str.split(', ')
+    df = df.explode('genre')
+    
     return df
-
-# @views.route('/testing.html')
-# def testing():
-#     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
 
 @views.route('/profile.html', methods=['GET', 'POST'])
 @login_required
@@ -276,89 +243,214 @@ def basic():
 
     return render_template("basic.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5, chart6=chart6)
 
+###INTERMEDIATE SECTION
+# Layout for Dash app
+def create_dash_app(flask_app):
+    # Initialize Dash app
+    dash_app = dash.Dash(__name__, server=flask_app, url_base_pathname='/dash/')
+
+    # Calculate the top 10 directors based on vote count within the Flask application context
+    with flask_app.app_context():
+        df_director = get_movie_data()
+        top_directors = df_director.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).index.tolist()
+    
+    dash_app.layout = html.Div([
+        dcc.Tabs([
+            dcc.Tab(label='Year Filtering', children=[
+                html.Div([
+                    dcc.Dropdown(
+                        id='year-dropdown',
+                        options=[{'label': str(year), 'value': year} for year in range(2019, datetime.now().year)],
+                        multi=True,
+                        placeholder='Select Year(s)'
+                    ),
+                    html.Div([
+                        html.Div([
+                            html.H2("Number of Movie Releases by Genre Over Time"),
+                            dcc.Graph(id='chart1')
+                        ], className='chart-container'),
+                        html.Div([
+                            html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.")
+                        ], className='description-container')
+                    ], className='chart-description-wrapper'),
+                    html.Div([
+                        html.Div([
+                            html.H2("Average Movie Runtime by Year"),
+                            dcc.Graph(id='chart2')
+                        ], className='chart-container'),
+                        html.Div([
+                            html.P("Across all of the years, the average movie runtime are closely knitted together with 2019 showing the highest average runtime. Then, from there forth, the average runtime has been decreasing with the year 2023 ending up with only 20 minutes. This could be due to the fact that movies are becoming more fast-paced and concise to adapt to audience's decreasing attention span in modern times due to the influence of social media")
+                        ], className='description-container')
+                    ], className='chart-description-wrapper')
+                ])
+            ]),
+            dcc.Tab(label='Genre Filtering', children=[
+                html.Div([
+                    dcc.Dropdown(
+                        id='genre-dropdown',
+                        options=[{'label': genre.name, 'value': genre.name} for genre in Genre.query.all()],
+                        multi=True,
+                        placeholder='Select Genre(s)'
+                    ),
+                    html.Div([
+                        html.Div([
+                            html.H2("Top 10 Starred Actors/Actresses Across Genres"),
+                            dcc.Graph(id='chart3')
+                        ], className='chart-container'),
+                        html.Div([
+                            html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
+                                   Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
+                                   War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
+                                   Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""")
+                        ], className='description-container')
+                    ], className='chart-description-wrapper', style={'display': 'flex', 'align-items': 'center'}),
+                    html.Div([
+                        html.Div([
+                            html.H2("Average Popularity and Sentiment of Movies by Genre"),
+                            dcc.Graph(id='chart4')
+                        ], className='chart-container'),
+                        html.Div([
+                            html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.")
+                        ], className='description-container')
+                    ], className='chart-description-wrapper')
+                ])
+            ]),
+            dcc.Tab(label='Director Filtering', children=[
+                html.Div([
+                    dcc.Dropdown(
+                        id='director-dropdown',
+                        options=[{'label': director, 'value': director} for director in top_directors],
+                        multi=True,
+                        placeholder='Select Director(s)'
+                    ),
+                    html.Div([
+                        html.Div([
+                            html.H2("Popularity Success of Genres by Top 10 Directors"),
+                            dcc.Graph(id='chart5')
+                        ], className='chart-container'),
+                        html.Div([
+                            html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.")
+                        ], className='description-container')
+                    ], className='chart-description-wrapper')
+                ])
+            ])
+        ])
+    ])
+
+    df = get_movie_data()
+    # Callbacks for updating charts based on filters
+    @dash_app.callback(
+        Output('chart1', 'figure'),
+        [Input('year-dropdown', 'value')]
+    )
+    def update_chart1(selected_years):
+        df1 = df.copy()
+        if selected_years:
+            df1 = df1[df1['release_year'].isin(selected_years)]
+            
+        ##CHART 1: Number of Movie Releases by Genre Over Time
+        df1 = df1.groupby(['release_year', 'genre']).size().reset_index(name='count')
+        df1 = df1.sort_values(by=['release_year', 'count'], ascending=[False, True])
+        fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
+        fig1.update_xaxes(dtick=1)  # Update x-axis to set the interval to one year
+        return fig1
+
+    @dash_app.callback(
+        Output('chart2', 'figure'),
+        [Input('year-dropdown', 'value')]
+    )
+    def update_chart2(selected_years):
+        df2 = df.copy()
+        if selected_years:
+            df2 = df2[df2['release_year'].isin(selected_years)]
+        
+                        # Print the data to verify
+        print("Chart 2 Data:")
+        print(df2.head())
+        
+        ##CHART 2: Average Movie Runtime by year
+        fig2 = px.box(df2, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
+        fig2.update_xaxes(dtick=1)
+        return fig2
+
+    @dash_app.callback(
+        Output('chart3', 'figure'),
+        [Input('genre-dropdown', 'value')]
+    )
+    def update_chart3(selected_genres):
+        df3 = df.copy()
+        if selected_genres:
+            df3 = df3[df3['genre'].isin(selected_genres)]
+            
+        #CHART 3: Top 10 Starred Actors/Actresses Across Genres
+        # Concatenate the Star columns into a single Series\       
+        stars = pd.concat([
+            df3[['Star1', 'genre']].rename(columns={'Star1': 'actor'}),
+        ])
+        
+        # Group by actor and genre, and count the occurrences
+        df3 = stars.groupby(['actor', 'genre']).size().reset_index(name='count')
+        # Step 4: Calculate the total count of appearances for each actor
+        actor_counts = df3.groupby('actor')['count'].sum().reset_index()
+        # Step 5: Select the top 10 actors based on the total count
+        top_10_actors = actor_counts.nlargest(10, 'count')['actor']
+        # Step 6: Filter the original DataFrame to include only the top 10 actors
+        df3 = df3[df3['actor'].isin(top_10_actors)]
+        
+        # Pivot the DataFrame to create matrix of actors and genres
+        df3 = df3.pivot(index="actor", columns="genre", values="count").fillna(0)
+        
+        #Heatmap
+        fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
+        fig3.update_layout(width=500, height=500)
+        return fig3
+
+    @dash_app.callback(
+        Output('chart4', 'figure'),
+        [Input('genre-dropdown', 'value')]
+    )
+    def update_chart4(selected_genres):
+        df4 = df.copy()
+        if selected_genres:
+            df4 = df4[df4['genre'].isin(selected_genres)]
+        
+                # Print the data to verify
+        print("Chart 4 Data:")
+        print(df4.head())
+        
+        ##CHART 4: Average Popularity and Sentiment of Movies by Genre
+        sentiment_df = df4.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
+        fig4 = px.scatter(sentiment_df, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
+
+        return fig4
+
+    @dash_app.callback(
+        Output('chart5', 'figure'),
+        [Input('director-dropdown', 'value')]
+    )
+    def update_chart5(selected_directors):
+        df5 = df.copy()
+        if selected_directors:
+            df5 = df[df['director'].isin(selected_directors)]
+            
+        #CHART 5: Popularity Success of Genres by Top 10 Directors
+        top_directors = df5.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).reset_index()
+        df5 = df[df['director'].isin(top_directors['director'])]
+        df5 = df5.groupby(['director', 'genre']).agg({'popularity': "mean"}).sort_values(by=['popularity'], ascending=False).reset_index()
+        
+        fig5 = px.bar(df5, x='director', y='popularity', color='genre', barmode='stack')
+        return fig5
+    
+    return dash_app
+
+# @views.route('/testing.html')
+# def testing():
+#     return render_template("testing.html", text="Hi, my name is", user="ALi", boolean=True)
+
 @views.route('/intermediate.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
 def intermediate():
-    # Retrieve necessary columns for the intermediate page using joinedload
-    query = db.session.query(Movie).options(
-        selectinload(Movie.directors),   # Load directors eagerly
-        selectinload(Movie.genres),      # Load genres eagerly
-    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
-    .join(Director, Director.director_id == MovieDirector.c.director_id)\
-    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
-    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
-    .all()
-
-    # Prepare the data for the response
-    data = [{
-        'title': row.title,  # Directly get the movie title
-        'vote_count': row.vote_count,  # Directly get vote count
-        'popularity': row.popularity,  # Directly get popularity
-        'runtime': row.runtime,  # Directly get runtime
-        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
-        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
-        'release_year': row.release_year,  # Directly get release year
-        'overview_sentiment': row.overview_sentiment,  # Directly get overview sentiment
-        'Star1': row.Star1,  # Directly get Star1
-    } for row in query]
-
-    df = pd.DataFrame(data)
-    # Split the 'genre' column into individual genres and explode the DataFrame
-    df['genre'] = df['genre'].str.split(', ')
-    df = df.explode('genre')
-    
-    ##CHART 1: Number of Movie Releases by Genre Over Time
-    df1 = df.groupby(['release_year', 'genre']).size().reset_index(name='count')
-    fig1 = px.area(df1, x="release_year", y="count", color="genre", line_group="genre")
-    fig1.update_xaxes(dtick = 1)  # Update x-axis to set the interval to one year
-    chart1 = pio.to_html(fig1, full_html=False)
-    
-    ##CHART 2: Average Movie Runtime by year
-    fig2 = px.box(df, x="release_year", y="runtime", hover_data=["release_year", "runtime"])
-    fig2.update_xaxes(dtick = 1)
-    chart2 = pio.to_html(fig2, full_html=False)
-    
-    #CHART 3: Top 10 Starred Actors/Actresses Across Genres
-    # Concatenate the Star columns into a single Series\
-    stars = pd.concat([
-        df[['Star1', 'genre']].rename(columns={'Star1': 'actor'}),
-    ])
-    
-    # Group by actor and genre, and count the occurrences
-    df3 = stars.groupby(['actor', 'genre']).size().reset_index(name='count')
-    
-    # Step 4: Calculate the total count of appearances for each actor
-    actor_counts = df3.groupby('actor')['count'].sum().reset_index()
-
-    # Step 5: Select the top 10 actors based on the total count
-    top_10_actors = actor_counts.nlargest(10, 'count')['actor']
-
-    # Step 6: Filter the original DataFrame to include only the top 10 actors
-    df3 = df3[df3['actor'].isin(top_10_actors)]
-    
-    # Pivot the DataFrame to create matrix of actors and genres
-    df3 = df3.pivot(index="actor", columns="genre", values="count").fillna(0)
-    
-    #Heatmap
-    fig3 = px.imshow(df3, x=df3.columns, y=df3.index)
-    fig3.update_layout(width=500, height=500)
-    chart3 = pio.to_html(fig3, full_html=False)
-    
-    ##CHART 4: Average Popularity and Sentiment of Movies by Genre
-    df5 = df.groupby('genre').agg({'popularity': 'mean', 'overview_sentiment': 'mean'}).reset_index()
-    fig5 = px.scatter(df5, x='popularity', y='overview_sentiment', color = 'genre', hover_data = ['genre'])
-    chart4 = pio.to_html(fig5, full_html=False)
-    
-    ##CHART 5: Popularity Success of Genres by Top 10 Directors
-    top_directors = df.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).reset_index()
-    df6 = df[df['director'].isin(top_directors['director'])]
-    df6 = df6.groupby(['director', 'genre']).agg({'popularity': "mean"}).sort_values(by=['popularity'], ascending=False).reset_index()
-    
-   
-    fig6 = px.bar(df6, x='director', y='popularity', color='genre', barmode='stack')
-    chart5 = pio.to_html(fig6, full_html=False)
-
-    return render_template("intermediate.html", chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4, chart5=chart5)
+    return render_template('intermediate.html')
     
 @views.route('/advanced.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)

@@ -3,66 +3,14 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='intermediate.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
     <h1 class="page-title">Explore Intermediate Cinema Analytics</h1>
 
-    <!-- Dropdown for Year Selection -->
-    <div class="year-selection">
-        <label for="year-select">Select Year:</label>
-        <select id="year-select" multiple>
-            <!-- Options will be populated by JavaScript -->
-        </select>
-        <button id="update-chart">Update Chart</button>
+    <!-- Container for Dash app -->
+    <div class="dash-container">
+        <iframe src="/dash/" width="100%" height="800px" style="border:none;"></iframe>
     </div>
-
-    <div class="chart-grid">
-        <div class="chart1">
-            <div class="chart-container">
-                <h2>Number of Movie Releases by Genre Over Time</h2>
-                <div id="chart1">{{ chart1|safe }}</div>
-            </div>
-        </div>
-        <div class="chart1-description chart-description">
-            <p>Description for Chart 1: Number of Movie Releases by Genre Over Time.</p>
-        </div>
-
-        <div class="chart2">
-            <div class="chart-container">
-                <h2>Average Movie Runtime by Decade</h2>
-                {{ chart2|safe }}
-            </div>
-        </div>
-        <div class="chart2-description chart-description">
-            <p>Description for Chart 2: Average Movie Runtime by Decade.</p>
-        </div>
-
-        <div class="chart3">
-            <div class="chart-container">
-                <h2>Top 10 Starred Actors/Actresses Across Genres</h2>
-                {{ chart3|safe }}
-            </div>
-        </div>
-        <div class="chart3-description chart-description">
-            <p>Description for Chart 3: Top 10 Starred Actors/Actresses Across Genres.</p>
-        </div>
-
-        <div class="chart5">
-            <div class="chart-container">
-                <h2>Average Popularity and Sentiment of Movies by Genre</h2>
-                {{ chart5|safe }}
-            </div>
-        </div>
-        <div class="chart5-description chart-description">
-            <p>Description for Chart 5: Average Popularity and Sentiment of Movies by Genre.</p>
-        </div>
-    </div>
-
-    <!--<h2>Most Associated Cast Members for Top 10 Directors</h2>
-    <div id="chart4">{{ chart4|safe }}</div> -->
-
-    <!---- <h2>Popularity Success of Genres by Director</h2>
-    <div id="chart6">{{ chart6|safe }}</div> -->
-
 {% endblock %}
