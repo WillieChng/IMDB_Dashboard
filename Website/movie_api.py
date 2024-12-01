@@ -3,6 +3,7 @@ import requests
 from dotenv import load_dotenv
 from os import environ
 from datetime import datetime
+from sklearn.preprocessing import MinMaxScaler
 
 load_dotenv()
 
@@ -50,4 +51,14 @@ def feature_extraction(df):
     current_year = datetime.now().year
     df['release_year'] = pd.to_datetime(df['release_date']).dt.year
     df['trend_score'] = df['popularity'] / (current_year - df['release_year'] + 1)
+    
+    # Clean the data
+    df.replace([float('inf'), float('-inf')], float('nan'), inplace=True)  # Replace infinite values with NaN
+    df.dropna(subset=['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score'], inplace=True)  # Drop rows with NaN values
+    
+    # Normalize the features using Min-Max scaling
+    scaler = MinMaxScaler()
+    df[['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score']] = scaler.fit_transform(
+        df[['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score']]
+    )
     return df
