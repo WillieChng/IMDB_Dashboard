@@ -622,41 +622,98 @@ def movie_details_page(movie_id):
     genres = [genre.name for genre in movie.genres]
     
     if request.method == 'POST':
-        movie_id = request.args.get('movie_id')
-        movie = Movie.query.get_or_404(movie_id)
         redirect(url_for('views.searched_movieDashboard', movie=movie))
     
     return render_template('movie_details.html', movie=movie, directors=directors, actors=actors)
 
+def calculate_weighted_rating(vote_average, vote_count, C, m):
+    return (vote_count / (vote_count + m) * vote_average) + (m / (vote_count + m) * C)
+
+def calculate_combined_metric(weighted_rating, popularity, overview_sentiment):
+    # Normalize the metrics (assuming max values for normalization)
+    max_popularity = 2680.593
+    max_overview_sentiment = 1.0
+
+    normalized_popularity = popularity / max_popularity
+    normalized_overview_sentiment = overview_sentiment / max_overview_sentiment
+
+    # Calculate the combined metric (equal weights)
+    combined_metric = (weighted_rating + normalized_popularity + normalized_overview_sentiment) / 3
+    return combined_metric
+
 @views.route('/searched_movieDashboard.html', methods=['GET'])
-def searched_movieDashboard(): #movie, directors, actors, genres (place it into parameters after testing)
+def searched_movieDashboard(): #movie (put in parameter)
     movie = Movie.query.get_or_404(2)
     
-    # Ensure directors, writers, and actors are loaded as names
+    # Prepare data for visualizations
+    genres = movie.genres
     directors = movie.directors
     actors = movie.actors
-    genres = movie.genres  # Ensure genres contains Genre objects
     
-    #CHART 1: Movie GENRE DISTRIBUTION
+    # CHART 1: Movie GENRE DISTRIBUTION
     genre_counts = pd.Series([genre.name for genre in genres]).value_counts()
     fig1 = px.pie(values=genre_counts, names=genre_counts.index, title='Genre Distribution')
     chart1 = pio.to_html(fig1, full_html=False)
     
-    ##CHART 2: NETWORK GRAPH for potrayal of relationship between Directors and Actors
+    # CHART 2: Gauge performance based on vote_average, popularity, overview_sentiment and vote_count
+    C = db.session.query(db.func.avg(Movie.vote_average)).scalar()
+    m = 1000  # Minimum votes required to be listed in the chart
+    
+    weighted_rating = calculate_weighted_rating(movie.vote_average, movie.vote_count, C, m)
+    combined_metric = calculate_combined_metric(weighted_rating, movie.popularity, movie.overview_sentiment)
+    fig2 = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=combined_metric,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': "Combined Metric", 'font': {'size': 24}},
+        delta={'reference': 0.5, 'increasing': {'color': "RebeccaPurple"}},
+        gauge={
+            'axis': {'range': [None, 1], 'tickwidth': 1, 'tickcolor': "darkblue"},
+            'bar': {'color': "darkblue"},
+            'bgcolor': "white",
+            'borderwidth': 2,
+            'bordercolor': "gray",
+            'steps': [
+                {'range': [0, 0.5], 'color': 'cyan'},
+                {'range': [0.5, 1], 'color': 'royalblue'}],
+            'threshold': {
+                'line': {'color': "red", 'width': 4},
+                'thickness': 0.75,
+                'value': 0.75}
+        }
+    ))
+
+    fig2.update_layout(paper_bgcolor="lavender", font={'color': "darkblue", 'family': "Arial"})
+    chart2 = pio.to_html(fig2, full_html=False)
+    
+    # CHART 3: OVERVIEW KEYWORDS WORDCLOUD
+    keywords = movie.all_combined_keywords
+    keywords = keywords.replace('[', '').replace(']', '').replace("'", '').split(', ')
+    wordcloud_text = ' '.join(keywords)
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(wordcloud_text)
+    fig3 = px.imshow(wordcloud, title='Overview Keywords Word Cloud')
+    chart3 = pio.to_html(fig3, full_html=False)
+    
+    # CHART 4: NETWORK GRAPH for portrayal of relationship between Directors and Actors
     G = nx.Graph()
     
-    for actor in actors:
-        G.add_node(actor.name, type='actor')
-    for director in directors:
-        G.add_node(director.name, type='director')
-    for actor in actors:
-        for director in directors:
-            G.add_edge(actor.name, director.name)
+    # Add the current movie to the graph
+    G.add_node(movie.title, type='movie')
+    
+    # Find similar movies based on shared genres
+    similar_movies = Movie.query.join(Movie.genres).filter(Genre.name.in_([genre.name for genre in genres])).limit(10).all()    
+    for similar_movie in similar_movies:
+        if similar_movie.movie_id != movie.movie_id:  # Exclude the current movie
+            G.add_node(similar_movie.title, type='movie')
+            for genre in similar_movie.genres:
+                if genre in genres:
+                    G.add_edge(movie.title, similar_movie.title, genre=genre.name)
     
     pos = nx.spring_layout(G)
     edge_x = []
     edge_y = []
-    for edge in G.edges():
+    edge_text = []
+    for edge in G.edges(data=True):
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
         edge_x.append(x0)
@@ -665,11 +722,13 @@ def searched_movieDashboard(): #movie, directors, actors, genres (place it into 
         edge_y.append(y0)
         edge_y.append(y1)
         edge_y.append(None)
+        edge_text.append(edge[2]['genre'])
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
         line=dict(width=0.5, color='#888'),
-        hoverinfo='none',
+        hoverinfo='text',
+        text=edge_text,
         mode='lines')
 
     node_x = []
@@ -686,6 +745,7 @@ def searched_movieDashboard(): #movie, directors, actors, genres (place it into 
         mode='markers+text',
         hoverinfo='text',
         text=node_text,
+        textposition='top center',
         marker=dict(
             showscale=True,
             colorscale='YlGnBu',
@@ -698,9 +758,9 @@ def searched_movieDashboard(): #movie, directors, actors, genres (place it into 
             ),
             line_width=2))
 
-    fig2 = go.Figure(data=[edge_trace, node_trace],
+    fig4 = go.Figure(data=[edge_trace, node_trace],
                      layout=go.Layout(
-                         title='Cast and Crew Network Graph',
+                         title='Similar Movies Network Graph',
                          titlefont_size=16,
                          showlegend=False,
                          hovermode='closest',
@@ -713,26 +773,9 @@ def searched_movieDashboard(): #movie, directors, actors, genres (place it into 
                          xaxis=dict(showgrid=False, zeroline=False),
                          yaxis=dict(showgrid=False, zeroline=False))
                      )
-    
-    chart2 = pio.to_html(fig2, full_html=False)
-    
-    ##CHART 3: OVERVIEW KEYWORDS WORDCLOUD
-    keywords = movie.all_combined_keywords
-    keywords = keywords.replace('[', '').replace(']', '').replace("'", '').split(', ')
-    wordcloud_text = ' '.join(keywords)
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(wordcloud_text)
-    fig3 = px.imshow(wordcloud, title='Overview Keywords Word Cloud')
-    chart3 = pio.to_html(fig3, full_html=False)
-    
-    ##CHART 4: Movie Rating and Popularity
-    rating_popularity = {
-        'rating': movie.vote_average,
-        'popularity': movie.popularity
-    }
-    fig4 = px.bar(x=list(rating_popularity.keys()), y=list(rating_popularity.values()), title='Rating and Popularity')
+        
     chart4 = pio.to_html(fig4, full_html=False)
-    
-    return render_template('searched_movieDashboard.html', chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4)
+    return render_template('searched_movieDashboard.html', movie_name=movie.title, chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4)
 
 #movie favourite handling
 @views.route('/add_to_favourites', methods=['POST'])

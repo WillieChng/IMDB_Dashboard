@@ -4,7 +4,7 @@
 <div id="side-panel" class="side-panel">
         <!-- Side panel content here -->
     </div>
-    <h1 class="page-title">Explore the Essentials of Cinema Analytics</h1>
+    <h1 class="page-title">"{{ movie_name | default('N/A') }}" Movie Dashboard</h1>
     <div class="chart-grid">
         <div class="chart1">
             <div class="chart-container">
@@ -18,7 +18,7 @@
 
         <div class="chart4">
             <div class="chart-container">
-                <h2>Network graph for potrayal of relationship between Directors and Actors</h2>
+                <h2>Based on vote_average, popularity, overview_sentiment and vote_count, the gauge performance is:</h2>
                 {{ chart2|safe }}
             </div>
         </div>
@@ -34,14 +34,15 @@
             <p>Network stuff</p>
         </div>
 
+
         <div class="chart3">
             <div class="chart-container">
-                <h2>Movie Rating and Popularity</h2>
+                <h2>Network graph for potrayal of relationship between Directors and Actors</h2>
                 {{ chart4|safe }}
             </div>
         </div>
 
         <div class="chart3-description">
-            <p>Movie rating and popularity stuff</p>
+            <p>Actor and director tings</p>
         </div>
 {% endblock %}
