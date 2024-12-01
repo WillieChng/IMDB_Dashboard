@@ -48,13 +48,12 @@
 }
 
 .personalized-card {
-    position: relative;
+    position: absolute;
     margin: 20px;
     border: 1px solid black;
     width: 300px; /* Adjust width as needed */
     height: 450px; /* Adjust height as needed */
     transform-style: preserve-3d;
-    transition: transform 1s;
     backface-visibility: hidden;
     border-radius: 7px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
@@ -63,6 +62,9 @@
     justify-content: space-between; /* Distribute space between elements */
     padding: 20px; /* Add padding for better appearance */
     box-sizing: border-box; /* Include padding in the element's total width and height */
+    transition: transform 1s, z-index 1s, opacity 1s;
+    opacity: 0.5; /* Set initial opacity */
+    cursor: pointer;
 }
 
 .personalized-card-title {

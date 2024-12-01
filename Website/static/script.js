@@ -242,35 +242,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const rightButton = document.querySelector('.fav-right-btn');
     const leftButton = document.querySelector('.fav-left-btn');
-    const cards = document.querySelectorAll('.fav-carousell > div');
+    let cards = document.querySelectorAll('.fav-carousell > div');
     let currentIndex = 0;
 
     function updateCards() {
-        if (cards.length === 1) {
-            cards[0].style.zIndex = 3;
-            cards[0].style.transform = 'translateX(0)';
+        const totalCards = cards.length;
+        const visibleCards = 5; // Number of cards to display
+        const halfVisible = Math.floor(visibleCards / 2);
+
+        if (totalCards === 0) {
+            displayNoMoreCardsMessage();
             return;
         }
-    
+
         cards.forEach((card, index) => {
-            if (index === currentIndex) {
-                card.style.zIndex = 3;
-                card.style.transform = 'translateX(0)';
-            } else if (index === (currentIndex + 1) % cards.length) {
-                card.style.zIndex = 2;
-                card.style.transform = 'translateX(100%)';
-            } else if (index === (currentIndex + 2) % cards.length) {
-                card.style.zIndex = 1;
-                card.style.transform = 'translateX(200%)';
-            } else if (index === (currentIndex + 3) % cards.length) {
-                card.style.zIndex = 0;
-                card.style.transform = 'translateX(300%)';
+            card.classList.remove('active', 'adjacent-left', 'adjacent-right', 'left', 'right');
+            const position = (index - currentIndex + totalCards) % totalCards;
+
+            if (position === 0) {
+                card.classList.add('active');
+                card.style.transform = `translateX(0) scale(1.2)`;
+            } else if (position === 1 || position === totalCards - 1) {
+                card.classList.add(position === 1 ? 'adjacent-right' : 'adjacent-left');
+                card.style.transform = `translateX(${position === 1 ? 150 : -150}px) scale(1)`;
+            } else if (position === 2 || position === totalCards - 2) {
+                card.classList.add(position === 2 ? 'right' : 'left');
+                card.style.transform = `translateX(${position === 2 ? 300 : -300}px) scale(0.8)`;
             } else {
-                card.style.zIndex = 0;
-                card.style.transform = 'translateX(-100%)';
+                card.style.transform = `translateX(${position > halfVisible ? 450 : -450}px) scale(0.6)`;
             }
         });
     }
+
+    function handleCardClick(event) {
+        const clickedCard = event.currentTarget;
+        const clickedIndex = Array.from(cards).indexOf(clickedCard);
+        if (clickedIndex !== -1) {
+            currentIndex = clickedIndex;
+            updateCards();
+        }
+    }
+    
+    cards.forEach(card => {
+        card.addEventListener('click', handleCardClick);
+    });
 
     const deleteButtons = document.querySelectorAll('.fav-card-delete');
     deleteButtons.forEach(button => {
@@ -281,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
                 currentIndex = 0; // Reset currentIndex to 0
                 updateCards(); // Update the positions after removing a card
-                alert("No more cards!");
             }
         });
     });
@@ -297,6 +311,27 @@ document.addEventListener('DOMContentLoaded', function() {
         leftButton.addEventListener('click', function() {
             currentIndex = (currentIndex - 1 + cards.length) % cards.length;
             updateCards();
+        });
+    }
+
+    function displayNoMoreCardsMessage() {
+        const carousel = document.querySelector('.fav-carousell');
+        if (!carousel) {
+            console.error('Carousel element not found');
+            return;
+        }
+        const messageCard = document.createElement('div');
+        messageCard.classList.add('fav-card', 'active');
+        messageCard.innerHTML = `
+            <div class="fav-card-title">No more cards</div>
+            <div class="fav-card-synopsis">You have removed all your favourite movies.</div>
+            <button class="fav-card-btn" id="search-movies-btn">Search for Movies</button>
+        `;
+        carousel.appendChild(messageCard);
+
+        const searchMoviesBtn = document.getElementById('search-movies-btn');
+        searchMoviesBtn.addEventListener('click', function() {
+            document.getElementById('search-input').focus();
         });
     }
 
@@ -357,6 +392,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    updateImageSource(); // Ensure the correct image is displayed on page load
+
      // Check for saved user preference, if any, on load of the website
      if (localStorage.getItem('darkMode') === 'enabled') {
         body.classList.add('dark-mode');
@@ -365,7 +403,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (modeLabel) {
         modeLabel.textContent = 'Light Mode';
     }
-    updateImageSource(); // Ensure the correct image is displayed on page load
 
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', function() {
