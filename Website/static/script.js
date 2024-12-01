@@ -295,7 +295,36 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', handleCardClick);
     });
 
-    // Add event listener for personalized delete buttons
+    const deleteButtons = document.querySelectorAll('.fav-card-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const parentCard = button.closest('.fav-card');
+            const movieId = parentCard.getAttribute('data-movie-id');
+            if (parentCard) {
+                fetch(`/remove_from_favourites?movie_id=${movieId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        parentCard.remove();
+                        cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+                        currentIndex = 0; // Reset currentIndex to 0
+                        updateCards(); // Update the positions after removing a card
+                    } else {
+                        alert('Failed to delete the card.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+
     const personalizedDeleteButtons = document.querySelectorAll('.personalized-delete');
     personalizedDeleteButtons.forEach(button => {
         button.addEventListener('click', function(event) {
@@ -334,14 +363,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function updatePersonalizedStatus() {
-        // Implement the logic to update the personalized status dynamically
-        // For example, you can update a status message or refresh a section of the page
-        const statusElement = document.getElementById('personalized-status');
-        if (statusElement) {
-            statusElement.textContent = 'Personalized recommendations updated.';
-        }
-    }
 
     // Function to remove deleted cards on page load
     function removeDeletedCards() {
