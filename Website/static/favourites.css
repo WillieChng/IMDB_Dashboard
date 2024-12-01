@@ -3,6 +3,7 @@
     font-weight: bold;
     text-align: center;
 }
+
 .fav-container {
     display: flex;
     flex-direction: row; /* Change to row to align buttons and carousel horizontally */
@@ -16,8 +17,8 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 450px; /* Adjust height as needed */
-    perspective: 50000px; /* Add perspective for 3D effect */
+    height: 550px; /* Adjust height as needed */
+    perspective: 10000px; /* Add perspective for 3D effect */
     position: relative;
     overflow: hidden;
     border: 1px solid black;
@@ -40,21 +41,39 @@
 
 .fav-card {
     position: absolute;
-    margin: 20px;
-    border: 1px solid black;
     width: 300px; /* Adjust width as needed */
     height: 450px; /* Adjust height as needed */
     transform-style: preserve-3d;
     backface-visibility: hidden;
     border-radius: 7px;
+    background-color: white;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Distribute space between elements */
     padding: 20px; /* Add padding for better appearance */
     box-sizing: border-box; /* Include padding in the element's total width and height */
-    transition: transform 1s, z-index 1s;
+    transition: transform 1s, z-index 1s, opacity 1s;
+    opacity: 0.5; /* Set initial opacity */
+    cursor: pointer;
+}
 
+.fav-card.active {
+    opacity: 1; /* Full opacity for the active card */
+    transform: scale(1.2); /* Scale up the active card */
+    z-index: 3; /* Bring the active card to the front */
+}
+
+.fav-card.adjacent-left, .fav-card.adjacent-right {
+    opacity: 0.75; /* Slightly higher opacity for adjacent cards */
+    transform: scale(1); /* Slightly smaller size for adjacent cards */
+    z-index: 2; /* Bring the adjacent cards to the middle */
+}
+
+.fav-card.left, .fav-card.right {
+    opacity: 0.5; /* Lower opacity for the leftmost and rightmost cards */
+    transform: scale(0.8); /* Smaller size for the leftmost and rightmost cards */
+    z-index: 1; /* Send the leftmost and rightmost cards to the back */
 }
 
 .fav-card-title {
@@ -81,6 +100,7 @@
     border-radius: 5px; /* Add rounded corners */
     cursor: pointer; /* Change cursor to pointer */
 }
+
 .fav-card-btn a, .fav-card-esc a {
     display: block; /* Ensure the links inside the buttons are block elements */
     width: 100%; /* Ensure the links take up the full width */
@@ -91,6 +111,7 @@
 .fav-card-btn:hover, .fav-card-esc:hover {
     background-color: #e0e0e0; /* Change background color on hover */
 }
+
 .see-personalized-btn {
     display: block; /* Make the button take up the full width */
     width: 15%; /* Ensure the button is full width */
@@ -109,10 +130,12 @@
     text-decoration: none; /* Remove underline from link */
     color: black; /* Set text color */
 }
+
 .see-personalized-btn:hover, .see-personalized-btn a:hover {
     background-color: #e0e0e0; /* Change background color on hover */
     text-decoration: none;
 }
+
 .fav-left-btn, .fav-right-btn {
     background: none;
     border: none;
@@ -126,21 +149,26 @@ body.dark-mode .fav-card {
     color: white; /* Light text color */
     box-shadow: 0px 0px 1px white; /* Light shadow */
 }
+
 body.dark-mode .fav-card-details {
     color: lightgrey; /* Light grey text color */
 }
+
 body.dark-mode .fav-card-btn {
     border: 1px solid white; /* Light border */
 }
 body.dark-mode .fav-card-btn a {
     color: black; /* Light text color */
 }
+
 body.dark-mode .fav-left-btn, body.dark-mode .fav-right-btn {
     color: white; /* Light text color */
 }
+
 body.dark-mode .fav-left-btn:hover, body.dark-mode .fav-right-btn:hover {
     color: lightgrey; /* Light grey text color */
 }
+
 body.dark-mode .fav-card-btn a:hover {
     color: black; /* Dark text color */
 }
