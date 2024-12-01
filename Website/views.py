@@ -249,6 +249,9 @@ def create_dash_app(flask_app):
     # Initialize Dash app
     dash_app = dash.Dash(__name__, server=flask_app, url_base_pathname='/dash/')
 
+    #dash font 
+    dash_app.css.append_css({"external_url": "/static/dash_custom.css"})
+
     # Calculate the top 10 directors based on vote count within the Flask application context
     with flask_app.app_context():
         df_director = get_movie_data()
@@ -617,6 +620,10 @@ def movie_details_page(movie_id):
     actors = [actor.name for actor in movie.actors]
     
     return render_template('movie_details.html', movie=movie, directors=directors, actors=actors)
+
+@views.route('/movie_details/<int:movie_id>/searched_movieDashboard.html', methods=['GET'])
+def searched_movieDashboard():
+    pass
 
 #movie favourite handling
 @views.route('/add_to_favourites', methods=['POST'])

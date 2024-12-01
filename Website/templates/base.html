@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='basic.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='personalized.css') }}">
-    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <header>
