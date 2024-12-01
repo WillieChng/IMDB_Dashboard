@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
 from flask_caching import Cache
 from flask_login import current_user, login_required
 from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
@@ -282,8 +282,22 @@ def create_dash_app(flask_app):
     'descriptionTextColor': '#AAA'
     }
 
-# Select styles based on the current mode
+    # Select styles based on the current mode
     styles = dark_mode_styles if mode == 'dark' else light_mode_styles
+    
+    container_style = {
+    'display': 'flex',
+    'flexDirection': 'column',
+    'alignItems': 'center',
+    'justifyContent': 'center',
+    'width': '100%',
+    'maxWidth': '1200px',
+    'margin': '20px auto',
+    'padding': '20px',
+    'border': '2px solid black',
+    'borderRadius': '10px',
+    'backgroundColor': '#f9f9f9'
+}
 
     dash_app.layout = html.Div([
         dcc.Tabs([
@@ -296,23 +310,15 @@ def create_dash_app(flask_app):
                         placeholder='Select Year(s)',
                     ),
                     html.Div([
-                        html.Div([
                         html.H2("Number of Movie Releases by Genre Over Time", style={'color': styles['textColor'], 'textAlign': 'center'}),
-                        dcc.Graph(id='chart1')
-                    ], className='chart-container', style={'backgroundColor': styles['chartContainerBackgroundColor']}),
-                        html.Div([
-                            html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'color': styles['descriptionTextColor']})
-                    ], className='description-container', style={'backgroundColor': styles['descriptionContainerBackgroundColor']})
-                    ], className='chart-description-wrapper'),
+                        dcc.Graph(id='chart1'),
+                        html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'color': styles['descriptionTextColor']})
+                    ], style=container_style),
                     html.Div([
-                        html.Div([
-                            html.H2("Average Movie Runtime by Year", style={'color': styles['textColor'], 'textAlign': 'center'}),
-                            dcc.Graph(id='chart2')
-                    ], className='chart-container', style={'backgroundColor': styles['chartContainerBackgroundColor']}),
-                        html.Div([
+                        html.H2("Average Movie Runtime by Year", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        dcc.Graph(id='chart2'),
                         html.P("Across all of the years, the average movie runtime are closely knitted together with 2019 showing the highest average runtime. Then, from there forth, the average runtime has been decreasing with the year 2023 ending up with only 20 minutes. This could be due to the fact that movies are becoming more fast-paced and concise to adapt to audience's decreasing attention span in modern times due to the influence of social media", style={'color': styles['descriptionTextColor']})
-                        ], className='description-container')
-                    ], className='chart-description-wrapper')
+                    ], style=container_style)
                 ])
             ]),
             dcc.Tab(label='Genre Filtering', children=[
@@ -324,26 +330,18 @@ def create_dash_app(flask_app):
                         placeholder='Select Genre(s)'
                     ),
                     html.Div([
-                        html.Div([
-                            html.H2("Top 10 Starred Actors/Actresses Across Genres", style={'color': styles['textColor'], 'textAlign': 'center'}),
-                            dcc.Graph(id='chart3')
-                        ], className='chart-container', style={'backgroundColor': styles['chartContainerBackgroundColor']}),
-                        html.Div([
-                            html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
-                                   Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
-                                   War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
-                                   Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""")
-                        ], className='description-container', style={'color': styles['descriptionTextColor'], 'padding-left': '10px'})
-                    ], className='chart-description-wrapper', style={'display': 'flex', 'align-items': 'center'}),
+                        html.H2("Top 10 Starred Actors/Actresses Across Genres", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        dcc.Graph(id='chart3'),
+                        html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
+                            Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
+                            War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
+                            Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""", style={'color': styles['descriptionTextColor'], 'padding-left': '10px'})
+                    ], style=container_style),
                     html.Div([
-                        html.Div([
-                            html.H2("Average Popularity and Sentiment of Movies by Genre", style={'color': styles['textColor'], 'textAlign': 'center'}),
-                            dcc.Graph(id='chart4')
-                        ], className='chart-container', style={'backgroundColor': styles['chartContainerBackgroundColor']}),
-                        html.Div([
-                            html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.")
-                        ], className='description-container', style={'color': styles['descriptionTextColor']})
-                    ], className='chart-description-wrapper')
+                        html.H2("Average Popularity and Sentiment of Movies by Genre", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        dcc.Graph(id='chart4'),
+                        html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.", style={'color': styles['descriptionTextColor']})
+                    ], style=container_style)
                 ])
             ]),
             dcc.Tab(label='Director Filtering', children=[
@@ -355,14 +353,10 @@ def create_dash_app(flask_app):
                         placeholder='Select Director(s)'
                     ),
                     html.Div([
-                        html.Div([
-                            html.H2("Popularity Success of Genres by Top 10 Directors", style={'color': styles['textColor'], 'textAlign': 'center'}),
-                            dcc.Graph(id='chart5')
-                        ], className='chart-container', style={'backgroundColor': styles['chartContainerBackgroundColor']}),
-                        html.Div([
-                            html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.", style={'color': styles['descriptionTextColor']})
-                        ], className='description-container', style={'backgroundColor': styles['descriptionContainerBackgroundColor']})
-                    ], className='chart-description-wrapper')
+                        html.H2("Popularity Success of Genres by Top 10 Directors", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        dcc.Graph(id='chart5'),
+                        html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.", style={'color': styles['descriptionTextColor']})
+                    ], style=container_style)
                 ])
             ])
         ])
@@ -543,55 +537,76 @@ def advanced():
     df2 = pd.DataFrame(all_movies)
     df2 = feature_extraction(df2)        
 
-    df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score'], var_name='metric', value_name='value')
-    
+    # Transform data for radar chart
+    df2_long = df2.melt(
+        id_vars=['title'], 
+        value_vars=['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score'], 
+        var_name='metric', 
+        value_name='value'
+    )
+
     fig1 = go.Figure()
-    
+
     # Add all movies to the legend without displaying them in the charts
     for title in df2_long['title'].unique():
         subset = df2_long[df2_long['title'] == title]
+        r_values = subset['value'].tolist()
+        theta_values = subset['metric'].tolist()
+        
+        # Close the shape by appending the first value and metric to the end
+        r_values.append(r_values[0])
+        theta_values.append(theta_values[0])
+        
         fig1.add_trace(go.Scatterpolar(
-            r=subset['value'],
-            theta=subset['metric'],
+            r=r_values,
+            theta=theta_values,
             name=title,
             mode='lines',
             line=dict(dash='solid'),  # Valid properties
             visible='legendonly'  # Only show in legend
         ))
 
+    # Fetch titles from request
     title1 = request.args.get('title1')
     title2 = request.args.get('title2')
     chart_title = f"{title1} VS. {title2}" if title1 and title2 else "Select 2 movies to compare"
 
+    # Add the selected titles to the chart
     if title1:
-        print(f"Title1: {title1}")
         subset = df2_long[df2_long['title'] == title1]
-        print(f"Subset for title1: {subset}")
         if not subset.empty:
+            r_values = subset['value'].tolist()
+            theta_values = subset['metric'].tolist()
+            r_values.append(r_values[0])
+            theta_values.append(theta_values[0])
+
             fig1.add_trace(go.Scatterpolar(
-                r=subset['value'],
-                theta=subset['metric'],
+                r=r_values,
+                theta=theta_values,
                 name=title1,
                 mode='lines',
-                line=dict(color='blue', dash='solid')  # Valid properties
+                line=dict(color='blue', dash='solid'),  # Valid properties
+                fill='toself',  # Fill the shape
+                fillcolor='rgba(0, 0, 255, 0.2)',  # Transparent blue
             ))
-        else:
-            print(f"No data found for title1: {title1}")
 
     if title2:
-        print(f"Title2: {title2}")
         subset = df2_long[df2_long['title'] == title2]
-        print(f"Subset for title2: {subset}")
         if not subset.empty:
+            r_values = subset['value'].tolist()
+            theta_values = subset['metric'].tolist()
+            r_values.append(r_values[0])
+            theta_values.append(theta_values[0])
+
             fig1.add_trace(go.Scatterpolar(
-                r=subset['value'],
-                theta=subset['metric'],
+                r=r_values,
+                theta=theta_values,
                 name=title2,
                 mode='lines',
-                line=dict(color='red', dash='solid')  # Valid properties
+                line=dict(color='red', dash='solid'),  # Valid properties
+                fill='toself',  # Fill the shape
+                fillcolor='rgba(255, 0, 0, 0.2)'  # Transparent red
             ))
-        else:
-            print(f"No data found for title2: {title2}")
 
     # Set the size of the charts and legends
     fig1.update_layout(
@@ -917,6 +932,27 @@ def remove_from_favourites():
 def user_favourites():
     favourites = current_user.user_favourites
     return render_template('user_favourites.html', favourites=favourites)
+
+@views.route('/remove_from_personalized', methods=['POST'])
+@login_required
+def remove_from_personalized():
+    try:
+        movie_id = request.args.get('movie_id')
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID is required'}), 400
+
+        # Ensure the session is initialized
+        if 'deleted_movies' not in session:
+            session['deleted_movies'] = []
+
+        deleted_movies = session['deleted_movies']
+        if movie_id not in deleted_movies:
+            deleted_movies.append(movie_id)
+            session['deleted_movies'] = deleted_movies
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @views.route('/settings.html')
 def settings_page():
