@@ -251,7 +251,7 @@ def create_dash_app(flask_app):
     dash_app = dash.Dash(__name__, server=flask_app, url_base_pathname='/dash/')
 
     #dash font 
-    dash_app.css.append_css({"external_url": "/static/dash_custom.css"})
+    dash_app.css.append_css({"external_url": "/static/intermediate.css"})
 
     # Calculate the top 10 directors based on vote count within the Flask application context
     with flask_app.app_context():
@@ -667,7 +667,7 @@ def movie_details_page(movie_id):
     if request.method == 'POST':
         redirect(url_for('views.searched_movieDashboard', movie=movie))
     
-    return render_template('movie_details.html', movie=movie, directors=directors, actors=actors)
+    return render_template('movie_details.html', movie=movie, directors=directors, actors=actors, genres=genres)
 
 def calculate_weighted_rating(vote_average, vote_count, C, m):
     return (vote_count / (vote_count + m) * vote_average) + (m / (vote_count + m) * C)
@@ -685,8 +685,9 @@ def calculate_combined_metric(weighted_rating, popularity, overview_sentiment):
     return combined_metric
 
 @views.route('/searched_movieDashboard.html', methods=['GET'])
-def searched_movieDashboard(): #movie (put in parameter)
-    movie = Movie.query.get_or_404(2)
+def searched_movieDashboard():
+    movie_id = request.args.get('movie_id')
+    movie = Movie.query.get_or_404(movie_id)
     
     # Prepare data for visualizations
     genres = movie.genres

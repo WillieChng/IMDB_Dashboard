@@ -39,7 +39,6 @@
     margin: 0 0 10px 0; /* Add margin to the bottom to create space between the title and the chart */
     padding: 0;
     background-color: white; /* Ensure the title has a background color */
-    padding: 0 10px; /* Add padding to the title */
     z-index: 1; /* Ensure the title is above the chart */
     white-space: nowrap; /* Prevent line breaks */
     font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
@@ -78,3 +77,16 @@
     width: 100%;
     margin: 20px 0;
 }
+
+/* dark mode */
+body.dark-mode .dash-container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .dash-graph {
+    background-color: pink;
+    color: #ffffff;
+}
+
+

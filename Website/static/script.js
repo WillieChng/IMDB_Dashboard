@@ -387,6 +387,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Event listener for the "Search for Movies" button
+    const searchMoviesBtn = document.getElementById('search-movies-btn');
+    if (searchMoviesBtn) {
+        searchMoviesBtn.addEventListener('click', function() {
+            document.getElementById('search-input').focus();
+            showPopupDialog();
+        });
+    }
+
     updateCards(); // Initialize the positions
 
     const darkModeToggle = document.getElementById('dark-mode-toggle');
