@@ -10,7 +10,7 @@
         <button class="fav-left-btn"><i class="fas fa-caret-left"></i></button>
         <div class="fav-carousell">
             {% for movie in recommendations %}
-            <div class="fav-card">
+            <div class="fav-card" data-movie-id="{{ movie.movie_id }}">
                 <button class="fav-card-delete">X</button>
                 <div class="personalized-card-title">{{ movie.title }}</div>
                 <div class="personalized-card-details">{{ movie.release_year }} ‧ {{ movie.genres | map(attribute='name') | join(', ') }} ‧ {{ movie.runtime }} mins</div>

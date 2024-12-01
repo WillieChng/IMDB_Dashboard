@@ -92,6 +92,29 @@
     overflow: hidden;
 }
 
+.movie-details-btn {
+    display: block; /* Make the button take up the full width */
+    width: 100%; /* Ensure the button is full width */
+    text-align: center; /* Center the text inside the button */
+    margin-top: 20px; /* Add some margin to separate the button */
+    padding: 10px; /* Add padding for better appearance */
+    border: none; /* Remove default border */
+    background-color: #f0f0f0; /* Light background color */
+    border-radius: 5px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer */
+}
+
+.movie-details-btn a {
+    display: block; /* Ensure the link inside the button is a block element */
+    width: 100%; /* Ensure the link takes up the full width */
+    text-decoration: none; /* Remove underline from link */
+    color: black; /* Set text color */
+}
+
+.movie-details-btn:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
 /* dark mode */
 .dark-mode .movie-details-container {
     border: 1px solid white;

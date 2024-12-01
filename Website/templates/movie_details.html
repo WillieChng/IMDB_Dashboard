@@ -18,12 +18,10 @@
             </div>
             <div class="movie-details-synopsis"><p>{{ movie.overview | default('N/A') }}</p></div>
             <div class="movie-details-bts">
-                <div class="movie-details-ori-lang"><strong>Original Language: </strong>{{ movie.original_language | default('N/A') }}</div>
                 <div class="movie-details-director"><strong>Director: </strong>{{ directors | join(', ') | default('N/A') }}</div>
-                <div class="movie-details-writer"><strong>Writer: </strong>{{ writers | join(', ') | default('N/A') }}</div>
                 <div class="movie-details-cast"><strong>Cast: </strong>{{ actors | join(', ') | default('N/A') }}</div>
-                <div class="movie-details-release-date"><strong>Release Date: </strong>{{ movie.release_date | default('N/A') }}</div>
             </div>
+            <button class="movie-details-btn"><a href="{{ url_for('views.searched_movieDashboard', movie_id=movie.movie_id) }}">View Dashboard</a></button>
         </div>
     </div>
 

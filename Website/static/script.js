@@ -299,11 +299,28 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function(event) {
             const parentCard = button.closest('.fav-card');
+            const movieId = parentCard.getAttribute('data-movie-id');
             if (parentCard) {
-                parentCard.remove();
-                cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
-                currentIndex = 0; // Reset currentIndex to 0
-                updateCards(); // Update the positions after removing a card
+                fetch(`/remove_from_favourites?movie_id=${movieId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        parentCard.remove();
+                        cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+                        currentIndex = 0; // Reset currentIndex to 0
+                        updateCards(); // Update the positions after removing a card
+                    } else {
+                        alert('Failed to delete the card.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
         });
     });
@@ -340,6 +357,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchMoviesBtn = document.getElementById('search-movies-btn');
         searchMoviesBtn.addEventListener('click', function() {
             document.getElementById('search-input').focus();
+            showPopupDialog();
+        });
+    }
+
+    function showPopupDialog() {
+        const searchInput = document.getElementById('search-input');
+        const searchSuggestions = document.getElementById('search-suggestions');
+    
+        // Clear any existing suggestions
+        searchSuggestions.innerHTML = '';
+    
+        // Create the dropdown message
+        const message = document.createElement('div');
+        message.classList.add('dropdown-state');
+        message.textContent = 'Please type something to search';
+    
+        // Append the message to the search suggestions
+        searchSuggestions.appendChild(message);
+    
+        // Show the search suggestions dropdown
+        searchSuggestions.style.display = 'block';
+    
+        // Hide the dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !searchSuggestions.contains(event.target)) {
+                searchSuggestions.style.display = 'none';
+            }
         });
     }
 
