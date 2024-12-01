@@ -248,98 +248,100 @@ def basic():
 # Layout for Dash app
 def create_dash_app(flask_app):
     # Initialize Dash app
-    dash_app = dash.Dash(__name__, server=flask_app, url_base_pathname='/dash/')
+    dash_app = dash.Dash(
+        server=flask_app, 
+        name="Dashboard",
+        url_base_pathname="/dash/",
+        external_stylesheets=[
+            "https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap",
+            "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.0/nouislider.min.css"
+            "/static/intermediate.css"
+        ])
 
     #dash font 
-    dash_app.css.append_css({"external_url": "/static/dash_custom.css"})
+    dash_app.css.append_css({"external_url": "/static/intermediate.css"})
 
     # Calculate the top 10 directors based on vote count within the Flask application context
     with flask_app.app_context():
         df_director = get_movie_data()
         top_directors = df_director.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).index.tolist()
     
-    dash_app.layout = html.Div([
-        dcc.Tabs([
-            dcc.Tab(label='Year Filtering', children=[
-                html.Div([
-                    dcc.Dropdown(
-                        id='year-dropdown',
-                        options=[{'label': str(year), 'value': year} for year in range(2019, datetime.now().year)],
-                        multi=True,
-                        placeholder='Select Year(s)'
-                    ),
+    dash_app.layout = html.Div(
+        style={"fontFamily": "Nunito, sans-serif"},
+        children=[
+            dcc.Tabs([
+                dcc.Tab(label='Year Filtering', children=[
                     html.Div([
+                        dcc.Dropdown(
+                            id='year-dropdown',
+                            options=[{'label': str(year), 'value': year} for year in range(2019, datetime.now().year)],
+                            multi=True,
+                            placeholder='Select Year(s)'
+                        ),
                         html.Div([
-                            html.H2("Number of Movie Releases by Genre Over Time"),
-                            dcc.Graph(id='chart1')
-                        ], className='chart-container'),
-                        html.Div([
-                            html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.")
-                        ], className='description-container')
-                    ], className='chart-description-wrapper'),
+                            html.Div([
+                                html.H2("Number of Movie Releases by Genre Over Time", style={'textAlign': 'center'}),
+                                dcc.Graph(id='chart1')
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}),
+                            html.Div([
+                                html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'fontSize': '1.2em', 'lineHeight': '1.6', 'textAlign': 'center', 'marginTop': '10px', 'color': '#333'})
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'})
+                        ])
+                    ])
+                ]),
+                dcc.Tab(label='Genre Filtering', children=[
                     html.Div([
+                        dcc.Dropdown(
+                            id='genre-dropdown',
+                            options=[{'label': genre.name, 'value': genre.name} for genre in Genre.query.all()],
+                            multi=True,
+                            placeholder='Select Genre(s)'
+                        ),
                         html.Div([
-                            html.H2("Average Movie Runtime by Year"),
-                            dcc.Graph(id='chart2')
-                        ], className='chart-container'),
+                            html.Div([
+                                html.H2("Top 10 Starred Actors/Actresses Across Genres", style={'textAlign': 'center'}),
+                                dcc.Graph(id='chart3')
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}),
+                            html.Div([
+                                html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
+                                       Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
+                                       War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
+                                       Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""", style={'fontSize': '1.2em', 'lineHeight': '1.6', 'textAlign': 'center', 'marginTop': '10px', 'color': '#333'})
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'})
+                        ], style={'display': 'flex', 'alignItems': 'center'}),
                         html.Div([
-                            html.P("Across all of the years, the average movie runtime are closely knitted together with 2019 showing the highest average runtime. Then, from there forth, the average runtime has been decreasing with the year 2023 ending up with only 20 minutes. This could be due to the fact that movies are becoming more fast-paced and concise to adapt to audience's decreasing attention span in modern times due to the influence of social media")
-                        ], className='description-container')
-                    ], className='chart-description-wrapper')
-                ])
-            ]),
-            dcc.Tab(label='Genre Filtering', children=[
-                html.Div([
-                    dcc.Dropdown(
-                        id='genre-dropdown',
-                        options=[{'label': genre.name, 'value': genre.name} for genre in Genre.query.all()],
-                        multi=True,
-                        placeholder='Select Genre(s)'
-                    ),
+                            html.Div([
+                                html.H2("Average Popularity and Sentiment of Movies by Genre", style={'textAlign': 'center'}),
+                                dcc.Graph(id='chart4')
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}),
+                            html.Div([
+                                html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.", style={'fontSize': '1.2em', 'lineHeight': '1.6', 'textAlign': 'center', 'marginTop': '10px', 'color': '#333'})
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'})
+                        ])
+                    ])
+                ]),
+                dcc.Tab(label='Director Filtering', children=[
                     html.Div([
+                        dcc.Dropdown(
+                            id='director-dropdown',
+                            options=[{'label': director, 'value': director} for director in top_directors],
+                            multi=True,
+                            placeholder='Select Director(s)'
+                        ),
                         html.Div([
-                            html.H2("Top 10 Starred Actors/Actresses Across Genres"),
-                            dcc.Graph(id='chart3')
-                        ], className='chart-container'),
-                        html.Div([
-                            html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
-                                   Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
-                                   War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
-                                   Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""")
-                        ], className='description-container')
-                    ], className='chart-description-wrapper', style={'display': 'flex', 'align-items': 'center'}),
-                    html.Div([
-                        html.Div([
-                            html.H2("Average Popularity and Sentiment of Movies by Genre"),
-                            dcc.Graph(id='chart4')
-                        ], className='chart-container'),
-                        html.Div([
-                            html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.")
-                        ], className='description-container')
-                    ], className='chart-description-wrapper')
-                ])
-            ]),
-            dcc.Tab(label='Director Filtering', children=[
-                html.Div([
-                    dcc.Dropdown(
-                        id='director-dropdown',
-                        options=[{'label': director, 'value': director} for director in top_directors],
-                        multi=True,
-                        placeholder='Select Director(s)'
-                    ),
-                    html.Div([
-                        html.Div([
-                            html.H2("Popularity Success of Genres by Top 10 Directors"),
-                            dcc.Graph(id='chart5')
-                        ], className='chart-container'),
-                        html.Div([
-                            html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.")
-                        ], className='description-container')
-                    ], className='chart-description-wrapper')
+                            html.Div([
+                                html.H2("Popularity Success of Genres by Top 10 Directors", style={'textAlign': 'center'}),
+                                dcc.Graph(id='chart5')
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}),
+                            html.Div([
+                                html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.", style={'fontSize': '1.2em', 'lineHeight': '1.6', 'textAlign': 'center', 'marginTop': '10px', 'color': '#333'})
+                            ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'})
+                        ])
+                    ])
                 ])
             ])
-        ])
-    ])
+        ]
+    )
 
     df = get_movie_data()
     # Callbacks for updating charts based on filters

@@ -2,13 +2,14 @@
 {% block title %} Intermediate {% endblock %} 
 
 {% block extra_css %}
+    {% set css_url = url_for('static', filename='intermediate.css') %}
+    <link rel="stylesheet" href="{{ css_url }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.0/nouislider.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='intermediate.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
-    <h1 class="page-title">Explore Intermediate Cinema Analytics</h1>
+    <h1 class="page-title-not-moving">Explore Intermediate Cinema Analytics</h1>
 
     <!-- Container for Dash app -->
     <div class="dash-container">

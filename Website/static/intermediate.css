@@ -1,4 +1,12 @@
-.page-title {
+/* Import the Nunito font */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+/* Apply the Nunito font to the body */
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+.page-title-not-moving {
     text-align: center;
     margin: 20px 0; /* Add some margin to the top and bottom */
     font-size: 2em; /* Adjust the font size as needed */
@@ -42,30 +50,35 @@
     padding: 0 10px; /* Add padding to the title */
     z-index: 1; /* Ensure the title is above the chart */
     white-space: nowrap; /* Prevent line breaks */
-    font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
+    font-family: 'Nunito', sans-serif; /* Use the Nunito font */
     font-weight: 700; /* Use a bold font weight */
     font-size: 1.5em;
 }
 
-.chart-description {
-    position: relative; /* Change to relative positioning */
-    margin-left: 0px; /* Add a small space between the chart and the description */
-    text-align: left; /* Align text to the left */
-    font-size: 2.2em; /* Adjust the font size as needed */
-    width: 600px; /* Set a fixed width for the description */
+.chart-description-wrapper {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    grid-column: span 2; /* Span across two columns */
-    color: #333; /* Change text color */
-    background-color: #f9f9f9; /* Change background color */
-    padding: 10px; /* Add padding */
-    border-radius: 5px; /* Add rounded corners */
-    line-height: 1.6; /* Add line spacing */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto; /* Add margin to the top and bottom */
+    padding: 20px; /* Add padding around the container */
+    border: 2px solid black; /* Add a border around the container */
+    border-radius: 10px; /* Add rounded corners to the container */
+    background-color: #f9f9f9; /* Set a background color for the container */
 }
 
-.chart-description:hover {
-    background-color: #bebebe; /* Change background color on hover */
+.description-container {
+    font-size: 1.2em; /* Increase the font size */
+    line-height: 1.6; /* Add line spacing */
+    text-align: center; /* Center the text */
+    margin-top: 10px; /* Add some margin to the top */
+    color: #333; /* Set the text color */
+}
+
+.chart-description-wrapper:hover {
+    background-color: #e0e0e0; /* Change background color on hover */
 }
 
 /* Shifted state for when the side panel is open */
