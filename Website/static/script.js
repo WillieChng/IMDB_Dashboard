@@ -250,6 +250,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const visibleCards = 5; // Number of cards to display
         const halfVisible = Math.floor(visibleCards / 2);
 
+        if (totalCards === 0) {
+            displayNoMoreCardsMessage();
+            return;
+        }
+
         cards.forEach((card, index) => {
             card.classList.remove('active', 'adjacent-left', 'adjacent-right', 'left', 'right');
             const position = (index - currentIndex + totalCards) % totalCards;
@@ -306,6 +311,27 @@ document.addEventListener('DOMContentLoaded', function() {
         leftButton.addEventListener('click', function() {
             currentIndex = (currentIndex - 1 + cards.length) % cards.length;
             updateCards();
+        });
+    }
+
+    function displayNoMoreCardsMessage() {
+        const carousel = document.querySelector('.fav-carousell');
+        if (!carousel) {
+            console.error('Carousel element not found');
+            return;
+        }
+        const messageCard = document.createElement('div');
+        messageCard.classList.add('fav-card', 'active');
+        messageCard.innerHTML = `
+            <div class="fav-card-title">No more cards</div>
+            <div class="fav-card-synopsis">You have removed all your favourite movies.</div>
+            <button class="fav-card-btn" id="search-movies-btn">Search for Movies</button>
+        `;
+        carousel.appendChild(messageCard);
+
+        const searchMoviesBtn = document.getElementById('search-movies-btn');
+        searchMoviesBtn.addEventListener('click', function() {
+            document.getElementById('search-input').focus();
         });
     }
 
@@ -366,6 +392,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    updateImageSource(); // Ensure the correct image is displayed on page load
+
      // Check for saved user preference, if any, on load of the website
      if (localStorage.getItem('darkMode') === 'enabled') {
         body.classList.add('dark-mode');
@@ -374,7 +403,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (modeLabel) {
         modeLabel.textContent = 'Light Mode';
     }
-    updateImageSource(); // Ensure the correct image is displayed on page load
 
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', function() {

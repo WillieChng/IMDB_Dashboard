@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: row; /* Change to row to align buttons and carousel horizontally */
     align-items: center;
+    justify-content: center;
     width: 100%;
     padding: 20px;
 }
@@ -16,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 80%;
     height: 550px; /* Adjust height as needed */
     perspective: 10000px; /* Add perspective for 3D effect */
     position: relative;
