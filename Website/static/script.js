@@ -33,12 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pageTitle) {
                 pageTitle.classList.toggle('shifted');
             }
-        }
-    }
-
-    function toggleSidePanel() {
-        if (sidePanel) {
-            sidePanel.classList.toggle('show');
             advancedShiftedContainers.forEach(container => {
                 container.classList.toggle('shifted');
             });
