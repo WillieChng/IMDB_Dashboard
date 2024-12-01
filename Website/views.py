@@ -20,6 +20,7 @@ import plotly.graph_objects as go
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+import networkx as nx
 
 # Define blueprint
 views = Blueprint('views', __name__) 
@@ -618,12 +619,120 @@ def movie_details_page(movie_id):
     # Ensure directors, writers, and actors are loaded as names
     directors = [director.name for director in movie.directors]
     actors = [actor.name for actor in movie.actors]
+    genres = [genre.name for genre in movie.genres]
+    
+    if request.method == 'POST':
+        movie_id = request.args.get('movie_id')
+        movie = Movie.query.get_or_404(movie_id)
+        redirect(url_for('views.searched_movieDashboard', movie=movie))
     
     return render_template('movie_details.html', movie=movie, directors=directors, actors=actors)
 
-@views.route('/movie_details/<int:movie_id>/searched_movieDashboard.html', methods=['GET'])
-def searched_movieDashboard():
-    pass
+@views.route('/searched_movieDashboard.html', methods=['GET'])
+def searched_movieDashboard(): #movie, directors, actors, genres (place it into parameters after testing)
+    movie = Movie.query.get_or_404(2)
+    
+    # Ensure directors, writers, and actors are loaded as names
+    directors = movie.directors
+    actors = movie.actors
+    genres = movie.genres  # Ensure genres contains Genre objects
+    
+    #CHART 1: Movie GENRE DISTRIBUTION
+    genre_counts = pd.Series([genre.name for genre in genres]).value_counts()
+    fig1 = px.pie(values=genre_counts, names=genre_counts.index, title='Genre Distribution')
+    chart1 = pio.to_html(fig1, full_html=False)
+    
+    ##CHART 2: NETWORK GRAPH for potrayal of relationship between Directors and Actors
+    G = nx.Graph()
+    
+    for actor in actors:
+        G.add_node(actor.name, type='actor')
+    for director in directors:
+        G.add_node(director.name, type='director')
+    for actor in actors:
+        for director in directors:
+            G.add_edge(actor.name, director.name)
+    
+    pos = nx.spring_layout(G)
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.append(x0)
+        edge_x.append(x1)
+        edge_x.append(None)
+        edge_y.append(y0)
+        edge_y.append(y1)
+        edge_y.append(None)
+
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=0.5, color='#888'),
+        hoverinfo='none',
+        mode='lines')
+
+    node_x = []
+    node_y = []
+    node_text = []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+        node_text.append(node)
+
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers+text',
+        hoverinfo='text',
+        text=node_text,
+        marker=dict(
+            showscale=True,
+            colorscale='YlGnBu',
+            size=10,
+            colorbar=dict(
+                thickness=15,
+                title='Node Connections',
+                xanchor='left',
+                titleside='right'
+            ),
+            line_width=2))
+
+    fig2 = go.Figure(data=[edge_trace, node_trace],
+                     layout=go.Layout(
+                         title='Cast and Crew Network Graph',
+                         titlefont_size=16,
+                         showlegend=False,
+                         hovermode='closest',
+                         margin=dict(b=20, l=5, r=5, t=40),
+                         annotations=[dict(
+                             text="",
+                             showarrow=False,
+                             xref="paper", yref="paper"
+                         )],
+                         xaxis=dict(showgrid=False, zeroline=False),
+                         yaxis=dict(showgrid=False, zeroline=False))
+                     )
+    
+    chart2 = pio.to_html(fig2, full_html=False)
+    
+    ##CHART 3: OVERVIEW KEYWORDS WORDCLOUD
+    keywords = movie.all_combined_keywords
+    keywords = keywords.replace('[', '').replace(']', '').replace("'", '').split(', ')
+    wordcloud_text = ' '.join(keywords)
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(wordcloud_text)
+    fig3 = px.imshow(wordcloud, title='Overview Keywords Word Cloud')
+    chart3 = pio.to_html(fig3, full_html=False)
+    
+    ##CHART 4: Movie Rating and Popularity
+    rating_popularity = {
+        'rating': movie.vote_average,
+        'popularity': movie.popularity
+    }
+    fig4 = px.bar(x=list(rating_popularity.keys()), y=list(rating_popularity.values()), title='Rating and Popularity')
+    chart4 = pio.to_html(fig4, full_html=False)
+    
+    return render_template('searched_movieDashboard.html', chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4)
 
 #movie favourite handling
 @views.route('/add_to_favourites', methods=['POST'])
