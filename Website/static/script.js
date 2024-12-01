@@ -325,6 +325,80 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Add event listener for personalized delete buttons
+    const personalizedDeleteButtons = document.querySelectorAll('.personalized-delete');
+    personalizedDeleteButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const parentCard = button.closest('.fav-card');
+            const movieId = parentCard.getAttribute('data-movie-id');
+            if (parentCard) {
+                parentCard.remove();
+                cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+                currentIndex = 0; // Reset currentIndex to 0
+                updateCards(); // Update the positions after removing a card
+
+                // Store the deleted movie ID in local storage
+                let deletedMovies = JSON.parse(localStorage.getItem('deletedMovies')) || [];
+                deletedMovies.push(movieId);
+                localStorage.setItem('deletedMovies', JSON.stringify(deletedMovies));
+
+                // Call the server to update the state
+                fetch(`/remove_from_personalized?movie_id=${movieId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert('Failed to update the server.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+                // Optionally, refresh the page or update the status dynamically
+                if (cards.length === 0) {
+                    // If no more cards, display a message or refresh the page
+                    displayNoMoreCardsMessage();
+                } else {
+                    // Update the status dynamically
+                    updatePersonalizedStatus();
+                }
+            }
+        });
+    });
+
+    // Function to remove deleted cards on page load
+    function removeDeletedCards() {
+        let deletedMovies = JSON.parse(localStorage.getItem('deletedMovies')) || [];
+        deletedMovies.forEach(movieId => {
+            const card = document.querySelector(`.fav-card[data-movie-id="${movieId}"]`);
+            if (card) {
+                card.remove();
+            }
+        });
+        cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
+        updateCards(); // Update the positions after removing a card
+    }
+
+    // Call the function on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        removeDeletedCards();
+        updatePersonalizedStatus(); // Ensure the status is updated on page load
+    });
+
+    function updatePersonalizedStatus() {
+        // Implement the logic to update the personalized status dynamically
+        // For example, you can update a status message or refresh a section of the page
+        const statusElement = document.getElementById('personalized-status');
+        if (statusElement) {
+            statusElement.textContent = 'Personalized recommendations updated.';
+        }
+    }
+
     if (rightButton) {
         rightButton.addEventListener('click', function() {
             currentIndex = (currentIndex + 1) % cards.length;
