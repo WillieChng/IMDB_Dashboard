@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block title %} Searched Movie Dashboard {% endblock %}
+
+{% block extra_css %}
+    {% set css_url = url_for('static', filename='searched_movieDashboard.css') %}
+    <link rel="stylesheet" href="{{ css_url }}">
+{% endblock %}
+
 {% block content %}
 <div id="side-panel" class="side-panel">
         <!-- Side panel content here -->
@@ -13,12 +19,12 @@
             </div>
         </div>
         <div class="chart1-description chart-description">
-            <p>Genre stuff</p>
+            <p>Popular genres indicating a balanced appeal to diverse audience preferences.</p>
         </div>
 
         <div class="chart4">
             <div class="chart-container">
-                <h2>Based on vote_average, popularity, overview_sentiment and vote_count, the gauge performance is:</h2>
+                <h2>Performance... How's it doing?</h2>
                 {{ chart2|safe }}
             </div>
         </div>
@@ -31,18 +37,18 @@
         </div>
 
         <div class="chart4-description">
-            <p>Network stuff</p>
+            <p>Based on Vote Average, Popularity, Overview Sentiment and Vote Count, {{ movie_name | default('N/A') }} seems to be doing pretty well.</p>
         </div>
 
 
         <div class="chart3">
             <div class="chart-container">
-                <h2>Network graph for potrayal of relationship between Directors and Actors</h2>
+                <h2>Movies of Similar Genres</h2>
                 {{ chart4|safe }}
             </div>
         </div>
 
         <div class="chart3-description">
-            <p>Actor and director tings</p>
+            <p>If you like {{ movie_name | default('N/A') }}, you might like some of these other movies as well.</p>
         </div>
 {% endblock %}

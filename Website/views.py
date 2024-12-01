@@ -286,7 +286,7 @@ def create_dash_app(flask_app):
                             html.Div([
                                 html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'fontSize': '1.2em', 'lineHeight': '1.6', 'textAlign': 'center', 'marginTop': '10px', 'color': '#333'})
                             ], style={'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center', 'justifyContent': 'center', 'width': '100%', 'maxWidth': '1200px', 'margin': '20px auto', 'padding': '20px', 'border': '2px solid black', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'})
-                        ])
+                        ]),
                     ])
                 ]),
                 dcc.Tab(label='Genre Filtering', children=[
@@ -699,6 +699,13 @@ def searched_movieDashboard():
     # CHART 1: Movie GENRE DISTRIBUTION
     genre_counts = pd.Series([genre.name for genre in genres]).value_counts()
     fig1 = px.pie(values=genre_counts, names=genre_counts.index, title='Genre Distribution')
+    
+    # Set the height and width for the pie chart
+    fig1.update_layout(
+        width=600,  # Set the width
+        height=400  # Set the height
+    )
+
     chart1 = pio.to_html(fig1, full_html=False)
     
     # CHART 2: Gauge performance based on vote_average, popularity, overview_sentiment and vote_count
@@ -729,7 +736,7 @@ def searched_movieDashboard():
         }
     ))
 
-    fig2.update_layout(paper_bgcolor="lavender", font={'color': "darkblue", 'family': "Arial"})
+    fig2.update_layout(paper_bgcolor="white", font={'color': "darkblue", 'family': "Arial"}, width=620, height=380)  # Set the width and height for the chart
     chart2 = pio.to_html(fig2, full_html=False)
     
     # CHART 3: OVERVIEW KEYWORDS WORDCLOUD
@@ -737,7 +744,14 @@ def searched_movieDashboard():
     keywords = keywords.replace('[', '').replace(']', '').replace("'", '').split(', ')
     wordcloud_text = ' '.join(keywords)
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(wordcloud_text)
-    fig3 = px.imshow(wordcloud, title='Overview Keywords Word Cloud')
+    fig3 = px.imshow(wordcloud, title='')
+
+    # Set the width and height for the word cloud chart
+    fig3.update_layout(
+        width=580,  # Set the width
+        height=380  # Set the height
+    )
+
     chart3 = pio.to_html(fig3, full_html=False)
     
     # CHART 4: NETWORK GRAPH for portrayal of relationship between Directors and Actors
@@ -806,7 +820,7 @@ def searched_movieDashboard():
 
     fig4 = go.Figure(data=[edge_trace, node_trace],
                      layout=go.Layout(
-                         title='Similar Movies Network Graph',
+                         title='',
                          titlefont_size=16,
                          showlegend=False,
                          hovermode='closest',
@@ -819,7 +833,13 @@ def searched_movieDashboard():
                          xaxis=dict(showgrid=False, zeroline=False),
                          yaxis=dict(showgrid=False, zeroline=False))
                      )
-        
+       
+    # Set the width and height for the network graph
+    fig4.update_layout(
+        width=1250,  # Set the width
+        height=400  # Set the height
+    )
+
     chart4 = pio.to_html(fig4, full_html=False)
     return render_template('searched_movieDashboard.html', movie_name=movie.title, chart1=chart1, chart2=chart2, chart3=chart3, chart4=chart4)
 
