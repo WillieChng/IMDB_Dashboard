@@ -8,30 +8,28 @@
 
 {% block content %} 
 <h2 class="advanced-page-title">Hmm... What about the rest of world?</h2>
-    <div class="chart-description-container advanced-shifted-container">
-        <div class="column column1">
-            <div class="chart-wrapper chart1-wrapper">
+    <div class="chart-grid advanced-shifted-container">
+        <div class="chart1">
+            <div class="chart-wrapper chart1-wrapper advanced-shifted-container">
                 <div id="chart">{{chart1|safe}}</div>
             </div>
         </div>
-        <div class="column column2">
-            <div class="chart-description chart1-description">
-                <div class="region-buttons">
-                    <button class="region-button" data-region="north-america">North America</button>
-                    <button class="region-button" data-region="europe">Europe</button>
-                    <button class="region-button" data-region="asia">Asia</button>
-                    <button class="region-button" data-region="south-america">South America</button>
-                    <button class="region-button" data-region="africa">Africa</button>
-                    <button class="region-button" data-region="oceania">Oceania</button>
-                </div>
-                <div id="region-description">
-                    <p class="region-description-text">Select a region to see the description.</p>
-                </div>
+        <div class="chart1-description chart-description advanced-shifted-container">
+            <div class="region-buttons">
+                <button class="region-button" data-region="north-america">North America</button>
+                <button class="region-button" data-region="europe">Europe</button>
+                <button class="region-button" data-region="asia">Asia</button>
+                <button class="region-button" data-region="south-america">South America</button>
+                <button class="region-button" data-region="africa">Africa</button>
+                <button class="region-button" data-region="oceania">Oceania</button>
+            </div>
+            <div id="region-description">
+                <p class="region-description-text">Where would you like to go to?</p>
             </div>
         </div>
     </div>
 
-    <h2 class="advanced-page-title">Real Time Movie Data Comparison</h2>
+    <h2 class="advanced-page-title"><br><br>Real Time Movie Data Comparison</h2>
     <div class="chart-grid advanced-shifted-container">
         <div class="chart-wrapper chart2-wrapper">
             <div id="chart2">{{chart2|safe}}</div>

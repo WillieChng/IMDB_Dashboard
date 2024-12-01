@@ -226,3 +226,8 @@
 .shifted {
     transform: translateX(65px); /* Adjust based on the width of the side panel */
 }
+
+/* dark mode */
+.dark-mode .chart-container h2 {
+    color: black;
+}

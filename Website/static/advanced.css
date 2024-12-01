@@ -7,8 +7,9 @@
 }
 
 .chart-grid {
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping of items */
+    display: grid;
+    grid-template-columns: 1fr; /* Single column */
+    grid-template-rows: auto auto; /* Two rows */
     gap: 20px; /* Add space between grid items */
     width: 100%;
     max-width: 1200px;
@@ -18,60 +19,35 @@
     position: relative; /* Ensure the description can be positioned absolutely */
 }
 
-.chart-description-container {
-    display: flex;
-    justify-content: space-between; /* Space between chart and description */
-    align-items: stretch; /* Align items vertically */
-    gap: 50px; /* Add space between the chart and the description */
-    margin-bottom: 20px; /* Add some margin to the bottom */
-    transition: transform 0.3s ease; /* Smooth transition for shifting */
-}
-
-.column {
-    flex: 1; /* Allow the column to grow and shrink */
-}
-
-.column1 {
-    flex: 0 0 50%; /* Set the initial size and prevent flex-grow and flex-shrink */
-    display: flex;
-    justify-content: flex-end; /* Align the chart to the right */
-    margin-left: 70px; /* Add some margin to the left */
-}
-
-.column2 {
-    flex: 0 0 50%; /* Set the initial size and prevent flex-grow and flex-shrink */
-}
-
 .chart-wrapper {
-    flex: 1 1 45%; /* Allow the chart to grow and shrink, and take up 45% of the container width */
-    margin-bottom: 20px; /* Add some margin to the bottom of each chart wrapper */
-    padding: 10px; /* Add padding around the chart container */
-    border: 2px solid black; /* Add a border around the chart wrapper */
-    border-radius: 10px; /* Add rounded corners to the chart wrapper */
-    background-color: #f9f9f9; /* Set a background color for the chart wrapper */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%; /* Make the chart container take the full width */
+    height: 474px; /* Adjust the height as needed */
+    border: 2px solid black; /* Add a border to each chart container */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Add padding to the top for the title */
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+    background-color: white; /* Ensure background color is white */
+    position: relative; /* Ensure the title is positioned relative to the container */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
 }
 
 .chart1-wrapper {
     height: 474px; /* Adjust the height as needed */
-    width: 100px; /* Adjust the width as needed */
-    margin-left: auto; /* Align the chart to the right */
-    margin-right: 0px; /* Align the chart to the right */
-    padding-right: 0; /* Remove any padding on the right side */
+    width: 100%; /* Make the chart container take the full width */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
 }
 
-.chart2-wrapper {
-    height: 474px; /* Adjust the height as needed */
-    width: 100%; /* Adjust the width as needed */
-    max-width: 1200px; /* Set a maximum width */
-    margin: auto; /* Center the chart container */
-}
-
-.chart-description {
+.chart1-description {
+    height: auto; /* Adjust the height as needed */
+    width: 100%; /* Make the description container take the full width */
     display: flex;
-    flex-direction: column; /* Stack buttons and description vertically */
-    flex: 1 1 45%; /* Allow the description to grow and shrink, and take up 45% of the container width */
-    width: 45%; /* Set a width for the description */
-    height: 474px; /* Make the description take the full height */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 20px; /* Add padding around the description */
     border: 2px solid black; /* Add a border around the description */
     border-radius: 10px; /* Add rounded corners to the description */
@@ -79,11 +55,12 @@
     text-align: left; /* Align text to the left */
     font-size: 1em; /* Adjust the font size as needed */
     line-height: 1.6; /* Add line spacing */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
 }
 
-.chart1-description {
+.chart2-wrapper {
     height: 474px; /* Adjust the height as needed */
-    width: 650px; /* Adjust the width as needed */
+    width: 100%; /* Make the chart container take the full width */
 }
 
 .chart-description:hover {
@@ -94,7 +71,7 @@
     display: flex;
     justify-content: space-around;
     gap: 20px; /* Add space between the buttons */
-    margin-bottom: 40px;
+    margin-bottom: 20px; /* Add some margin to the bottom */
 }
 
 .region-button {
@@ -159,6 +136,17 @@ button[type="submit"] {
     cursor: pointer;
     align-self: center; /* Align the button to the center */
     font-weight: bold; /* Use a bold font weight */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .chart-grid {
+        grid-template-columns: 1fr; /* Single column */
+        grid-template-areas:
+            "chart1"
+            "chart1-description"
+            "chart2";
+    }
 }
 
 button[type="submit"]:hover {

@@ -495,7 +495,7 @@ def advanced():
                          color='No_of_Movies', 
                          hover_name='production_countries'
                          )
-    fig1.update_layout(width=880)  # Set the width for Chart 1
+    fig1.update_layout(width=1180)  # Set the width for Chart 1
     chart1 = pio.to_html(fig1, full_html=False)
     
     all_movies = []
