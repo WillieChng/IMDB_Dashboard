@@ -295,36 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', handleCardClick);
     });
 
-    const deleteButtons = document.querySelectorAll('.fav-card-delete');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            const parentCard = button.closest('.fav-card');
-            const movieId = parentCard.getAttribute('data-movie-id');
-            if (parentCard) {
-                fetch(`/remove_from_favourites?movie_id=${movieId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        parentCard.remove();
-                        cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
-                        currentIndex = 0; // Reset currentIndex to 0
-                        updateCards(); // Update the positions after removing a card
-                    } else {
-                        alert('Failed to delete the card.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-        });
-    });
-
     // Add event listener for personalized delete buttons
     const personalizedDeleteButtons = document.querySelectorAll('.personalized-delete');
     personalizedDeleteButtons.forEach(button => {
@@ -332,44 +302,46 @@ document.addEventListener('DOMContentLoaded', function() {
             const parentCard = button.closest('.fav-card');
             const movieId = parentCard.getAttribute('data-movie-id');
             if (parentCard) {
-                parentCard.remove();
-                cards = document.querySelectorAll('.fav-carousell > .fav-card'); // Update the cards NodeList
-                currentIndex = 0; // Reset currentIndex to 0
-                updateCards(); // Update the positions after removing a card
-
-                // Store the deleted movie ID in local storage
-                let deletedMovies = JSON.parse(localStorage.getItem('deletedMovies')) || [];
-                deletedMovies.push(movieId);
-                localStorage.setItem('deletedMovies', JSON.stringify(deletedMovies));
-
-                // Call the server to update the state
-                fetch(`/remove_from_personalized?movie_id=${movieId}`, {
+                fetch('/remove_from_personalized', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({ movie_id: movieId })
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (!data.success) {
-                        alert('Failed to update the server.');
+                    if (data.success) {
+                        parentCard.remove();
+                        updatePersonalizedStatus();
+                    } else {
+                        console.error(data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                 });
-
-                // Optionally, refresh the page or update the status dynamically
-                if (cards.length === 0) {
-                    // If no more cards, display a message or refresh the page
-                    displayNoMoreCardsMessage();
-                } else {
-                    // Update the status dynamically
-                    updatePersonalizedStatus();
-                }
             }
         });
     });
+
+    function updatePersonalizedStatus() {
+        // Implement the logic to update the personalized status dynamically
+        // For example, you can update a status message or refresh a section of the page
+        const statusElement = document.getElementById('personalized-status');
+        if (statusElement) {
+            statusElement.textContent = 'Personalized recommendations updated.';
+        }
+    }
+
+    function updatePersonalizedStatus() {
+        // Implement the logic to update the personalized status dynamically
+        // For example, you can update a status message or refresh a section of the page
+        const statusElement = document.getElementById('personalized-status');
+        if (statusElement) {
+            statusElement.textContent = 'Personalized recommendations updated.';
+        }
+    }
 
     // Function to remove deleted cards on page load
     function removeDeletedCards() {

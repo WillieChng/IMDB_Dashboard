@@ -141,42 +141,19 @@ def personalized():
         return redirect(url_for('views.user_favourites'))
 
     # Fetch recommendations based on top genres
-    recommendations = Movie.query.join(Movie.genres).filter(Genre.name.in_(top_genres)).order_by(Movie.popularity.desc()).limit(3).all()
+    recommendations = Movie.query.join(Movie.genres).filter(Genre.name.in_(top_genres)).order_by(Movie.popularity.desc()).limit(5).all()
 
-    return render_template("personalized.html", top_genres=top_genres, recommendations=recommendations)
+    # Store recommendations in user_recommendations table if not already present
+    for movie in recommendations:
+        if movie not in current_user.user_recommendations:
+            current_user.user_recommendations.append(movie)
+    db.session.commit()
+
+    return render_template("personalized.html", top_genres=top_genres, recommendations=current_user.user_recommendations)
 
 @views.route('/')  # Root function
 def homepage():
     return render_template("homepage.html")
-
-@views.route('/testing.html', methods=['GET', 'POST'])
-def testing():
-    # Retrieve necessary columns for the basic page using joinedload
-    query = db.session.query(Movie).options(
-        selectinload(Movie.directors),   # Load directors eagerly
-        selectinload(Movie.genres),      # Load genres eagerly
-    ).join(MovieDirector, Movie.movie_id == MovieDirector.c.movie_id)\
-    .join(Director, Director.director_id == MovieDirector.c.director_id)\
-    .join(MovieGenre, Movie.movie_id == MovieGenre.c.movie_id)\
-    .join(Genre, Genre.genre_id == MovieGenre.c.genre_id)\
-    .all()
-
-    # Prepare the data for the response
-    data = [{
-        'title': row.title,  # Directly get the movie title
-        'vote_count': row.vote_count,  # Directly get vote count
-        'popularity': row.popularity,  # Directly get popularity
-        'director': ', '.join([director.name for director in row.directors]),  # Join directors' names if there are multiple
-        'genre': ', '.join([genre.name for genre in row.genres]),  # Join genres if there are multiple
-        'release_year': row.release_year,  # Directly get release year
-        'adult': row.adult,  # Directly get adult status
-        'Star1': row.Star1,  # Directly get Star1
-        'Star2': row.Star2,  # Directly get Star2
-        'Star3': row.Star3,  # Directly get Star3
-        'Star4': row.Star4   # Directly get Star4
-    } for row in query]
-
-    return render_template("testing.html", data=data)
 
 @views.route('/basic.html', methods=['GET', 'POST'])
 @cache.cached(timeout=300)
@@ -258,46 +235,46 @@ def create_dash_app(flask_app):
         df_director = get_movie_data()
         top_directors = df_director.groupby('director').agg({'vote_count': 'sum'}).sort_values(by=['vote_count'], ascending=False).head(10).index.tolist()
     
-    # Define a variable to indicate the current mode (light or dark)
-    mode = 'dark'  # Change this to 'light' for light mode
+    # # Define a variable to indicate the current mode (light or dark)
+    # mode = 'dark'  # Change this to 'light' for light mode
 
-    # Define styles for light and dark modes
-    light_mode_styles = {
-        'backgroundColor': '#FFF',
-        'textColor': '#000',
-        'dropdownBackgroundColor': '#FFF',
-        'dropdownTextColor': '#000',
-        'chartContainerBackgroundColor': '#FFF',
-        'descriptionContainerBackgroundColor': '#FFF',
-        'descriptionTextColor': '#000'
-    }
-    
-    dark_mode_styles = {
-    'backgroundColor': '#111',
-    'textColor': '#FFF',
-    'dropdownBackgroundColor': '#333',
-    'dropdownTextColor': '#FFF',
-    'chartContainerBackgroundColor': '#222',
-    'descriptionContainerBackgroundColor': '#222',
-    'descriptionTextColor': '#AAA'
-    }
+    # # Define styles for light and dark modes
+    # light_mode_styles = {
+    #     'backgroundColor': '#FFF',
+    #     'textColor': '#000',
+    #     'dropdownBackgroundColor': '#FFF',
+    #     'dropdownTextColor': '#000',
+    #     'chartContainerBackgroundColor': '#FFF',
+    #     'descriptionContainerBackgroundColor': '#FFF',
+    #     'descriptionTextColor': '#000'
+    # }
 
-    # Select styles based on the current mode
-    styles = dark_mode_styles if mode == 'dark' else light_mode_styles
-    
+    # dark_mode_styles = {
+    #     'backgroundColor': '#111',
+    #     'textColor': '#FFF',
+    #     'dropdownBackgroundColor': '#333',
+    #     'dropdownTextColor': '#FFF',
+    #     'chartContainerBackgroundColor': '#222',
+    #     'descriptionContainerBackgroundColor': '#222',
+    #     'descriptionTextColor': '#000'  # Set description text color to black
+    # }
+
+    # # Select styles based on the current mode
+    # styles = dark_mode_styles if mode == 'dark' else light_mode_styles
+
     container_style = {
-    'display': 'flex',
-    'flexDirection': 'column',
-    'alignItems': 'center',
-    'justifyContent': 'center',
-    'width': '100%',
-    'maxWidth': '1200px',
-    'margin': '20px auto',
-    'padding': '20px',
-    'border': '2px solid black',
-    'borderRadius': '10px',
-    'backgroundColor': '#f9f9f9'
-}
+        'display': 'flex',
+        'flexDirection': 'column',
+        'alignItems': 'center',
+        'justifyContent': 'center',
+        'width': '100%',
+        'maxWidth': '1200px',
+        'margin': '20px auto',
+        'padding': '20px',
+        'border': '2px solid black',
+        'borderRadius': '10px',
+        'backgroundColor': '#f9f9f9'
+    }
 
     dash_app.layout = html.Div([
         dcc.Tabs([
@@ -310,14 +287,14 @@ def create_dash_app(flask_app):
                         placeholder='Select Year(s)',
                     ),
                     html.Div([
-                        html.H2("Number of Movie Releases by Genre Over Time", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        html.H2("Number of Movie Releases by Genre Over Time", style={'color': 'black', 'textAlign': 'center'}),
                         dcc.Graph(id='chart1'),
-                        html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'color': styles['descriptionTextColor']})
+                        html.P("2020-2022 has seen a trend in increase of movies across majority of genres. Drama and Documentary are genres that are frequently released throughout the years, with comedy coming at a close second. The least released genres are War, Western and history due to lack of demand and interest from audience.", style={'color': 'black'})
                     ], style=container_style),
                     html.Div([
-                        html.H2("Average Movie Runtime by Year", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        html.H2("Average Movie Runtime by Year", style={'color': 'black', 'textAlign': 'center'}),
                         dcc.Graph(id='chart2'),
-                        html.P("Across all of the years, the average movie runtime are closely knitted together with 2019 showing the highest average runtime. Then, from there forth, the average runtime has been decreasing with the year 2023 ending up with only 20 minutes. This could be due to the fact that movies are becoming more fast-paced and concise to adapt to audience's decreasing attention span in modern times due to the influence of social media", style={'color': styles['descriptionTextColor']})
+                        html.P("Across all of the years, the average movie runtime are closely knitted together with 2019 showing the highest average runtime. Then, from there forth, the average runtime has been decreasing with the year 2023 ending up with only 20 minutes. This could be due to the fact that movies are becoming more fast-paced and concise to adapt to audience's decreasing attention span in modern times due to the influence of social media", style={'color': 'black'})
                     ], style=container_style)
                 ])
             ]),
@@ -330,17 +307,17 @@ def create_dash_app(flask_app):
                         placeholder='Select Genre(s)'
                     ),
                     html.Div([
-                        html.H2("Top 10 Starred Actors/Actresses Across Genres", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        html.H2("Top 10 Starred Actors/Actresses Across Genres", style={'color': 'black', 'textAlign': 'center'}),
                         dcc.Graph(id='chart3'),
                         html.P("""The chart shows the top 10 actors/actresses have all starred in a decent amount of comedy movies. Moreover, talented actors/actresses are more likely to be casted in comedy movies due to their ability to deliver great punchlines and comedic timing. 
                             Action, Thriller, Drama and Horror are the next most popular genres that actors/actresses have starred in which indicates them having a different set of acting skills to deliver a convincing performance. 
                             War is the least popular genre for actors/actresses to star in due to the lack of demand and interest from the audience. It is also a challenging genre to act in as it requires actors/actresses to portray the harsh realities of war. 
-                            Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""", style={'color': styles['descriptionTextColor'], 'padding-left': '10px'})
+                            Ultimately, the chart shows that actors/actresses have starred in a variety of genres which showcases their versatility and acting skills.""", style={'color': 'black', 'padding-left': '10px'})
                     ], style=container_style),
                     html.Div([
-                        html.H2("Average Popularity and Sentiment of Movies by Genre", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        html.H2("Average Popularity and Sentiment of Movies by Genre", style={'color': 'black', 'textAlign': 'center'}),
                         dcc.Graph(id='chart4'),
-                        html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.", style={'color': styles['descriptionTextColor']})
+                        html.P("Family and adventure movies have the highest average popularity and sentiment score. This is due to the fact that family movies are generally heartwarming and have a positive message that resonates with the audience. Adventure movies are also popular as they provide an escape from reality and take the audience on an exciting journey. Western and horror movies have the lowest average popularity and sentiment score. Western movies are a niche genre that appeals to a specific audience, while horror movies are known for their dark and unsettling themes.", style={'color': 'black'})
                     ], style=container_style)
                 ])
             ]),
@@ -353,9 +330,9 @@ def create_dash_app(flask_app):
                         placeholder='Select Director(s)'
                     ),
                     html.Div([
-                        html.H2("Popularity Success of Genres by Top 10 Directors", style={'color': styles['textColor'], 'textAlign': 'center'}),
+                        html.H2("Popularity Success of Genres by Top 10 Directors", style={'color': 'black', 'textAlign': 'center'}),
                         dcc.Graph(id='chart5'),
-                        html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.", style={'color': styles['descriptionTextColor']})
+                        html.P("James Mangold has the highest average popularity across all genres, working on box-office movies such as Logan, Ford v Ferrari and Walk the Line. Followed by Francis Lawrence and Robert Schwentke, which shows their ability to direct movies of different themes that resonate with the audience.", style={'color': 'black'})
                     ], style=container_style)
                 ])
             ])
@@ -936,23 +913,13 @@ def user_favourites():
 @views.route('/remove_from_personalized', methods=['POST'])
 @login_required
 def remove_from_personalized():
-    try:
-        movie_id = request.args.get('movie_id')
-        if not movie_id:
-            return jsonify({'success': False, 'error': 'Movie ID is required'}), 400
-
-        # Ensure the session is initialized
-        if 'deleted_movies' not in session:
-            session['deleted_movies'] = []
-
-        deleted_movies = session['deleted_movies']
-        if movie_id not in deleted_movies:
-            deleted_movies.append(movie_id)
-            session['deleted_movies'] = deleted_movies
-
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+    movie_id = request.json.get('movie_id')
+    movie = Movie.query.get(movie_id)
+    if movie in current_user.user_recommendations:
+        current_user.user_recommendations.remove(movie)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Movie removed from personalized recommendations.'})
+    return jsonify({'success': False, 'message': 'Movie not found in personalized recommendations.'})
 
 @views.route('/settings.html')
 def settings_page():
