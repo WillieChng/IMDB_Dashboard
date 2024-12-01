@@ -6,6 +6,15 @@ body {
     font-family: 'Nunito', sans-serif;
 }
 
+.intermediate-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    margin: 10px;
+}
+
 .page-title-not-moving {
     text-align: center;
     margin: 20px 0; /* Add some margin to the top and bottom */
@@ -91,15 +100,5 @@ body {
     margin: 20px 0;
 }
 
-/* dark mode */
-body.dark-mode .dash-container {
-    background-color: #1e1e1e;
-    color: #ffffff;
-}
-
-body.dark-mode .dash-graph {
-    background-color: pink;
-    color: #ffffff;
-}
 
 
