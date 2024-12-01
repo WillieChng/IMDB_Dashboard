@@ -476,6 +476,7 @@ def advanced():
                          color='No_of_Movies', 
                          hover_name='production_countries'
                          )
+    fig1.update_layout(width=880)  # Set the width for Chart 1
     chart1 = pio.to_html(fig1, full_html=False)
     
     all_movies = []
@@ -497,7 +498,6 @@ def advanced():
     df2_long = df2.melt(id_vars=['title'], value_vars=['vote_average', 'popularity', 'vote_count', 'weighted_rating', 'trend_score'], var_name='metric', value_name='value')
     
     fig1 = go.Figure()
-    fig2 = go.Figure()
     
     # Add all movies to the legend without displaying them in the charts
     for title in df2_long['title'].unique():
@@ -513,7 +513,7 @@ def advanced():
 
     title1 = request.args.get('title1')
     title2 = request.args.get('title2')
-    chart_title = f"{title1} VS. {title2}" if title1 and title2 else "Spider Chart Comparison"
+    chart_title = f"{title1} VS. {title2}" if title1 and title2 else "Select 2 movies to compare"
 
     if title1:
         print(f"Title1: {title1}")
@@ -561,7 +561,9 @@ def advanced():
             font=dict(
                 size=10,  # Adjust the font size of the legend
             ),
-        )
+        ),
+        width=1170,  # Set the width of the chart
+        height=450  # Set the height of the chart
     )
 
     chart2 = pio.to_html(fig1, full_html=False)

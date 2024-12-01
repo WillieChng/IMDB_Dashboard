@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentSections = document.querySelectorAll('.content');
     const chartGrid = document.querySelector('.chart-grid');
     const pageTitle = document.querySelector('.page-title');
+    const advancedShiftedContainers = document.querySelectorAll('.advanced-shifted-container');
+    const advancedPageTitles = document.querySelectorAll('.advanced-page-title');
 
     function toggleSidePanel() {
         if (sidePanel) {
@@ -31,6 +33,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pageTitle) {
                 pageTitle.classList.toggle('shifted');
             }
+        }
+    }
+
+    function toggleSidePanel() {
+        if (sidePanel) {
+            sidePanel.classList.toggle('show');
+            advancedShiftedContainers.forEach(container => {
+                container.classList.toggle('shifted');
+            });
+            advancedPageTitles.forEach(title => {
+                title.classList.toggle('shifted');
+            });
         }
     }
 
@@ -518,5 +532,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const regionButtons = document.querySelectorAll('.region-button');
+    const regionDescription = document.getElementById('region-description');
+
+    const descriptions = {
+        'north-america': 'North America is known for its prolific film industry, Hollywood, which produces a significant number of movies each year.',
+        'europe': 'Europe has a rich history of cinema, with countries like France, Germany, and Italy contributing significantly to the global film industry.',
+        'asia': 'Asia is home to some of the largest film industries in the world, including Bollywood in India and the rapidly growing film industry in China.',
+        'south-america': 'South America has a vibrant film industry, with countries like Brazil and Argentina producing critically acclaimed movies.',
+        'africa': 'Africa\'s film industry is growing, with Nollywood in Nigeria being one of the largest film producers in the world.',
+        'oceania': 'Oceania, particularly Australia and New Zealand, has a thriving film industry known for producing high-quality movies.'
+    };
+
+    regionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const region = this.getAttribute('data-region');
+            regionDescription.innerHTML = `<p class="region-description-text">${descriptions[region]}</p>`;
+        });
+    });
 });
 

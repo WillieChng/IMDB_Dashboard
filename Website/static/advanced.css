@@ -1,4 +1,4 @@
-.page-title {
+.advanced-page-title {
     text-align: center;
     margin: 20px 0; /* Add some margin to the top and bottom */
     font-size: 2em; /* Adjust the font size as needed */
@@ -18,62 +18,111 @@
     position: relative; /* Ensure the description can be positioned absolutely */
 }
 
+.chart-description-container {
+    display: flex;
+    justify-content: space-between; /* Space between chart and description */
+    align-items: stretch; /* Align items vertically */
+    gap: 50px; /* Add space between the chart and the description */
+    margin-bottom: 20px; /* Add some margin to the bottom */
+    transition: transform 0.3s ease; /* Smooth transition for shifting */
+}
+
+.column {
+    flex: 1; /* Allow the column to grow and shrink */
+}
+
+.column1 {
+    flex: 0 0 50%; /* Set the initial size and prevent flex-grow and flex-shrink */
+    display: flex;
+    justify-content: flex-end; /* Align the chart to the right */
+    margin-left: 70px; /* Add some margin to the left */
+}
+
+.column2 {
+    flex: 0 0 50%; /* Set the initial size and prevent flex-grow and flex-shrink */
+}
+
 .chart-wrapper {
-    flex: 1 1 100%; /* Allow the chart to grow and shrink, and take up 100% of the container width */
+    flex: 1 1 45%; /* Allow the chart to grow and shrink, and take up 45% of the container width */
     margin-bottom: 20px; /* Add some margin to the bottom of each chart wrapper */
     padding: 10px; /* Add padding around the chart container */
-    border: 1px solid #ccc; /* Add a border around the chart wrapper */
+    border: 2px solid black; /* Add a border around the chart wrapper */
     border-radius: 10px; /* Add rounded corners to the chart wrapper */
     background-color: #f9f9f9; /* Set a background color for the chart wrapper */
 }
 
-.chart-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%; /* Make the chart container take the full width */
-    height: 470px; /* Adjust the height as needed */
-    border: 2px solid black; /* Add a border to each chart container */
-    border-radius: 10px; /* Rounded corners */
-    padding: 20px; /* Add padding to the top for the title */
-    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
-    background-color: white; /* Ensure background color is white */
-    position: relative; /* Ensure the title is positioned relative to the container */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for opacity and transform */
+.chart1-wrapper {
+    height: 474px; /* Adjust the height as needed */
+    width: 100px; /* Adjust the width as needed */
+    margin-left: auto; /* Align the chart to the right */
+    margin-right: 0px; /* Align the chart to the right */
+    padding-right: 0; /* Remove any padding on the right side */
 }
 
-.chart-container h2 {
-    margin: 0 0 10px 0; /* Add margin to the bottom to create space between the title and the chart */
-    padding: 0;
-    background-color: white; /* Ensure the title has a background color */
-    padding: 0 10px; /* Add padding to the title */
-    z-index: 1; /* Ensure the title is above the chart */
-    white-space: nowrap; /* Prevent line breaks */
-    font-family: 'Nunito Sans', sans-serif; /* Use a sans-serif font */
-    font-weight: 700; /* Use a bold font weight */
-    font-size: 1.5em;
+.chart2-wrapper {
+    height: 474px; /* Adjust the height as needed */
+    width: 100%; /* Adjust the width as needed */
+    max-width: 1200px; /* Set a maximum width */
+    margin: auto; /* Center the chart container */
 }
 
 .chart-description {
-    position: relative; /* Change to relative positioning */
-    margin-left: 0px; /* Add a small space between the chart and the description */
-    text-align: left; /* Align text to the left */
-    font-size: 2.2em; /* Adjust the font size as needed */
-    width: 600px; /* Set a fixed width for the description */
     display: flex;
-    align-items: center;
-    grid-column: span 2; /* Span across two columns */
-    color: #333; /* Change text color */
-    background-color: #f9f9f9; /* Change background color */
-    padding: 10px; /* Add padding */
-    border-radius: 5px; /* Add rounded corners */
+    flex-direction: column; /* Stack buttons and description vertically */
+    flex: 1 1 45%; /* Allow the description to grow and shrink, and take up 45% of the container width */
+    width: 45%; /* Set a width for the description */
+    height: 474px; /* Make the description take the full height */
+    padding: 20px; /* Add padding around the description */
+    border: 2px solid black; /* Add a border around the description */
+    border-radius: 10px; /* Add rounded corners to the description */
+    background-color: #f9f9f9; /* Set a background color for the description */
+    text-align: left; /* Align text to the left */
+    font-size: 1em; /* Adjust the font size as needed */
     line-height: 1.6; /* Add line spacing */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.chart1-description {
+    height: 474px; /* Adjust the height as needed */
+    width: 650px; /* Adjust the width as needed */
 }
 
 .chart-description:hover {
     background-color: #bebebe; /* Change background color on hover */
+}
+
+.region-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px; /* Add space between the buttons */
+    margin-bottom: 40px;
+}
+
+.region-button {
+    padding: 5px 10px;
+    border: 2px solid black;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.region-button:hover,
+.region-button:focus,
+.region-button:active {
+    background-color: rgb(61, 60, 60);
+    color: white;
+    outline: 2px solid black; /* Remove the default focus outline */
+    border-color: rgb(61, 60, 60); /* Match the border color to the background color */
+}
+
+.p,
+.region-description-text {
+    font-size: 2.0em; /* Adjust the font size as needed */
+    color: black; /* Set the text color */
+    margin-top: 10px; /* Add some margin to the top */
+    line-height: 1.8; /* Add line spacing */
+    text-align: center; /* Center the text */
 }
 
 .bottom-search-container {
@@ -82,32 +131,41 @@
     align-items: center;
     flex-direction: column; /* Stack items vertically */
     gap: 30px; /* Add space between the search bars and the button */
+    margin-top: 50px; /* Add some margin to the top */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for opacity and transform */
 }
 
 .search-container {
     display: flex;
     justify-content: center; /* Center the search bars */
     gap: 100px; /* Add space between the search bars */
+    width: 1200px; /* Make the search container take the full width */
 }
 
-.search-bar {
+.bottom-search-bar {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid black;
     border-radius: 5px;
     font-size: 1em;
 }
 
 button[type="submit"] {
     padding: 10px 20px;
-    border: none;
+    border: 2px solid black;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: black;
     color: white;
-    font-size: 1em;
+    font-size: 1.2em;
     cursor: pointer;
     align-self: center; /* Align the button to the center */
+    font-weight: bold; /* Use a bold font weight */
 }
 
 button[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: rgb(61, 60, 60);
+}
+
+/* Shifted state for when the side panel is open */
+.shifted {
+    transform: translateX(130px); /* Adjust based on the width of the side panel */
 }

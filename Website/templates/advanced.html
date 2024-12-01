@@ -7,14 +7,33 @@
 {% endblock %}
 
 {% block content %} 
-    <h2>Number of Movies by Production Country</h2> 
-    <div class="chart-wrapper">
-        <div id="chart">{{chart1|safe}}</div>
+<h2 class="advanced-page-title">Hmm... What about the rest of world?</h2>
+    <div class="chart-description-container advanced-shifted-container">
+        <div class="column column1">
+            <div class="chart-wrapper chart1-wrapper">
+                <div id="chart">{{chart1|safe}}</div>
+            </div>
+        </div>
+        <div class="column column2">
+            <div class="chart-description chart1-description">
+                <div class="region-buttons">
+                    <button class="region-button" data-region="north-america">North America</button>
+                    <button class="region-button" data-region="europe">Europe</button>
+                    <button class="region-button" data-region="asia">Asia</button>
+                    <button class="region-button" data-region="south-america">South America</button>
+                    <button class="region-button" data-region="africa">Africa</button>
+                    <button class="region-button" data-region="oceania">Oceania</button>
+                </div>
+                <div id="region-description">
+                    <p class="region-description-text">Select a region to see the description.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h2>Real Time Movie Data Comparison</h2>
-    <div class="chart-grid">
-        <div class="chart-wrapper">
+    <h2 class="advanced-page-title">Real Time Movie Data Comparison</h2>
+    <div class="chart-grid advanced-shifted-container">
+        <div class="chart-wrapper chart2-wrapper">
             <div id="chart2">{{chart2|safe}}</div>
         </div>
     </div>
@@ -23,11 +42,11 @@
     <div class="spacer"></div>
 
     <!-- Search containers at the bottom of the page -->
-    <div class="bottom-search-container">
+    <div class="bottom-search-container advanced-shifted-container">
         <form id="search-form" action="{{ url_for('views.advanced') }}" method="GET">
             <div class="search-container">
-                <input type="text" class="search-bar" name="title1" placeholder="Search for Spider Chart 1">
-                <input type="text" class="search-bar" name="title2" placeholder="Search for Spider Chart 2">
+                <input type="text" class="bottom-search-bar" name="title1" placeholder="Movie 1...">
+                <input type="text" class="bottom-search-bar" name="title2" placeholder="Movie 2...">
             </div><br><br><br>
             <button type="submit">Compare</button>
             <div id="error-message" style="color: red; display: none;">Both fields must be filled in to search.</div>
@@ -36,5 +55,6 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
