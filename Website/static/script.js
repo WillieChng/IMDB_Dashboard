@@ -392,6 +392,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    if (deleteButton) {
+        deleteButton.addEventListener('click', function() {
+            fetch('/delete_profile_picture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    profilePicture.src = '';
+                    profilePicture.style.display = 'none';
+                    defaultIcon.style.display = 'block';
+                    toggleDefaultIcon();
+                } else {
+                    console.error(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    }
+
+    function toggleDefaultIcon() {
+        if (profilePicture && profilePicture.src && profilePicture.src !== window.location.href) {
+            if (defaultIcon) {
+                defaultIcon.classList.add('hidden');
+            }
+            if (profilePicture) {
+                profilePicture.style.display = 'block';
+            }
+        } else {
+            if (defaultIcon) {
+                defaultIcon.classList.remove('hidden');
+            }
+            if (profilePicture) {
+                profilePicture.style.display = 'none';
+            }
+        }
+    }
+    // Initial check
+    toggleDefaultIcon();
+
     if (rightButton) {
         rightButton.addEventListener('click', function() {
             currentIndex = (currentIndex + 1) % cards.length;
