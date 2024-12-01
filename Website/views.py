@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
 from flask_caching import Cache
 from flask_login import current_user, login_required
 from Website.models import Movie, Genre, Actor, Director, MovieGenre, MovieActor, MovieDirector, User
@@ -932,6 +932,27 @@ def remove_from_favourites():
 def user_favourites():
     favourites = current_user.user_favourites
     return render_template('user_favourites.html', favourites=favourites)
+
+@views.route('/remove_from_personalized', methods=['POST'])
+@login_required
+def remove_from_personalized():
+    try:
+        movie_id = request.args.get('movie_id')
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID is required'}), 400
+
+        # Ensure the session is initialized
+        if 'deleted_movies' not in session:
+            session['deleted_movies'] = []
+
+        deleted_movies = session['deleted_movies']
+        if movie_id not in deleted_movies:
+            deleted_movies.append(movie_id)
+            session['deleted_movies'] = deleted_movies
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @views.route('/settings.html')
 def settings_page():
