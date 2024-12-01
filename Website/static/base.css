@@ -277,7 +277,8 @@ header {
 }
 
 .content.shifted {
-    margin-left: 200px; /* Offset content by the width of the sidebar */
+    margin-left: 100px; /* Offset content by the width of the sidebar */
+    margin-right: 50px;
     transition: margin-left 0.3s; /* Smooth transition for margin change */
 }
 
