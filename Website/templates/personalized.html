@@ -15,7 +15,7 @@
                 <div class="personalized-card-title">{{ movie.title }}</div>
                 <div class="personalized-card-details">{{ movie.release_year }} ‧ {{ movie.genres | map(attribute='name') | join(', ') }} ‧ {{ movie.runtime }} mins</div>
                 <div class="personalized-card-synopsis">
-                    <p>{{ (movie.overview[:150] if movie.overview else 'N/A')  }}{% if movie.overview and movie.overview|length > 100 %}...{% endif %}</p>
+                    <p>{{ (movie.overview[:100] if movie.overview else 'N/A')  }}{% if movie.overview and movie.overview|length > 100 %}...{% endif %}</p>
                 </div>
                 <button class="personalized-card-btn"><a href="{{ url_for('views.movie_details_page', movie_id=movie.movie_id) }}">See More</a></button>
             </div>
