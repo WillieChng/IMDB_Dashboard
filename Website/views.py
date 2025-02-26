@@ -921,6 +921,18 @@ def remove_from_personalized():
         return jsonify({'success': True, 'message': 'Movie removed from personalized recommendations.'})
     return jsonify({'success': False, 'message': 'Movie not found in personalized recommendations.'})
 
+@views.route('/delete_profile_picture', methods=['POST'])
+@login_required
+def delete_profile_picture():
+    if current_user.profile_picture:
+        file_path = os.path.join(UPLOAD_FOLDER, current_user.profile_picture)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        current_user.profile_picture = None
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Profile picture deleted successfully.'})
+    return jsonify({'success': False, 'message': 'No profile picture to delete.'})
+
 @views.route('/settings.html')
 def settings_page():
     return render_template("settings.html")
